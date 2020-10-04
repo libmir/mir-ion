@@ -122,10 +122,10 @@ private template stage1_impl(string arch)
                     static foreach (j; 0 .. 4)
                         d[i][j] = __builtin_vpadd_u32(d[i][j], d[i][j]);
 
-                    ushort8 result;
+                    __vector(ushort[8]) result;
                     static foreach (i; 0 .. 2)
                     static foreach (j; 0 .. 4)
-                        result[i * 4 + j] = extractelement!(ushort8, i * 4 + j)(cast(ushort8) d[i][j]);
+                        result[i * 4 + j] = extractelement!(__vector(ushort[8]), i * 4 + j)(cast(__vector(ushort[8])) d[i][j]);
                 }
                 else
                 {
