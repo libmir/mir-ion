@@ -6,6 +6,8 @@ IONREF = $(REF_ALTTEXT $(TT $2), $2, mir, ion, $1)$(NBSP)
 +/
 module mir.ion.deser;
 
+public import mir.serde;
+
 import mir.bignum.decimal: Decimal;
 import mir.bignum.integer: BigInt;
 import mir.ion.deser.low_level;
@@ -13,7 +15,6 @@ import mir.ion.exception;
 import mir.ion.symbol_table;
 import mir.ion.type_code;
 import mir.ion.value;
-import mir.serde;
 import mir.small_array;
 import mir.small_string;
 import mir.utility: _expect;
@@ -73,12 +74,12 @@ T deserializeJson(T)(scope const(char)[] text)
 
 /// Test @nogc deserialization
 @safe pure @nogc
-version(all) unittest
+unittest
 {
-    import mir.small_array;
-    import mir.small_string;
     import mir.bignum.decimal;
     import mir.rc.array;
+    import mir.small_array;
+    import mir.small_string;
 
     static struct Book
     {
