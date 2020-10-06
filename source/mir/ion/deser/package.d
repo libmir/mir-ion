@@ -564,15 +564,18 @@ private template deserializeValueMember(alias deserializeValue, alias deserializ
                     return exc;
                 __traits(getMember, value, member)[v.key.idup] = move(temporal);
             }
-            static if (isField!(T, member))
+            static if (hasTransform)
             {
-                transform(__traits(getMember, value, member));
-            }
-            else
-            {
-                auto temporal = __traits(getMember, value, member);
-                transform(temporal);
-                __traits(getMember, value, member) = move(temporal);
+                static if (isField!(T, member))
+                {
+                    transform(__traits(getMember, value, member));
+                }
+                else
+                {
+                    auto temporal = __traits(getMember, value, member);
+                    transform(temporal);
+                    __traits(getMember, value, member) = move(temporal);
+                }
             }
         }
         else
@@ -581,16 +584,19 @@ private template deserializeValueMember(alias deserializeValue, alias deserializ
             Temporal temporal;
             if (auto exc = impl(data, temporal, context))
                 return exc;
-            static if (isField!(T, member))
+            static if (hasTransform)
             {
-                __traits(getMember, value, member) = to!(serdeDeserializationMemberType!(T, member))(move(temporal));
-                transform(__traits(getMember, value, member));
-            }
-            else
-            {
-                auto temporal = to!(serdeDeserializationMemberType!(T, member))(move(temporal));
-                transform(temporal);
-                __traits(getMember, value, member) = move(temporal);
+                static if (isField!(T, member))
+                {
+                    __traits(getMember, value, member) = to!(serdeDeserializationMemberType!(T, member))(move(temporal));
+                    transform(__traits(getMember, value, member));
+                }
+                else
+                {
+                    auto temporal = to!(serdeDeserializationMemberType!(T, member))(move(temporal));
+                    transform(temporal);
+                    __traits(getMember, value, member) = move(temporal);
+                }
             }
         }
         else
@@ -599,7 +605,9 @@ private template deserializeValueMember(alias deserializeValue, alias deserializ
             if (auto exc = impl(data, __traits(getMember, value, member), context))
                 return exc;
             static if (hasTransform)
+            {
                 transform(__traits(getMember, value, member));
+            }
         }
         else
         {
@@ -619,7 +627,9 @@ private template deserializeValueMember(alias deserializeValue, alias deserializ
                     return exc;
             }
             static if (hasTransform)
+            {
                 transform(temporal);
+            }
             __traits(getMember, value, member) = move(temporal);
         }
 
