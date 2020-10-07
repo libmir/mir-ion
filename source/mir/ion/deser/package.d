@@ -325,8 +325,8 @@ template deserializeValue(string[] symbolTable)
             import mir.conv: to;
             import core.lifetime: move;
             serdeGetProxy!T temporal;
-            static if (hasUDA!(value, serdeScoped))
-                static if (__traits(compiles, { .deserializeScoped!symbolTable(data, temporal); }))
+            static if (hasUDA!(T, serdeScoped))
+                static if (__traits(compiles, .deserializeScoped(data, temporal)))
                     alias impl = .deserializeScoped;
                 else
                     alias impl = .deserializeValue!symbolTable;
