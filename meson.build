@@ -16,7 +16,6 @@ sources_list = [
     'mir/ion/deser/package',
     'mir/ion/exception',
     'mir/ion/internal/data_holder',
-    'mir/ion/internal/jsonbuffer',
     'mir/ion/internal/simd',
     'mir/ion/internal/stage1',
     'mir/ion/internal/stage2',

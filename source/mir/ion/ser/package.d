@@ -6,6 +6,8 @@ IONREF = $(REF_ALTTEXT $(TT $2), $2, mir, ion, $1)$(NBSP)
 +/
 module mir.ion.ser;
 
+import mir.bignum.integer: BigInt;
+import mir.bignum.decimal: Decimal;
 import mir.ion.deser;
 import mir.ion.deser.low_level: isNullable;
 import mir.reflection;
@@ -65,13 +67,11 @@ unittest
 }
 
 /// JSON serialization function with pretty formatting and custom output range.
-void serializeJsonPretty(string sep = "\t", V, O)(auto ref V value, ref O output)
-    if(isOutputRange!(O, const(char)[]))
+void serializeJsonPretty(string sep = "\t", V, Appender)(auto ref V value, ref Appender appender)
+    if(isOutputRange!(Appender, const(char)[]))
 {
-    import std.range.primitives: put;
-    auto ser = jsonSerializer!sep((const(char)[] chars) => put(output, chars));
+    auto ser = jsonSerializer!sep(&appender);
     ser.serializeValue(value);
-    ser.flush;
 }
 
 ///
@@ -207,7 +207,7 @@ unittest
         private int sum;
 
         // opApply is used for serialization
-        int opApply(int delegate(in char[] key, int val) pure dg) pure
+        int opApply(int delegate(scope const char[] key, int val) pure dg) pure
         {
             if(auto r = dg("a", 1)) return r;
             if(auto r = dg("b", 2)) return r;
@@ -253,10 +253,99 @@ unittest
     assert(serializeJson(s) == `{"a":"str_str_str_str_str"}`);
 }
 
-/// JSON serialization back-end
-struct JsonSerializer(string sep, Dg)
+/++
+Object serialization wrapper.
++/
+struct ObjectSerializer(Serializer)
 {
-    import mir.ion.internal.jsonbuffer;
+    /// Serializer pointer
+    Serializer* serializer;
+    /// Object start serializer state
+    Serializer.State state;
+
+    /// Starts object serialization
+    this(ref Serializer serializer)
+    {
+        this.serializer = &serializer;
+        this.state = this.serializer.objectBegin;
+    }
+
+    /// Ends object serialization
+    ~this()
+    {
+        this.serializer.objectEnd(state);
+    }
+
+    @disable this(this);
+
+    /// Serialize key-value pair
+    void serializeKeyValue(T)(string key, auto ref const T value)
+    {
+        serializer.putKey(key);
+        serializeValue(*serializer, value);
+    }
+
+    /// Serialize key-value pair for escaped keys
+    void putEscapedKeyValue(T)(string key, auto ref const T value)
+    {
+        serializer.putEscapedKey(key);
+        serializeValue(*serializer, value);
+    }
+}
+
+/++
+Array serialization wrapper.
++/
+struct ArraySerializer(Serializer)
+{
+    /// Serializer pointer
+    Serializer* serializer;
+    /// Array start serializer state
+    Serializer.State state;
+
+    /// Starts object serialization
+    this(ref Serializer serializer)
+    {
+        this.serializer = &serializer;
+        this.state = this.serializer.arrayBegin;
+    }
+
+    /// Ends object serialization
+    ~this()
+    {
+        this.serializer.arrayEnd(state);
+    }
+
+    @disable this(this);
+
+    /// Serialize key-value pair
+    void serializeValue(T)(auto ref const value)
+    {
+        serializeValue(*serializer, value);
+    }
+}
+
+
+struct Serializer
+{
+    struct ArraySerializer
+    {
+        Serializer* serializer;
+
+        void put(T)(auto ref const value)
+        {
+
+        }
+    }
+}
+
+/// JSON serialization back-end
+struct JsonSerializer(string sep, Appender)
+{
+    /// JSON string buffer
+    Appender* appender;
+
+    private uint state;
 
     static if(sep.length)
     {
@@ -268,27 +357,15 @@ struct JsonSerializer(string sep, Dg)
             {
                 static if(sep.length == 1)
                 {
-                    sink.put(sep[0]);
+                    appender.put(sep[0]);
                 }
                 else
                 {
-                    sink.put!sep;
+                    appender.put(sep);
                 }
             }
         }
     }
-
-
-    /// JSON string buffer
-    JsonBuffer!Dg sink;
-
-    ///
-    this(Dg sink)
-    {
-        this.sink = JsonBuffer!Dg(sink);
-    }
-
-    private uint state;
 
     private void pushState(uint state)
     {
@@ -308,11 +385,11 @@ struct JsonSerializer(string sep, Dg)
         {
             static if(sep.length)
             {
-                sink.put!",\n";
+                appender.put(",\n");
             }
             else
             {
-                sink.put(',');
+                appender.put(',');
             }
         }
     }
@@ -323,11 +400,11 @@ struct JsonSerializer(string sep, Dg)
         static if(sep.length)
         {
             deep++;
-            sink.put!"{\n";
+            appender.put("{\n");
         }
         else
         {
-            sink.put('{');
+            appender.put('{');
         }
         return popState;
     }
@@ -338,10 +415,10 @@ struct JsonSerializer(string sep, Dg)
         static if(sep.length)
         {
             deep--;
-            sink.put('\n');
+            appender.put('\n');
             putSpace;
         }
-        sink.put('}');
+        appender.put('}');
         pushState(state);
     }
 
@@ -351,11 +428,11 @@ struct JsonSerializer(string sep, Dg)
         static if(sep.length)
         {
             deep++;
-            sink.put!"[\n";
+            appender.put("[\n");
         }
         else
         {
-            sink.put('[');
+            appender.put('[');
         }
         return popState;
     }
@@ -366,107 +443,169 @@ struct JsonSerializer(string sep, Dg)
         static if(sep.length)
         {
             deep--;
-            sink.put('\n');
+            appender.put('\n');
             putSpace;
         }
-        sink.put(']');
+        appender.put(']');
         pushState(state);
     }
 
     ///ditto
-    void putEscapedKey(in char[] key)
+    void putEscapedKey(scope const char[] key)
     {
         incState;
         static if(sep.length)
         {
             putSpace;
         }
-        sink.put('\"');
-        sink.putSmallEscaped(key);
+        appender.put('\"');
+        appender.put(key);
         static if(sep.length)
         {
-            sink.put!"\": ";
+            appender.put(`": `);
         }
         else
         {
-            sink.put!"\":";
+            appender.put(`":`);
         }
     }
 
-    ///ditto
-    void putKey(in char[] key)
+    private void putString(scope const char[] str)
     {
-        incState;
-        static if(sep.length)
-        {
-            putSpace;
-        }
-        sink.put('\"');
-        sink.put(key);
-        static if(sep.length)
-        {
-            sink.put!"\": ";
-        }
-        else
-        {
-            sink.put!"\":";
-        }
-    }
+        import mir.utility: _expect;
 
-    ///ditto
-    void putNumberValue(Num)(Num num, FormatSpec!char fmt = FormatSpec!char.init)
-    {
-        import std.format: formatValue;
-        auto f = &sink.putSmallEscaped;
-        static if (isNumeric!Num)
+        char[6] buffer = `\u0000`;
+        size_t j;
+        scope const(char)[] output;
+        foreach (size_t i, char c; str)
         {
-            static struct S
+            if (_expect(c == '"', false))
             {
-                typeof(f) fun;
-                auto put(scope const(char)[] str)
+                output = `\"`;
+            }
+            else
+            if (_expect(c == '\\', false))
+            {
+                output = `\\`;
+            }
+            else
+            if (_expect(c < ' ', false))
+            {
+                if (c == '\t')
                 {
-                    fun(str);
+                    output = `\t`;
+                }
+                else
+                if (c == '\n')
+                {
+                    output = `\n`;
+                }
+                else
+                if (c == '\r')
+                {
+                    output = `\r`;
+                }
+                else
+                if (c == '\f')
+                {
+                    output = `\f`;
+                }
+                else
+                if (c == '\b')
+                {
+                    output = `\b`;
+                }
+                else
+                {
+                    buffer[4] = cast(char)('0' + (c <= 0xF));
+                    uint d = 0xF & c;
+                    buffer[5] = cast(char)(d < 10 ? '0' + d : 'A' + (d - 10));
+                    output = buffer;
                 }
             }
-            auto app = S(f);
-            if (fmt == FormatSpec!char.init)
+            else
+            if (_expect(i + 1 < str.length, true))
             {
-                import mir.format: print;
-                print(app, num);
-                return;
+                continue;
             }
+            else
+            {
+                i += 1;
+            }
+            appender.put(str[j .. i]);
+            appender.put(output);
+            output = null;
+            j = i + 1;
         }
-        assumePure((typeof(f) fun) => formatValue(fun, num, fmt))(f);
     }
 
     ///ditto
-    void putValue(typeof(null))
+    void putKey(scope const char[] key)
     {
-        sink.put!"null";
-    }
-
-    ///ditto
-    void putValue(bool b)
-    {
-        if(b)
-            sink.put!"true";
+        incState;
+        static if(sep.length)
+        {
+            putSpace;
+        }
+        appender.put('\"');
+        putString(key);
+        static if(sep.length)
+        {
+            appender.put(`": `);
+        }
         else
-            sink.put!"false";
-    }
-
-    ///ditto
-    void putValue(in char[] str)
-    {
-        sink.put('\"');
-        sink.put(str);
-        sink.put('\"');
+        {
+            appender.put(`":`);
+        }
     }
 
     ///ditto
     void putValue(Num)(Num num)
         if (isNumeric!Num && !is(Num == enum))
     {
-        putNumberValue(num);
+        import mir.format: print;
+        print(appender, num);
+        return;
+    }
+
+    ///ditto
+    void putValue(size_t size)(auto ref const BigInt!size num)
+    {
+        num.toString(appender);
+    }
+
+    ///ditto
+    void putValue(size_t size)(auto ref const Decimal!size num)
+    {
+        num.toString(appender);
+    }
+
+    ///ditto
+    void putValue(typeof(null))
+    {
+        appender.put("null");
+    }
+
+    ///ditto
+    void putValue(bool b)
+    {
+        appender.put(b ? "true" : "false");
+    }
+
+    ///ditto
+    void putEscapedValue(scope const char[] value)
+    {
+        appender.put('\"');
+        appender.put(value);
+        appender.put('\"');
+    }
+
+    ///ditto
+    void putValue(scope const char[] value)
+    {
+        appender.put('\"');
+        putString(value);
+        appender.put('\"');
     }
 
     ///ditto
@@ -478,21 +617,15 @@ struct JsonSerializer(string sep, Dg)
             putSpace;
         }
     }
-
-    ///ditto
-    void flush()
-    {
-        sink.flush;
-    }
 }
 
 /++
 Creates JSON serialization back-end.
 Use `sep` equal to `"\t"` or `"    "` for pretty formatting.
 +/
-auto jsonSerializer(string sep = "", Dg)(scope Dg sink)
+auto jsonSerializer(string sep = "", Appender)(return Appender* appender)
 {
-    return JsonSerializer!(sep, Dg)(sink);
+    return JsonSerializer!(sep, Appender)(appender);
 }
 
 ///
@@ -500,11 +633,10 @@ unittest
 {
 
     import std.array;
-    import std.bigint;
-    import std.format: singleSpec;
+    import mir.bignum.integer;
 
     auto app = appender!string;
-    auto ser = jsonSerializer(&app.put!(const(char)[]));
+    auto ser = jsonSerializer(&app);
     auto state0 = ser.objectBegin;
 
         ser.putEscapedKey("null");
@@ -514,17 +646,16 @@ unittest
         auto state1 = ser.arrayBegin();
             ser.elemBegin; ser.putValue(null);
             ser.elemBegin; ser.putValue(123);
-            ser.elemBegin; ser.putNumberValue(12300000.123, singleSpec("%.10e"));
+            ser.elemBegin; ser.putValue(12300000.123);
             ser.elemBegin; ser.putValue("\t");
             ser.elemBegin; ser.putValue("\r");
             ser.elemBegin; ser.putValue("\n");
-            ser.elemBegin; ser.putNumberValue(BigInt("1234567890"));
+            ser.elemBegin; ser.putValue(BigInt!2("1234567890"));
         ser.arrayEnd(state1);
 
     ser.objectEnd(state0);
-    ser.flush;
 
-    assert(app.data == `{"null":null,"array":[null,123,1.2300000123e+07,"\t","\r","\n",1234567890]}`);
+    assert(app.data == `{"null":null,"array":[null,123,1.2300000123e7,"\t","\r","\n",1234567890]}`, app.data);
 }
 
 unittest
@@ -534,7 +665,7 @@ unittest
     import std.format: singleSpec;
 
     auto app = appender!string;
-    auto ser = jsonSerializer!"    "(&app.put!(const(char)[]));
+    auto ser = jsonSerializer!"    "(&app);
     auto state0 = ser.objectBegin;
 
         ser.putEscapedKey("null");
@@ -544,15 +675,14 @@ unittest
         auto state1 = ser.arrayBegin();
             ser.elemBegin; ser.putValue(null);
             ser.elemBegin; ser.putValue(123);
-            ser.elemBegin; ser.putNumberValue(12300000.123, singleSpec("%.10e"));
+            ser.elemBegin; ser.putValue(12300000.123);
             ser.elemBegin; ser.putValue("\t");
             ser.elemBegin; ser.putValue("\r");
             ser.elemBegin; ser.putValue("\n");
-            ser.elemBegin; ser.putNumberValue(BigInt("1234567890"));
+            ser.elemBegin; ser.putValue(BigInt!2("1234567890"));
         ser.arrayEnd(state1);
 
     ser.objectEnd(state0);
-    ser.flush;
 
     assert(app.data ==
 `{
@@ -560,7 +690,7 @@ unittest
     "array": [
         null,
         123,
-        1.2300000123e+07,
+        1.2300000123e7,
         "\t",
         "\r",
         "\n",
@@ -584,15 +714,15 @@ unittest
 }
 
 /// Number serialization
-void serializeValue(S, V)(ref S serializer, in V value, FormatSpec!char fmt = FormatSpec!char.init)
-    if((isNumeric!V && !is(V == enum)) || is(V == BigInt))
+void serializeValue(S, V)(ref S serializer, auto ref const V value)
+    if ((isNumeric!V && !is(V == enum)) || is(V == BigInt!size0, size_t size0) || is(V == Decimal!size1, size_t size1))
 {
     static if (isFloatingPoint!V)
     {
         import std.math : isNaN, isFinite, signbit;
 
         if (isFinite(value))
-            serializer.putNumberValue(value, fmt);
+            serializer.putValue(value);
         else if (value.isNaN)
             serializer.putValue(signbit(value) ? "-nan" : "nan");
         else if (value == V.infinity)
@@ -601,15 +731,15 @@ void serializeValue(S, V)(ref S serializer, in V value, FormatSpec!char fmt = Fo
             serializer.putValue("-inf");
     }
     else
-        serializer.putNumberValue(value, fmt);
+        serializer.putValue(value);
 }
 
 ///
 unittest
 {
-    import std.bigint;
+    import mir.bignum.integer;
 
-    assert(serializeJson(BigInt(123)) == `123`);
+    assert(serializeJson(BigInt!2(123)) == `123`);
     assert(serializeJson(2.40f) == `2.4`);
     assert(serializeJson(float.nan) == `"nan"`);
     assert(serializeJson(float.infinity) == `"inf"`);
@@ -672,7 +802,7 @@ void serializeValue(S)(ref S serializer, in char[] value)
 ///
 unittest
 {
-    assert(serializeJson("\t \" \\") == `"\t \" \\"`);
+    assert(serializeJson("\t \" \\") == `"\t \" \\"`, serializeJson("\t \" \\"));
 }
 
 /// Array serialization
@@ -863,7 +993,7 @@ unittest
 
 /// Struct and class type serialization
 void serializeValue(S, V)(ref S serializer, auto ref V value)
-    if(!isNullable!V && isAggregateType!V && !is(V : BigInt) && !isInputRange!V)
+    if (!isNullable!V && isAggregateType!V && !is(V == BigInt!size0, size_t size0) && !isInputRange!V)
 {
     static if(is(V == class) || is(V == interface))
     {
