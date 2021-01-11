@@ -6,6 +6,8 @@ IONREF = $(REF_ALTTEXT $(TT $2), $2, mir, ion, $1)$(NBSP)
 +/
 module mir.ion.ser.json;
 
+public import mir.serde;
+
 /// JSON serialization back-end
 struct JsonSerializer(string sep, Appender)
 {
@@ -412,7 +414,7 @@ unittest
 ///
 unittest
 {
-    import mir.ion.deser;
+    import mir.ion.deser.json;
 
     static struct S
     {
@@ -503,7 +505,7 @@ unittest
 ///
 unittest
 {
-    import mir.ion.deser;
+    import mir.ion.deser.json;
     import std.range;
     import std.algorithm;
     import std.conv;
