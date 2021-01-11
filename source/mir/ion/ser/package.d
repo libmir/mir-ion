@@ -97,21 +97,8 @@ struct ArraySerializer(Serializer)
     /// Serialize key-value pair
     void serializeValue(T)(auto ref const value)
     {
+        this.serializer.elemBegin;
         serializeValue(*serializer, value);
-    }
-}
-
-
-struct Serializer
-{
-    struct ArraySerializer
-    {
-        Serializer* serializer;
-
-        void put(T)(auto ref const value)
-        {
-
-        }
     }
 }
 

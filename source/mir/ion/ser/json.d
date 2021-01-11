@@ -8,14 +8,18 @@ module mir.ion.ser.json;
 
 public import mir.serde;
 
-/// JSON serialization back-end
+/++
+JSON serialization back-end
++/
 struct JsonSerializer(string sep, Appender)
 {
     import mir.bignum.decimal: Decimal;
     import mir.bignum.integer: BigInt;
     import std.traits: isNumeric;
 
-    /// JSON string buffer
+    /++
+    JSON string buffer
+    +/
     Appender* appender;
 
     private uint state;
@@ -293,7 +297,9 @@ struct JsonSerializer(string sep, Appender)
 }
 
 
-/// JSON serialization function.
+/++
+JSON serialization function.
++/
 string serializeJson(V)(auto ref V value)
 {
     return serializeJsonPretty!""(value);
@@ -311,33 +317,6 @@ unittest
     assert(serializeJson(S("str", 4)) == `{"foo":"str","bar":4}`);
 }
 
-
-/// JSON serialization function with pretty formatting.
-string serializeJsonPretty(string sep = "\t", V)(auto ref V value)
-{
-    import std.array: appender;
-    import std.functional: forward;
-
-    auto app = appender!(char[]);
-    serializeJsonPretty!sep(forward!value, app);
-    return cast(string) app.data;
-}
-
-///
-unittest
-{
-    static struct S { int a; }
-    assert(S(4).serializeJsonPretty == "{\n\t\"a\": 4\n}");
-}
-
-/// JSON serialization function with pretty formatting and custom output range.
-void serializeJsonPretty(string sep = "\t", V, Appender)(auto ref V value, ref Appender appender)
-    // if (isOutputRange!(Appender, const(char)[]))
-{
-    import mir.ion.ser: serializeValue;
-    auto ser = jsonSerializer!sep(&appender);
-    ser.serializeValue(value);
-}
 
 ///
 unittest
@@ -523,23 +502,98 @@ unittest
 }
 
 /++
-Creates JSON serialization back-end.
-Use `sep` equal to `"\t"` or `"    "` for pretty formatting.
+JSON serialization function with pretty formatting.
 +/
-auto jsonSerializer(string sep = "", Appender)(return Appender* appender)
+string serializeJsonPretty(string sep = "\t", V)(auto ref V value)
 {
-    return JsonSerializer!(sep, Appender)(appender);
+    import std.array: appender;
+    import std.functional: forward;
+
+    auto app = appender!(char[]);
+    serializeJsonPretty!sep(app, forward!value);
+    return cast(string) app.data;
 }
 
 ///
 unittest
 {
+    static struct S { int a; }
+    assert(S(4).serializeJsonPretty!"    " ==
+q{{
+    "a": 4
+}});
+}
 
-    import std.array;
+/++
+JSON serialization for custom outputt range.
++/
+void serializeJson(Appender, V)(ref Appender appender, auto ref V value)
+{
+    return serializeJsonPretty!""(appender, value);
+}
+
+///
+@safe pure nothrow @nogc
+unittest
+{
+    import mir.appender: ScopedBuffer;
+    ScopedBuffer!char buffer;
+    static struct S { int a; }
+    serializeJson(buffer, S(4));
+    assert(buffer.data == `{"a":4}`);
+}
+
+/++
+JSON serialization function with pretty formatting and custom output range.
++/
+template serializeJsonPretty(string sep = "\t")
+{
+    import std.range.primitives: isOutputRange; 
+    ///
+    void serializeJsonPretty(Appender, V)(ref Appender appender, auto ref V value)
+        if (isOutputRange!(Appender, const(char)[]))
+    {
+        import mir.ion.ser: serializeValue;
+        auto ser = jsonSerializer!sep((()@trusted => &appender)());
+        ser.serializeValue(value);
+    }
+}
+
+///
+// @safe pure nothrow @nogc
+unittest
+{
+    import mir.appender: ScopedBuffer;
+    ScopedBuffer!char buffer;
+    static struct S { int a; }
+    serializeJsonPretty!"    "(buffer, S(4));
+    assert(buffer.data ==
+`{
+    "a": 4
+}`);
+}
+
+/++
+Creates JSON serialization back-end.
+Use `sep` equal to `"\t"` or `"    "` for pretty formatting.
++/
+template jsonSerializer(string sep = "")
+{
+    ///
+    auto jsonSerializer(Appender)(return Appender* appender)
+    {
+        return JsonSerializer!(sep, Appender)(appender);
+    }
+}
+
+///
+@safe pure nothrow @nogc unittest
+{
+    import mir.appender: ScopedBuffer;
     import mir.bignum.integer;
 
-    auto app = appender!string;
-    auto ser = jsonSerializer(&app);
+    ScopedBuffer!char buffer;
+    auto ser = jsonSerializer((()@trusted=>&buffer)());
     auto state0 = ser.objectBegin;
 
         ser.putEscapedKey("null");
@@ -553,14 +607,15 @@ unittest
             ser.elemBegin; ser.putValue("\t");
             ser.elemBegin; ser.putValue("\r");
             ser.elemBegin; ser.putValue("\n");
-            ser.elemBegin; ser.putValue(BigInt!2("1234567890"));
+            ser.elemBegin; ser.putValue(BigInt!2(1234567890));
         ser.arrayEnd(state1);
 
     ser.objectEnd(state0);
 
-    assert(app.data == `{"null":null,"array":[null,123,1.2300000123e7,"\t","\r","\n",1234567890]}`, app.data);
+    assert(buffer.data == `{"null":null,"array":[null,123,1.2300000123e7,"\t","\r","\n",1234567890]}`);
 }
 
+///
 unittest
 {
     import std.array;
