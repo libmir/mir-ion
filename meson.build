@@ -12,6 +12,7 @@ has_cpp_headers = false
 
 sources_list = [
     'mir/ion/conv',
+    'mir/ion/deser/json',
     'mir/ion/deser/low_level',
     'mir/ion/deser/package',
     'mir/ion/exception',
@@ -22,6 +23,7 @@ sources_list = [
     'mir/ion/internal/stage3',
     'mir/ion/internal/stage4_s',
     'mir/ion/lob',
+    'mir/ion/ser/json',
     'mir/ion/ser/package',
     'mir/ion/symbol_table',
     'mir/ion/tape',

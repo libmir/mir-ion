@@ -115,9 +115,10 @@ SerdeException deserializeValueFromJson(T)(scope const(char)[] text, ref T value
     import mir.serde: serdeGetDeserializatinKeysRecurse;
     import mir.string_table: MirStringTable, minimalIndexType;
 
-    enum nMax = 8192u;
+    enum nMax = 4096u;
     enum keys = serdeGetDeserializatinKeysRecurse!T;
     static immutable table = MirStringTable!(minimalIndexType!(keys.length))(keys);
+    // nMax * 4 is enough. We use larger multiplier to reduce memory allocation count
     auto tapeHolder = IonDataHolder!(nMax * 8)(nMax * 8);
     size_t tapeLength;
 
