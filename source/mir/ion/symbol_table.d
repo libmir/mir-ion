@@ -21,6 +21,7 @@ since they are never explicit in user data: this specification disallows (by ign
 Here are the system symbols for Ion 1.0.
 +/
 static immutable string[] IonSystemSymbolTable_v1 = [
+    "$0",
     "$ion",
     "$ion_1_0",
     "$ion_symbol_table",
@@ -456,10 +457,10 @@ version(mir_ion_test) unittest
     table.finalize;
 }
 
-package(mir.ion) auto findKey()(string[] symbolTable, string key)
+package(mir.ion) auto findKey()(const string[] symbolTable, string key)
 {
     import mir.algorithm.iteration: findIndex;
     auto ret = symbolTable.findIndex!(a => a == key);
     assert(ret != size_t.max, "Missing key: " ~ key);
-    return ret + 1;
+    return ret;
 }
