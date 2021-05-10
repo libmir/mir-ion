@@ -6,10 +6,6 @@ project('ion_meson_example', 'c', 'd',
     ]
 )
 
-add_project_arguments([
-    '-fPIC',
-] , language : 'c')
-
 description = 'Ion Meson Example.'
 
 add_global_link_arguments('-Wl,--no-demangle', language : 'd')
