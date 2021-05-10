@@ -1,4 +1,4 @@
-project('ion_meson_example', 'd')
+project('ion_meson_example', 'c', 'd')
 
 description = 'Ion Meson Example.'
 
