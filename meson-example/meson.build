@@ -11,6 +11,7 @@ description = 'Ion Meson Example.'
 add_global_link_arguments('-Wl,--no-demangle', language : 'd')
 
 add_global_arguments([
+    '-relocation-model=pic',
     '-dip1008',
     '--d-version=mir_secure_memory',
 ], language: 'd')
