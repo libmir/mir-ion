@@ -1,12 +1,4 @@
-project('ion_meson_example', 'c', 'd',
-    version: '2.0.0',
-    meson_version: '>=0.46',
-    default_options : [
-        'b_staticpic=true',
-        'b_pie=true',
-        'warning_level=2',
-    ]
-)
+project('ion_meson_example', 'c', 'd')
 
 add_project_arguments([
     '-fPIC',
