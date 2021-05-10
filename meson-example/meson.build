@@ -24,10 +24,10 @@ add_project_arguments([
 ], language: 'd')
 
 subprojects = [
-    'mir-core',
-    'mir-algorithm',
-    'mir-cpuid',
     'mir-ion',
+    'mir-cpuid',
+    'mir-algorithm',
+    'mir-core',
 ]
 
 required_deps = []
