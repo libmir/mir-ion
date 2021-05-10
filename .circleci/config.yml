@@ -10,7 +10,7 @@ jobs:
           name: Test meson example
           command: |
             cd meson-example
-            meson build --default-library=static --buildtype=debug
+            meson build --default-library=static -Db_staticpic=true --buildtype=debug
             ninja -C build
             gcc test.c build/libion-example.so
             LD_LIBRARY_PATH=build ./a.out

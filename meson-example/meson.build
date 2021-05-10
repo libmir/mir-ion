@@ -3,7 +3,6 @@ project('ion_meson_example', 'd',
     meson_version: '>=0.46',
     default_options : [
         'warning_level=2',
-        'b_staticpic=true',
     ]
 )
 
