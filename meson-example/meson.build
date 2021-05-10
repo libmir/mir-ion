@@ -2,6 +2,8 @@ project('ion_meson_example', 'd',
     version: '2.0.0',
     meson_version: '>=0.46',
     default_options : [
+        'b_staticpic=true',
+        'b_pie=true',
         'warning_level=2',
     ]
 )
@@ -41,7 +43,7 @@ ion_example_src = [
     'source/meson_test.d',
 ]
 
-ion_example_lib = shared_library('ion_meson_example',
+ion_example_lib = library('ion_meson_example',
     ion_example_src,
     include_directories: ion_example_dir,
     install: true,
@@ -51,7 +53,7 @@ ion_example_lib = shared_library('ion_meson_example',
 )
 
 ion_example_dep = declare_dependency(
-    link_with: [ion_example_lib],
+    link_whole: [ion_example_lib],
     include_directories: ion_example_dir,
     dependencies: required_deps,
 )
