@@ -1,4 +1,4 @@
-project('ion_meson_example', 'd',
+project('ion_meson_example', 'c', 'd',
     version: '2.0.0',
     meson_version: '>=0.46',
     default_options : [
