@@ -4,8 +4,13 @@ then
   dub test --arch=aarch64 --build=unittest
 else
   dub test --arch=$ARCH --build=unittest
-  # if [ \( "$DC" = "ldc2" \) -o \( "$DC" = "ldmd2" \) ]
-  # then
-  #     cd benchmarks/sajson ; dub --build=release-nobounds --compiler=ldmd2 ; cd ../..
-  # fi
 fi
+cd meson-example
+meson build --default-library=static --buildtype=debug
+ninja -C build
+if [ "$TRAVIS_OS_NAME" = "osx" ]
+then
+  gcc test.c build/libion-example.dylib
+else
+  gcc test.c build/libion-example.so
+LD_LIBRARY_PATH=build ./a.out
