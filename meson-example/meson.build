@@ -43,7 +43,7 @@ ion_example_src = [
     'source/meson_test.d',
 ]
 
-ion_example_lib = library('ion_meson_example',
+ion_example_lib = shared_library('ion_meson_example',
     ion_example_src,
     include_directories: ion_example_dir,
     install: true,
