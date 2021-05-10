@@ -7,13 +7,13 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Test meson example
-        command: |
-          cd meson-example
-          meson build --default-library=static --buildtype=debug
-          ninja -C build
-          gcc test.c build/libion-example.so
-          LD_LIBRARY_PATH=build ./a.out
+          name: Test meson example
+          command: |
+            cd meson-example
+            meson build --default-library=static --buildtype=debug
+            ninja -C build
+            gcc test.c build/libion-example.so
+            LD_LIBRARY_PATH=build ./a.out
 
 orbs:
   mirci: libmir/upload_docs@0.1.4
