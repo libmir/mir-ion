@@ -1,10 +1,4 @@
-project('ion_meson_example', 'c', 'd',
-    default_options : [
-        'b_staticpic=true',
-        'b_pie=true',
-        'warning_level=2',
-    ]
-)
+project('ion_meson_example', 'c', 'd')
 
 description = 'Ion Meson Example.'
 
