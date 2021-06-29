@@ -204,6 +204,11 @@ pure nothrow:
         version (LDC) pragma(inline, true);
         import mir.ion.value;
         uint length;
+        uint s = keySpace[keyPosition++];
+        assert(s >> 4 == 8); //string
+        s &= 0xF;
+        if (s < 0xE)
+            return cast(const(char)[])keySpace[keyPosition .. s + keyPosition];
         auto data = keySpace[keyPosition .. $];
         parseVarUInt!false(data, length);
         return cast(const(char)[])data[0 .. length];
@@ -411,7 +416,7 @@ pure nothrow:
 
 version(mir_ion_test) unittest
 {
-    IonSymbolTable!false table;
+    IonSymbolTable!false table = void;
     table.initialize;
 
     import mir.format;
@@ -444,7 +449,7 @@ version(mir_ion_test) unittest
 
     import mir.format;
 
-    foreach(i; IonSystemSymbol.max + 1 ..10_000_000)
+    foreach(i; IonSystemSymbol.max + 1 ..10_000_00)
     {
         auto key = stringBuf() << i;
         auto j = table.insert(key.data);
@@ -459,6 +464,20 @@ version(mir_ion_test) unittest
                 assert(table.find(vkey.data));
             }
         }
+    }
+
+    table.finalize;
+}
+
+version(mir_ion_test) unittest
+{
+    IonSymbolTable!true table;
+    table.initialize;
+
+    foreach (i; 0 .. 20)
+    {
+        auto id = table.insert("a key a bit larger then 14");
+        assert(id == IonSystemSymbol.max + 1);
     }
 
     table.finalize;
