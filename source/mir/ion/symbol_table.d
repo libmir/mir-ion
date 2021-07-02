@@ -167,6 +167,13 @@ pure nothrow:
         nextKeyPosition += ionPutVarUInt(keySpace.ptr + nextKeyPosition, IonSystemSymbol.symbols);
         assert(nextKeyPosition == 9);
         nextKeyPosition += ionPutStartLength; // symbol array
+        assert(nextKeyPosition == unfinilizedFirstKeyPosition);
+    }
+
+    package enum unfinilizedFirstKeyPosition = 12;
+
+    const(ubyte)[] unfinilizedKeysData() scope const {
+        return keySpace[unfinilizedFirstKeyPosition .. nextKeyPosition];
     }
 
     /++
