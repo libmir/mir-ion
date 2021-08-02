@@ -41,6 +41,8 @@ struct BloombergSerializer()
     /// Mutable value used to choose format specidied or user-defined serialization specializations
     int serdeTarget = SerdeTarget.bloomberg;
 
+    private uint valueIndex;
+
 @safe pure:
 
     private const(char)* toScopeStringz(scope const(char)[] value) @trusted return scope nothrow
@@ -86,12 +88,12 @@ struct BloombergSerializer()
     {
         if (currentPartString.length == 1)
         {
-            blpapi.setValueChar(nextValue, *currentPartString.data.ptr, 0).validate;
+            blpapi.setValueChar(nextValue, *currentPartString.data.ptr, valueIndex).validate;
         }
         else
         {
             currentPartString.put('\0');
-            blpapi.setValueString(nextValue, currentPartString.data.ptr, 0).validate;
+            blpapi.setValueString(nextValue, currentPartString.data.ptr, valueIndex).validate;
         }
         nextValue = null;
     }
@@ -112,7 +114,7 @@ struct BloombergSerializer()
     void putSymbolPtr(scope const char* value)
     {
         auto name = getName(value);
-        blpapi.setValueFromName(nextValue, name, 0).validate;
+        blpapi.setValueFromName(nextValue, name, valueIndex).validate;
         blpapi.nameDestroy(name);
         nextValue = null;
     }
@@ -136,10 +138,17 @@ struct BloombergSerializer()
     }
 
     ///
-    alias listBegin = structBegin;
+    BloombergElement* listBegin(size_t length = 0)
+    {
+        valueIndex = uint.max;
+        return null;
+    }
 
     ///
-    alias listEnd = structEnd;
+    void listEnd(BloombergElement* state)
+    {
+        valueIndex = 0;
+    }
 
     ///
     alias sexpBegin = listBegin;
@@ -219,11 +228,11 @@ struct BloombergSerializer()
         {
             if (float(value) is value)
             {
-                blpapi.setValueFloat32(nextValue, value, 0).validate;
+                blpapi.setValueFloat32(nextValue, value, valueIndex).validate;
             }
             else
             {
-                blpapi.setValueFloat64(nextValue, value, 0).validate;
+                blpapi.setValueFloat64(nextValue, value, valueIndex).validate;
             }
         }
         else
@@ -287,7 +296,7 @@ struct BloombergSerializer()
     void putValue(bool b)
     {
         assert(nextValue);
-        blpapi.setValueBool(nextValue, b, 0).validate;
+        blpapi.setValueBool(nextValue, b, valueIndex).validate;
         nextValue = null;
     }
 
@@ -315,15 +324,14 @@ struct BloombergSerializer()
     void putValue(Timestamp value)
     {
         blpapi.HighPrecisionDatetime dt = value;
-        blpapi.setValueHighPrecisionDatetime(nextValue, dt, 0).validate;
+        blpapi.setValueHighPrecisionDatetime(nextValue, dt, valueIndex).validate;
         nextValue = null;
     }
 
     ///
     void elemBegin()
     {
-        assert(nextValue is null);
-        blpapi.appendElement(aggregateValue, nextValue).validate;
+        nextValue = aggregateValue;
     }
 
     ///
