@@ -1,39 +1,19 @@
 /++
 $(H4 High level Msgpack deserialization API)
 
-This module requires msgpack-d package.
-
 Macros:
 IONREF = $(REF_ALTTEXT $(TT $2), $2, mir, ion, $1)$(NBSP)
 +/
 module mir.deser.msgpack;
 import mir.algebraic : Nullable;
 import mir.ser.msgpack : MessagePackFmt;
-import mir.ion.exception;
+import mir.ion.exception : IonErrorCode, ionException, ionErrorMsg;
 import mir.lob : Blob;
 
 struct MsgpackExtension
 {
     Blob data;
     ubyte type;
-}
-
-struct MsgpackList
-{
-    const(ubyte)[] data;
-    size_t length;
-}
-
-struct MsgpackStruct
-{
-    const(ubyte)[] data;
-    size_t length;
-}
-
-struct MsgpackDescribedValue
-{
-    const(ubyte)[] data;
-    MessagePackFmt type;
 }
 
 private static T unpackMsgPackVal(T)(scope ref const(ubyte)[] data)
