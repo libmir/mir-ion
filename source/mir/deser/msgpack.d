@@ -41,6 +41,7 @@ private static T unpackMsgPackVal(T)(scope ref const(ubyte)[] data)
         }
     }
 
+    data = data[UT.sizeof .. $];
     return cast(typeof(return))ret;
 }
 
@@ -60,10 +61,9 @@ private static void advance(scope ref const(ubyte)[] data, size_t newStart) {
 private static void readMap(S)(ref S serializer, scope ref const(ubyte)[] data, size_t length)
 {
     auto state = serializer.structBegin();
-    auto window = data[0 .. $];
     foreach(i; 0 .. length)
     {
-        if (window.length < 1)
+        if (data.length < 1)
         {
             version (D_Exceptions)
                 throw IonErrorCode.unexpectedEndOfData.ionException;
@@ -71,8 +71,8 @@ private static void readMap(S)(ref S serializer, scope ref const(ubyte)[] data, 
                 assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
         }
 
-        MessagePackFmt keyType = cast(MessagePackFmt)window[0];
-        window.advance(1);
+        MessagePackFmt keyType = cast(MessagePackFmt)data[0];
+        data.advance(1);
         uint keyLength = 0;
         sw: switch (keyType)
         {
@@ -86,22 +86,19 @@ private static void readMap(S)(ref S serializer, scope ref const(ubyte)[] data, 
 
             case MessagePackFmt.str8:
             {
-                keyLength = unpackMsgPackVal!ubyte(window);
-                window.advance(1);
+                keyLength = unpackMsgPackVal!ubyte(data);
                 break sw;
             }
 
             case MessagePackFmt.str16:
             {
-                keyLength = unpackMsgPackVal!ushort(window);
-                window.advance(2);
+                keyLength = unpackMsgPackVal!ushort(data);
                 break sw;
             }
 
             case MessagePackFmt.str32:
             {
-                keyLength = unpackMsgPackVal!uint(window);
-                window.advance(4);
+                keyLength = unpackMsgPackVal!uint(data);
                 break sw;
             }
 
@@ -112,7 +109,7 @@ private static void readMap(S)(ref S serializer, scope ref const(ubyte)[] data, 
                     assert(0, IonErrorCode.expectedStringValue.ionErrorMsg);
         }
 
-        if (window.length < keyLength)
+        if (data.length < keyLength)
         {
             version (D_Exceptions)
                 throw IonErrorCode.unexpectedEndOfData.ionException;
@@ -120,24 +117,22 @@ private static void readMap(S)(ref S serializer, scope ref const(ubyte)[] data, 
                 assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
         }
 
-        serializer.putKey((() @trusted => cast(const(char[]))window[0 .. keyLength])());
-        window.advance(keyLength);
+        serializer.putKey((() @trusted => cast(const(char[]))data[0 .. keyLength])());
+        data.advance(keyLength);
 
-        MessagePackFmt valueType = cast(MessagePackFmt)window[0];
-        window.advance(1);
-        handleElement(serializer, valueType, window);
+        MessagePackFmt valueType = cast(MessagePackFmt)data[0];
+        data.advance(1);
+        handleElement(serializer, valueType, data);
     }
     serializer.structEnd(state);
-    data.advance(data.length - window.length);
 }
 
 private static void readList(S)(ref S serializer, scope ref const(ubyte)[] data, size_t length)
 {
     auto state = serializer.listBegin(length);
-    auto window = data[0 .. $];
     foreach(i; 0 .. length)
     {
-        if (window.length < 1)
+        if (data.length < 1)
         {
             version (D_Exceptions)
                 throw IonErrorCode.unexpectedEndOfData.ionException;
@@ -145,12 +140,11 @@ private static void readList(S)(ref S serializer, scope ref const(ubyte)[] data,
                 assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
         }
 
-        MessagePackFmt type = cast(MessagePackFmt)window[0];
-        window.advance(1);
-        serializer.elemBegin; handleElement(serializer, type, window);
+        MessagePackFmt type = cast(MessagePackFmt)data[0];
+        data.advance(1);
+        serializer.elemBegin; handleElement(serializer, type, data);
     }
     serializer.listEnd(state);
-    data.advance(data.length - window.length);
 }
 
 private static void readExt(S)(ref S serializer, scope ref const(ubyte)[] data, size_t length)
@@ -172,13 +166,11 @@ private static void readExt(S)(ref S serializer, scope ref const(ubyte)[] data, 
         if (length == 4)
         {
             uint unixTime = unpackMsgPackVal!uint(data);
-            data.advance(4);
             serializer.putValue(Timestamp.fromUnixTime(unixTime));
         }
         else if (length == 8)
         {
             ulong packedUnixTime = unpackMsgPackVal!ulong(data);
-            data.advance(8);
             ulong nanosecs = packedUnixTime >> 34;
             ulong seconds = packedUnixTime & 0x3ffffffff;
             auto time = Timestamp.fromUnixTime(seconds);
@@ -190,9 +182,7 @@ private static void readExt(S)(ref S serializer, scope ref const(ubyte)[] data, 
         else if (length == 12)
         {
             uint nanosecs = unpackMsgPackVal!uint(data);
-            data.advance(4);
             long seconds = unpackMsgPackVal!long(data);
-            data.advance(8);
             auto time = Timestamp.fromUnixTime(seconds);
             time.fractionExponent = -9;
             time.fractionCoefficient = nanosecs;
@@ -271,8 +261,6 @@ private static void readFloat(S)(ref S serializer, scope ref const(ubyte)[] data
         ulong v = unpackMsgPackVal!ulong(data);
         serializer.putValue((() @trusted => *cast(double*)&v)());
     }
-
-    data.advance(length);
 }
 
 @safe pure
@@ -340,17 +328,14 @@ private static void handleElement(S)(ref S serializer, MessagePackFmt type, scop
         
         case MessagePackFmt.uint16:
             serializer.putValue(unpackMsgPackVal!ushort(data));
-            data.advance(2);
             break sw;
 
         case MessagePackFmt.uint32:
             serializer.putValue(unpackMsgPackVal!uint(data));
-            data.advance(4);
             break sw;
         
         case MessagePackFmt.uint64:
             serializer.putValue(unpackMsgPackVal!ulong(data));
-            data.advance(8);
             break sw;
 
         case MessagePackFmt.int8:
@@ -360,40 +345,33 @@ private static void handleElement(S)(ref S serializer, MessagePackFmt type, scop
         
         case MessagePackFmt.int16:
             serializer.putValue(unpackMsgPackVal!short(data));
-            data.advance(2);
             break sw;
 
         case MessagePackFmt.int32:
             serializer.putValue(unpackMsgPackVal!int(data));
-            data.advance(4);
             break sw;
 
         case MessagePackFmt.int64:
             serializer.putValue(unpackMsgPackVal!long(data));
-            data.advance(8);
             break sw;
 
         case MessagePackFmt.map16:
             ushort mapLength = unpackMsgPackVal!ushort(data);
-            data.advance(2);
             readMap(serializer, data, mapLength);
             break sw;
         
         case MessagePackFmt.map32:
             uint mapLength = unpackMsgPackVal!uint(data);
-            data.advance(4);
             readMap(serializer, data, mapLength);
             break sw;
 
         case MessagePackFmt.array16:
             ushort arrayLength = unpackMsgPackVal!ushort(data);
-            data.advance(2);
             readList(serializer, data, arrayLength);
             break sw;
 
         case MessagePackFmt.array32:
             uint arrayLength = unpackMsgPackVal!uint(data);
-            data.advance(4);
             readList(serializer, data, arrayLength);
             break sw;
 
@@ -405,13 +383,11 @@ private static void handleElement(S)(ref S serializer, MessagePackFmt type, scop
         
         case MessagePackFmt.str16:
             ushort strLength = unpackMsgPackVal!ushort(data);
-            data.advance(2);
             readStr(serializer, data, strLength);
             break sw;
 
         case MessagePackFmt.str32:
             uint strLength = unpackMsgPackVal!uint(data);
-            data.advance(4);
             readStr(serializer, data, strLength);
             break sw;
 
@@ -432,13 +408,11 @@ private static void handleElement(S)(ref S serializer, MessagePackFmt type, scop
 
         case MessagePackFmt.bin16:
             ushort binLength = unpackMsgPackVal!ushort(data);
-            data.advance(2);
             readBin(serializer, data, binLength);
             break sw;
 
         case MessagePackFmt.bin32:
             uint binLength = unpackMsgPackVal!uint(data);
-            data.advance(4);
             readBin(serializer, data, binLength);
             break sw;
             
@@ -450,13 +424,11 @@ private static void handleElement(S)(ref S serializer, MessagePackFmt type, scop
 
         case MessagePackFmt.ext16:
             ushort extLength = unpackMsgPackVal!ushort(data);
-            data.advance(2);
             readExt(serializer, data, extLength);
             break sw;
 
         case MessagePackFmt.ext32:
             uint extLength = unpackMsgPackVal!uint(data);
-            data.advance(4);
             readExt(serializer, data, extLength);
             break sw;
 
