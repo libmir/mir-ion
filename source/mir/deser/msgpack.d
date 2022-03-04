@@ -34,408 +34,445 @@ private static T unpackMsgPackVal(T)(scope ref const(ubyte)[] data)
     version (LittleEndian)
     {
         import core.bitop : bswap, byteswap;
-        static if (T.sizeof >= 4) {
+        static if (T.sizeof >= 4)
+        {
             ret = bswap(ret);
-        } else static if (T.sizeof == 2) {
+        } 
+        else static if (T.sizeof == 2)
+        {
             ret = byteswap(ret);
         }
     }
 
-    data = data[UT.sizeof .. $];
+    data.advance(UT.sizeof);
     return cast(typeof(return))ret;
 }
 
 @safe @nogc pure
-private static void advance(scope ref const(ubyte)[] data, size_t newStart) {
-    if (data.length < newStart)
-    {
-        version (D_Exceptions)
-            throw IonErrorCode.unexpectedEndOfData.ionException;
-        else
-            assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
-    }
-
+private static void advance(scope ref const(ubyte)[] data, size_t newStart)
+{
     data = data[newStart .. $];
 }
 
-private static void readMap(S)(ref S serializer, scope ref const(ubyte)[] data, size_t length)
-{
-    auto state = serializer.structBegin();
-    foreach(i; 0 .. length)
-    {
-        if (data.length < 1)
-        {
-            version (D_Exceptions)
-                throw IonErrorCode.unexpectedEndOfData.ionException;
-            else
-                assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
-        }
-
-        MessagePackFmt keyType = cast(MessagePackFmt)data[0];
-        data.advance(1);
-        uint keyLength = 0;
-        sw: switch (keyType)
-        {
-            // fixstr
-            static foreach(v; MessagePackFmt.fixstr .. MessagePackFmt.fixstr + 0x20)
-            {
-                case v:
-                    keyLength = (v - MessagePackFmt.fixstr);
-                    break sw;
-            }
-
-            case MessagePackFmt.str8:
-            {
-                keyLength = unpackMsgPackVal!ubyte(data);
-                break sw;
-            }
-
-            case MessagePackFmt.str16:
-            {
-                keyLength = unpackMsgPackVal!ushort(data);
-                break sw;
-            }
-
-            case MessagePackFmt.str32:
-            {
-                keyLength = unpackMsgPackVal!uint(data);
-                break sw;
-            }
-
-            default:
-                version (D_Exceptions)
-                    throw IonErrorCode.expectedStringValue.ionException;
-                else
-                    assert(0, IonErrorCode.expectedStringValue.ionErrorMsg);
-        }
-
-        if (data.length < keyLength)
-        {
-            version (D_Exceptions)
-                throw IonErrorCode.unexpectedEndOfData.ionException;
-            else
-                assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
-        }
-
-        serializer.putKey((() @trusted => cast(const(char[]))data[0 .. keyLength])());
-        data.advance(keyLength);
-
-        MessagePackFmt valueType = cast(MessagePackFmt)data[0];
-        data.advance(1);
-        handleElement(serializer, valueType, data);
-    }
-    serializer.structEnd(state);
-}
-
-private static void readList(S)(ref S serializer, scope ref const(ubyte)[] data, size_t length)
-{
-    auto state = serializer.listBegin(length);
-    foreach(i; 0 .. length)
-    {
-        if (data.length < 1)
-        {
-            version (D_Exceptions)
-                throw IonErrorCode.unexpectedEndOfData.ionException;
-            else
-                assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
-        }
-
-        MessagePackFmt type = cast(MessagePackFmt)data[0];
-        data.advance(1);
-        serializer.elemBegin; handleElement(serializer, type, data);
-    }
-    serializer.listEnd(state);
-}
-
-private static void readExt(S)(ref S serializer, scope ref const(ubyte)[] data, size_t length)
-{
-    if (data.length < (length + 1)) 
-    {
-        version (D_Exceptions)
-            throw IonErrorCode.unexpectedEndOfData.ionException;
-        else
-            assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
-    }
-    
-    ubyte ext_type = data[0];
-    data.advance(1);
-
-    if (ext_type == cast(ubyte)-1)
-    {
-        import mir.timestamp : Timestamp;
-        if (length == 4)
-        {
-            uint unixTime = unpackMsgPackVal!uint(data);
-            serializer.putValue(Timestamp.fromUnixTime(unixTime));
-        }
-        else if (length == 8)
-        {
-            ulong packedUnixTime = unpackMsgPackVal!ulong(data);
-            ulong nanosecs = packedUnixTime >> 34;
-            ulong seconds = packedUnixTime & 0x3ffffffff;
-            auto time = Timestamp.fromUnixTime(seconds);
-            time.fractionExponent = -9;
-            time.fractionCoefficient = nanosecs;
-            time.precision = Timestamp.Precision.fraction;
-            serializer.putValue(time);
-        }
-        else if (length == 12)
-        {
-            uint nanosecs = unpackMsgPackVal!uint(data);
-            long seconds = unpackMsgPackVal!long(data);
-            auto time = Timestamp.fromUnixTime(seconds);
-            time.fractionExponent = -9;
-            time.fractionCoefficient = nanosecs;
-            time.precision = Timestamp.Precision.fraction;
-            serializer.putValue(time);
-        }
-    }
-    else
-    {
-        // XXX: How do we want to serialize exts that we don't recognize?
-        if (data.length < length)
-        {
-            version (D_Exceptions)
-                throw IonErrorCode.unexpectedEndOfData.ionException;
-            else
-                assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
-        }
-        auto state = serializer.structBegin();
-        serializer.putKey("type");
-        serializer.putValue(ext_type);
-        serializer.putKey("data");
-        serializer.putValue(Blob(data[0 .. length]));
-        serializer.structEnd(state);
-        data.advance(length);
-    }
-}
-
-private static void readStr(S)(ref S serializer, scope ref const(ubyte)[] data, size_t length)
-{
-    if (data.length < length) 
-    {
-        version (D_Exceptions)
-            throw IonErrorCode.unexpectedEndOfData.ionException;
-        else
-            assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
-    }
-    serializer.putValue((() @trusted => cast(const(char)[])data[0 .. length])());
-    data.advance(length);
-}
-
-private static void readBin(S)(ref S serializer, scope ref const(ubyte)[] data, size_t length)
-{
-    if (data.length < length)
-    {
-        version (D_Exceptions)
-            throw IonErrorCode.unexpectedEndOfData.ionException;
-        else
-            assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
-    }
-    serializer.putValue(Blob(data[0 .. length]));
-    data.advance(length);
-}
-
-private static void readFloat(S)(ref S serializer, scope ref const(ubyte)[] data, size_t length)
-{
-    import core.bitop : bswap;
-
-    if (data.length < length)
-    {
-        version (D_Exceptions)
-            throw IonErrorCode.unexpectedEndOfData.ionException;
-        else
-            assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
-    }
-
-    assert(length == 4 || length == 8);
-
-    if (length == 4)
-    {
-        uint v = unpackMsgPackVal!uint(data);
-        serializer.putValue((() @trusted => *cast(float*)&v)());
-    }
-    else if (length == 8)
-    {
-        // manually construct the ulong
-        ulong v = unpackMsgPackVal!ulong(data);
-        serializer.putValue((() @trusted => *cast(double*)&v)());
-    }
-}
-
 @safe pure
-private static void handleElement(S)(ref S serializer, MessagePackFmt type, scope ref const(ubyte)[] data)
+private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt type, scope ref const(ubyte)[] data)
 {
-    import mir.bignum.integer : BigInt;
-    sw: switch (type) 
+    size_t length = 0;
+    switch (type) 
     {
         // fixint
-        static foreach(v; MessagePackFmt.fixint .. (1 << 7))
-        {
-            case v:
-                // work around a weird bug -- passing v will
-                // cause some weird shenanigans to happen here
-                serializer.putValue(cast(ubyte)type);
-                break sw;
-        }
+        case MessagePackFmt.fixint: .. case (1 << 7) - 1:
+            serializer.putValue(cast(ubyte)type);
+            break;
 
         // fixnint
-        static foreach(v; MessagePackFmt.fixnint .. 0x100)
-        {
-            case v:
-                // but of course, passing v here Just Werks (TM)
-                serializer.putValue(cast(byte)v);
-                break sw;
-        }
-
-        // fixmap
-        static foreach(v; MessagePackFmt.fixmap .. MessagePackFmt.fixmap + 0x10)
-        {
-            case v:
-                readMap(serializer, data, v & 0x0F);
-                break sw;
-        }
-
-        // fixarray
-        static foreach(v; MessagePackFmt.fixarray ..  MessagePackFmt.fixarray + 0x10)
-        {
-            case v:
-                readList(serializer, data, (v - MessagePackFmt.fixarray));
-                break sw;
-        }
-        
-        // fixext
-        static foreach(v; MessagePackFmt.fixext1 .. MessagePackFmt.fixext16 + 1)
-        {
-            case v:
-                readExt(serializer, data, 1 << (v - MessagePackFmt.fixext1));
-                break sw;
-        }
-
-        // fixstr
-        static foreach(v; MessagePackFmt.fixstr .. MessagePackFmt.fixstr + 0x20)
-        {
-            case v:
-                readStr(serializer, data, (v - MessagePackFmt.fixstr));
-                break sw;
-        }
-
+        case MessagePackFmt.fixnint: .. case 0xFF:
+            serializer.putValue(cast(byte)type);
+            break;
 
         case MessagePackFmt.uint8:
             serializer.putValue(data[0]);
             data.advance(1);
-            break sw;
+            break;
         
         case MessagePackFmt.uint16:
             serializer.putValue(unpackMsgPackVal!ushort(data));
-            break sw;
+            break;
 
         case MessagePackFmt.uint32:
             serializer.putValue(unpackMsgPackVal!uint(data));
-            break sw;
+            break;
         
         case MessagePackFmt.uint64:
             serializer.putValue(unpackMsgPackVal!ulong(data));
-            break sw;
+            break;
 
         case MessagePackFmt.int8:
             serializer.putValue(cast(byte)data[0]);
             data.advance(1);
-            break sw;
+            break;
         
         case MessagePackFmt.int16:
             serializer.putValue(unpackMsgPackVal!short(data));
-            break sw;
+            break;
 
         case MessagePackFmt.int32:
             serializer.putValue(unpackMsgPackVal!int(data));
-            break sw;
+            break;
 
         case MessagePackFmt.int64:
             serializer.putValue(unpackMsgPackVal!long(data));
-            break sw;
+            break;
 
+        case MessagePackFmt.fixmap: .. case MessagePackFmt.fixmap + 0xF:
         case MessagePackFmt.map16:
-            ushort mapLength = unpackMsgPackVal!ushort(data);
-            readMap(serializer, data, mapLength);
-            break sw;
-        
         case MessagePackFmt.map32:
-            uint mapLength = unpackMsgPackVal!uint(data);
-            readMap(serializer, data, mapLength);
-            break sw;
+            goto ReadMap;
 
+        case MessagePackFmt.fixarray: .. case MessagePackFmt.fixarray + 0xF:
         case MessagePackFmt.array16:
-            ushort arrayLength = unpackMsgPackVal!ushort(data);
-            readList(serializer, data, arrayLength);
-            break sw;
-
         case MessagePackFmt.array32:
-            uint arrayLength = unpackMsgPackVal!uint(data);
-            readList(serializer, data, arrayLength);
-            break sw;
+            goto ReadArray;
 
+        case MessagePackFmt.fixstr: .. case MessagePackFmt.fixstr + 0x1F:
         case MessagePackFmt.str8:
-            ubyte strLength = data[0];
-            data.advance(1);
-            readStr(serializer, data, strLength);
-            break sw;
-        
         case MessagePackFmt.str16:
-            ushort strLength = unpackMsgPackVal!ushort(data);
-            readStr(serializer, data, strLength);
-            break sw;
-
         case MessagePackFmt.str32:
-            uint strLength = unpackMsgPackVal!uint(data);
-            readStr(serializer, data, strLength);
-            break sw;
+            goto ReadStr;
 
         case MessagePackFmt.nil:
             serializer.putValue(null);
-            break sw;
+            break;
 
         case MessagePackFmt.true_:
         case MessagePackFmt.false_:
             serializer.putValue(type == MessagePackFmt.true_ ? true : false);
-            break sw;
+            break;
 
-        case MessagePackFmt.bin8:
-            ubyte binLength = data[0];
-            data.advance(1);
-            readBin(serializer, data, binLength);
-            break sw;
-
-        case MessagePackFmt.bin16:
-            ushort binLength = unpackMsgPackVal!ushort(data);
-            readBin(serializer, data, binLength);
-            break sw;
-
-        case MessagePackFmt.bin32:
-            uint binLength = unpackMsgPackVal!uint(data);
-            readBin(serializer, data, binLength);
-            break sw;
+        case MessagePackFmt.bin8: .. case MessagePackFmt.bin32:
+            goto ReadBin;
             
-        case MessagePackFmt.ext8:
-            ubyte extLength = data[0];
-            data.advance(1);
-            readExt(serializer, data, extLength);
-            break sw;
-
-        case MessagePackFmt.ext16:
-            ushort extLength = unpackMsgPackVal!ushort(data);
-            readExt(serializer, data, extLength);
-            break sw;
-
-        case MessagePackFmt.ext32:
-            uint extLength = unpackMsgPackVal!uint(data);
-            readExt(serializer, data, extLength);
-            break sw;
+        case MessagePackFmt.fixext1: .. case MessagePackFmt.fixext16:
+        case MessagePackFmt.ext8: .. case MessagePackFmt.ext32:
+            goto ReadExt;
 
         case MessagePackFmt.float32:
         case MessagePackFmt.float64:
-            readFloat(serializer, data, type == MessagePackFmt.float32 ? 4 : 8);
-            break sw;
+            goto ReadFloat;
+
+        ReadMap:
+        {
+            if (type <= MessagePackFmt.fixmap + 0xF && type >= MessagePackFmt.fixmap)
+            {
+                length = (type - MessagePackFmt.fixmap);
+            }
+            else if (type == MessagePackFmt.map16)
+            {
+                length = unpackMsgPackVal!ushort(data);
+            }
+            else if (type == MessagePackFmt.map32)
+            {
+                length = unpackMsgPackVal!uint(data);
+            }
+            else
+            {
+                assert(0, "Should never happen");
+            }
+
+            auto state = serializer.structBegin();
+            foreach(i; 0 .. length)
+            {
+                if (data.length < 1)
+                {
+                    version (D_Exceptions)
+                        throw IonErrorCode.unexpectedEndOfData.ionException;
+                    else
+                        assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
+                }
+
+                MessagePackFmt keyType = cast(MessagePackFmt)data[0];
+                data.advance(1);
+                uint keyLength = 0;
+                sw: switch (keyType)
+                {
+                    // fixstr
+                    static foreach(v; MessagePackFmt.fixstr .. MessagePackFmt.fixstr + 0x20)
+                    {
+                        case v:
+                            keyLength = (v - MessagePackFmt.fixstr);
+                            break sw;
+                    }
+
+                    case MessagePackFmt.str8:
+                    {
+                        keyLength = unpackMsgPackVal!ubyte(data);
+                        break sw;
+                    }
+
+                    case MessagePackFmt.str16:
+                    {
+                        keyLength = unpackMsgPackVal!ushort(data);
+                        break sw;
+                    }
+
+                    case MessagePackFmt.str32:
+                    {
+                        keyLength = unpackMsgPackVal!uint(data);
+                        break sw;
+                    }
+
+                    default:
+                        version (D_Exceptions)
+                            throw IonErrorCode.expectedStringValue.ionException;
+                        else
+                            assert(0, IonErrorCode.expectedStringValue.ionErrorMsg);
+                }
+
+                if (data.length < keyLength)
+                {
+                    version (D_Exceptions)
+                        throw IonErrorCode.unexpectedEndOfData.ionException;
+                    else
+                        assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
+                }
+
+                serializer.putKey((() @trusted => cast(const(char[]))data[0 .. keyLength])());
+                data.advance(keyLength);
+
+                MessagePackFmt valueType = cast(MessagePackFmt)data[0];
+                data.advance(1);
+                handleMsgPackElement(serializer, valueType, data);
+            }
+            serializer.structEnd(state);
+            break;
+        }
+        
+        ReadArray:
+        {
+            if (type <= MessagePackFmt.fixarray + 0xF && type >= MessagePackFmt.fixarray)
+            {
+                length = (type - MessagePackFmt.fixarray);
+            }
+            else if (type == MessagePackFmt.array16)
+            {
+                length = unpackMsgPackVal!ushort(data);
+            }
+            else if (type == MessagePackFmt.array32)
+            {
+                length = unpackMsgPackVal!uint(data);
+            }
+            else
+            {
+                assert(0, "Should never happen");
+            }
+
+            auto state = serializer.listBegin(length);
+            foreach(i; 0 .. length)
+            {
+                if (data.length < 1)
+                {
+                    version (D_Exceptions)
+                        throw IonErrorCode.unexpectedEndOfData.ionException;
+                    else
+                        assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
+                }
+
+                MessagePackFmt elementType = cast(MessagePackFmt)data[0];
+                data.advance(1);
+            
+                serializer.elemBegin;
+                handleMsgPackElement(serializer, elementType, data);
+            }
+            serializer.listEnd(state);
+            break;
+        }
+
+        ReadExt:
+        {
+            if (type <= MessagePackFmt.fixext16 && type >= MessagePackFmt.fixext1)
+            {
+                length = 1 << (type - MessagePackFmt.fixext1);
+            }
+            else if (type == MessagePackFmt.ext8)
+            {
+                if (data.length < 1)
+                {
+                    version (D_Exceptions)
+                        throw IonErrorCode.unexpectedEndOfData.ionException;
+                    else
+                        assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
+                }
+
+                length = data[0];
+                data.advance(1);
+            }
+            else if (type == MessagePackFmt.ext16)
+            {
+                length = unpackMsgPackVal!ushort(data);
+            }
+            else if (type == MessagePackFmt.ext32)
+            {
+                length = unpackMsgPackVal!uint(data);
+            }
+            else
+            {
+                assert(0, "Should never happen");
+            }
+
+            if (data.length < (length + 1)) 
+            {
+                version (D_Exceptions)
+                    throw IonErrorCode.unexpectedEndOfData.ionException;
+                else
+                    assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
+            }
+            
+            ubyte ext_type = data[0];
+            data.advance(1);
+
+            if (ext_type == cast(ubyte)-1)
+            {
+                import mir.timestamp : Timestamp;
+                if (length == 4)
+                {
+                    uint unixTime = unpackMsgPackVal!uint(data);
+                    serializer.putValue(Timestamp.fromUnixTime(unixTime));
+                }
+                else if (length == 8)
+                {
+                    ulong packedUnixTime = unpackMsgPackVal!ulong(data);
+                    ulong nanosecs = packedUnixTime >> 34;
+                    ulong seconds = packedUnixTime & 0x3ffffffff;
+                    auto time = Timestamp.fromUnixTime(seconds);
+                    time.fractionExponent = -9;
+                    time.fractionCoefficient = nanosecs;
+                    time.precision = Timestamp.Precision.fraction;
+                    serializer.putValue(time);
+                }
+                else if (length == 12)
+                {
+                    uint nanosecs = unpackMsgPackVal!uint(data);
+                    long seconds = unpackMsgPackVal!long(data);
+                    auto time = Timestamp.fromUnixTime(seconds);
+                    time.fractionExponent = -9;
+                    time.fractionCoefficient = nanosecs;
+                    time.precision = Timestamp.Precision.fraction;
+                    serializer.putValue(time);
+                }
+            }
+            else
+            {
+                // XXX: How do we want to serialize exts that we don't recognize?
+                if (data.length < length)
+                {
+                    version (D_Exceptions)
+                        throw IonErrorCode.unexpectedEndOfData.ionException;
+                    else
+                        assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
+                }
+                auto state = serializer.structBegin();
+                serializer.putKey("type");
+                serializer.putValue(ext_type);
+                serializer.putKey("data");
+                serializer.putValue(Blob(data[0 .. length]));
+                serializer.structEnd(state);
+                data.advance(length);
+            }
+            break;
+        }
+        
+        ReadStr:
+        {
+            if (type <= MessagePackFmt.fixstr + 0x1F && type >= MessagePackFmt.fixstr)
+            {
+                length = (type - MessagePackFmt.fixstr);
+            }
+            else if (type == MessagePackFmt.str8)
+            {
+                if (data.length < 1)
+                {
+                    version (D_Exceptions)
+                        throw IonErrorCode.unexpectedEndOfData.ionException;
+                    else
+                        assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
+                }
+
+                length = data[0];
+                data.advance(1);
+            }
+            else if (type == MessagePackFmt.str16)
+            {
+                length = unpackMsgPackVal!ushort(data);
+            }
+            else if (type == MessagePackFmt.str32)
+            {
+                length = unpackMsgPackVal!uint(data);
+            }
+            else 
+            {
+                assert(0, "Should never happen");
+            }
+
+            if (data.length < length) 
+            {
+                version (D_Exceptions)
+                    throw IonErrorCode.unexpectedEndOfData.ionException;
+                else
+                    assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
+            }
+
+            serializer.putValue((() @trusted => cast(const(char)[])data[0 .. length])());
+            data.advance(length);
+            break;
+        }
+        
+        ReadBin:
+        {
+            length = 0;
+
+            if (type == MessagePackFmt.bin8)
+            {
+                if (data.length < 1)
+                {
+                    version (D_Exceptions)
+                        throw IonErrorCode.unexpectedEndOfData.ionException;
+                    else
+                        assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
+                }
+                length = data[0];
+                data.advance(1);
+            }
+            else if (type == MessagePackFmt.bin16)
+            {
+                length = unpackMsgPackVal!ushort(data);
+            }
+            else if (type == MessagePackFmt.bin32)
+            {
+                length = unpackMsgPackVal!uint(data);
+            }
+            else 
+            {
+                assert(0, "Should never happen");
+            }
+
+            if (data.length < length)
+            {
+                version (D_Exceptions)
+                    throw IonErrorCode.unexpectedEndOfData.ionException;
+                else
+                    assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
+            }
+            serializer.putValue(Blob(data[0 .. length]));
+            data.advance(length);
+            break;
+        }
+        
+        ReadFloat:
+        {
+            length = type == MessagePackFmt.float32 ? 4 : 8;
+            if (data.length < length)
+            {
+                version (D_Exceptions)
+                    throw IonErrorCode.unexpectedEndOfData.ionException;
+                else
+                    assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
+            }
+
+            assert(length == 4 || length == 8);
+
+            if (length == 4)
+            {
+                uint v = unpackMsgPackVal!uint(data);
+                serializer.putValue((() @trusted => *cast(float*)&v)());
+            }
+            else if (length == 8)
+            {
+                // manually construct the ulong
+                ulong v = unpackMsgPackVal!ulong(data);
+                serializer.putValue((() @trusted => *cast(double*)&v)());
+            }
+            break;
+        }
 
         default:
             version (D_Exceptions)
@@ -450,17 +487,19 @@ struct MsgpackValueStream
 {
     const(ubyte)[] data;
 
-    // private alias DG = int delegate(IonErrorCode error, MsgpackDescribedValue value) @safe pure nothrow @nogc;
-    // private alias EDG = int delegate(MsgpackDescribedValue value) @safe pure @nogc;
-
-    void serialize(S)(ref S serializer)
+    void serialize(S)(ref S serializer) const
     {
-        auto window = data;
+        auto window = data[0 .. $];
+        bool following = false;
         while (window.length)
         {
+            if (following)
+                serializer.nextTopLevelValue;
+            following = true;
+
             MessagePackFmt type = cast(MessagePackFmt)window[0];
             window = window[1 .. $];
-            handleElement(serializer, type, window);
+            handleMsgPackElement(serializer, type, window);
         }
     }
 }

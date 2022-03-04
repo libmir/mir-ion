@@ -381,11 +381,8 @@ version(mir_ion_test) unittest
     // static assert(data.ion2textPretty == "{\n\ta: 1,\n\tb: 2\n}");
 }
 
-/++
-Converts MessagePack binary data to Ion binary data.
-+/
-@trusted pure
-immutable(ubyte)[] msgpack2ion()(scope const(ubyte)[] data)
+void msgpack2ion(Appender)(scope const(ubyte)[] data, ref Appender appender)
+    @trusted pure @nogc
 {
     import mir.ion.internal.data_holder: ionPrefix, IonTapeHolder;
     import mir.ion.symbol_table: IonSymbolTable;
@@ -394,22 +391,49 @@ immutable(ubyte)[] msgpack2ion()(scope const(ubyte)[] data)
     import mir.serde : SerdeTarget;
     import mir.deser.msgpack : MsgpackValueStream;
     enum nMax = 4096;
-    IonTapeHolder!(nMax * 8, true) tapeHolder = void;
+    IonTapeHolder!(nMax * 8) tapeHolder = void;
     tapeHolder.initialize;
-    IonSymbolTable!true table;
-    auto ser = IonSerializer!(typeof(tapeHolder), null, true)(&tapeHolder, &table, SerdeTarget.ion);
+    IonSymbolTable!false table;
+    auto ser = IonSerializer!(typeof(tapeHolder), null, false)(&tapeHolder, &table, SerdeTarget.ion);
   
     data.MsgpackValueStream.serialize(ser);
   
+    appender.put(ionPrefix);
     if (table.initialized)
     {
         table.finalize;
-        return cast(immutable) (ionPrefix ~ table.tapeData ~ tapeHolder.tapeData);
+        appender.put(table.tapeData);
     }
-    else
+    appender.put(tapeHolder.tapeData);
+}
+
+/++
+Converts MessagePack binary data to Ion binary data.
++/
+@safe pure
+immutable(ubyte)[] msgpack2ion()(scope const(ubyte)[] data)
+{
+    import mir.appender : scopedBuffer;
+    auto buf = scopedBuffer!ubyte;
+    data.msgpack2ion(buf);
+    return buf.data.idup;
+}
+
+@safe pure @nogc
+version(mir_ion_test) unittest
+{
+    import mir.appender : scopedBuffer;
+    import mir.deser.ion : deserializeIon;
+    static struct S
     {
-        return cast(immutable) (ionPrefix ~ tapeHolder.tapeData);
+        bool compact;
+        int schema;
     }
+
+    auto buf = scopedBuffer!ubyte();
+    static immutable ubyte[] data = [0x82, 0xa7, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x63, 0x74, 0xc3, 0xa6, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x04];
+    data.msgpack2ion(buf);
+    assert(buf.data.deserializeIon!S == S(true, 4));
 }
   
 @safe pure
