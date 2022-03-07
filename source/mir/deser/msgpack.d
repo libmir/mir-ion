@@ -457,32 +457,33 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
             if (ext_type == cast(ubyte)-1)
             {
                 import mir.timestamp : Timestamp;
+                Timestamp time;
                 if (length == 4)
                 {
                     uint unixTime = unpackMsgPackVal!uint(data);
-                    serializer.putValue(Timestamp.fromUnixTime(unixTime));
+                    time = Timestamp.fromUnixTime(unixTime);
                 }
                 else if (length == 8)
                 {
                     ulong packedUnixTime = unpackMsgPackVal!ulong(data);
                     ulong nanosecs = packedUnixTime >> 34;
                     ulong seconds = packedUnixTime & 0x3ffffffff;
-                    auto time = Timestamp.fromUnixTime(seconds);
+                    time = Timestamp.fromUnixTime(seconds);
                     time.fractionExponent = -9;
                     time.fractionCoefficient = nanosecs;
                     time.precision = Timestamp.Precision.fraction;
-                    serializer.putValue(time);
                 }
                 else if (length == 12)
                 {
                     uint nanosecs = unpackMsgPackVal!uint(data);
                     long seconds = unpackMsgPackVal!long(data);
-                    auto time = Timestamp.fromUnixTime(seconds);
+                    time = Timestamp.fromUnixTime(seconds);
                     time.fractionExponent = -9;
                     time.fractionCoefficient = nanosecs;
                     time.precision = Timestamp.Precision.fraction;
-                    serializer.putValue(time);
                 }
+
+                serializer.putValue(time);
             }
             else
             {
