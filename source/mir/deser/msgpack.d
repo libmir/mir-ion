@@ -136,6 +136,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
 
         ReadMap:
         {
+            import mir.format : stringBuf, print;
             if (type <= MessagePackFmt.fixmap + 0xF && type >= MessagePackFmt.fixmap)
             {
                 length = (type - MessagePackFmt.fixmap);
@@ -166,33 +167,202 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
 
                 MessagePackFmt keyType = cast(MessagePackFmt)data[0];
                 data = data[1 .. $];
+                stringBuf keyBuf;
                 uint keyLength = 0;
-                sw: switch (keyType)
+                switch (keyType)
                 {
                     // fixstr
-                    static foreach(v; MessagePackFmt.fixstr .. MessagePackFmt.fixstr + 0x20)
-                    {
-                        case v:
-                            keyLength = (v - MessagePackFmt.fixstr);
-                            break sw;
-                    }
-
+                    case MessagePackFmt.fixstr: .. case MessagePackFmt.fixstr + 0x1F:
                     case MessagePackFmt.str8:
-                    {
-                        keyLength = unpackMsgPackVal!ubyte(data);
-                        break sw;
-                    }
-
                     case MessagePackFmt.str16:
+                    case MessagePackFmt.str32:
+                        goto StrKey;
+
+                    case MessagePackFmt.fixint: .. case (1 << 7) - 1:
+                    case MessagePackFmt.uint8:
+                    case MessagePackFmt.uint16:
+                    case MessagePackFmt.uint32:
+                    case MessagePackFmt.uint64:
+                        goto UIntKey;
+
+                    case MessagePackFmt.fixnint: .. case 0xFF:
+                    case MessagePackFmt.int8:
+                    case MessagePackFmt.int16:
+                    case MessagePackFmt.int32:
+                    case MessagePackFmt.int64:
+                        goto IntKey;
+                    
+                    case MessagePackFmt.fixext1: .. case MessagePackFmt.fixext16:
+                    case MessagePackFmt.ext8: .. case MessagePackFmt.ext32:
+                        goto TimestampKey;
+
+                    StrKey:
                     {
-                        keyLength = unpackMsgPackVal!ushort(data);
-                        break sw;
+                        if (keyType <= MessagePackFmt.fixstr + 0x1F && keyType >= MessagePackFmt.fixstr)
+                        {
+                            keyLength = (keyType - MessagePackFmt.fixstr);
+                        }
+                        else if (keyType == MessagePackFmt.str8)
+                        {
+                            keyLength = unpackMsgPackVal!ubyte(data);
+                        }
+                        else if (keyType == MessagePackFmt.str16)
+                        {
+                            keyLength = unpackMsgPackVal!ushort(data);
+                        }
+                        else if (keyType == MessagePackFmt.str32)
+                        {
+                            keyLength = unpackMsgPackVal!uint(data);
+                        }
+                        else
+                        {
+                            assert(0, "Should never happen");
+                        }
+
+                        serializer.putKey((() @trusted => cast(const(char[]))data[0 .. keyLength])());
+                        data = data[keyLength .. $];
+                        break;
                     }
 
-                    case MessagePackFmt.str32:
+                    UIntKey:
                     {
-                        keyLength = unpackMsgPackVal!uint(data);
-                        break sw;
+                        ulong val = 0;
+                        if (keyType <= (1 << 7) - 1 && keyType >= MessagePackFmt.fixint)
+                        {
+                            val = keyType;
+                        }
+                        else if (keyType == MessagePackFmt.uint8)
+                        {
+                            val = unpackMsgPackVal!ubyte(data);
+                        }
+                        else if (keyType == MessagePackFmt.uint16)
+                        {
+                            val = unpackMsgPackVal!ushort(data);
+                        }
+                        else if (keyType == MessagePackFmt.uint32)
+                        {
+                            val = unpackMsgPackVal!uint(data);
+                        }
+                        else if (keyType == MessagePackFmt.uint64)
+                        {
+                            val = unpackMsgPackVal!ulong(data);
+                        }
+                        else
+                        {
+                            assert(0, "Should never happen");
+                        }
+
+                        keyBuf.print(val);
+                        serializer.putKey(keyBuf.data);
+                        break;
+                    }
+
+                    IntKey:
+                    {
+                        long val = 0;
+                        if (keyType <= 0xFF && keyType >= MessagePackFmt.fixnint)
+                        {
+                            val = cast(byte)keyType;
+                        }
+                        else if (keyType == MessagePackFmt.int8)
+                        {
+                            val = unpackMsgPackVal!byte(data);
+                        }
+                        else if (keyType == MessagePackFmt.int16)
+                        {
+                            val = unpackMsgPackVal!short(data);
+                        }
+                        else if (keyType == MessagePackFmt.int32)
+                        {
+                            val = unpackMsgPackVal!int(data);
+                        }
+                        else if (keyType == MessagePackFmt.int64)
+                        {
+                            val = unpackMsgPackVal!long(data);
+                        }
+                        else
+                        {
+                            assert(0, "Should never happen");
+                        }
+
+                        keyBuf.print(val);
+                        serializer.putKey(keyBuf.data[0 .. keyBuf.length]);
+                        break;
+                    }
+
+                    // Ugly mess here
+                    TimestampKey: {
+                        if (keyType <= MessagePackFmt.fixext16 && keyType >= MessagePackFmt.fixext1)
+                        {
+                            keyLength = 1 << (keyType - MessagePackFmt.fixext1);
+                        }
+                        else if (keyType == MessagePackFmt.ext8)
+                        {
+                            keyLength = unpackMsgPackVal!ubyte(data);
+                        }
+                        else if (keyType == MessagePackFmt.ext16)
+                        {
+                            keyLength = unpackMsgPackVal!ushort(data);
+                        }
+                        else if (keyType == MessagePackFmt.ext32)
+                        {
+                            keyLength = unpackMsgPackVal!uint(data);
+                        }
+                        else
+                        {
+                            assert(0, "Should never happen");
+                        }
+
+                        if (data.length < (keyLength + 1)) 
+                        {
+                            version (D_Exceptions)
+                                throw IonErrorCode.unexpectedEndOfData.ionException;
+                            else
+                                assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
+                        }
+                        
+                        ubyte ext_type = data[0];
+                        data = data[1 .. $];
+
+                        if (ext_type == cast(ubyte)-1)
+                        {
+                            import mir.timestamp : Timestamp;
+                            Timestamp time;
+                            if (keyLength == 4)
+                            {
+                                uint unixTime = unpackMsgPackVal!uint(data);
+                                time = Timestamp.fromUnixTime(unixTime);
+                            }
+                            else if (keyLength == 8)
+                            {
+                                ulong packedUnixTime = unpackMsgPackVal!ulong(data);
+                                ulong nanosecs = packedUnixTime >> 34;
+                                ulong seconds = packedUnixTime & 0x3ffffffff;
+                                time = Timestamp.fromUnixTime(seconds);
+                                time.fractionExponent = -9;
+                                time.fractionCoefficient = nanosecs;
+                                time.precision = Timestamp.Precision.fraction;
+                            }
+                            else if (keyLength == 12)
+                            {
+                                uint nanosecs = unpackMsgPackVal!uint(data);
+                                long seconds = unpackMsgPackVal!long(data);
+                                time = Timestamp.fromUnixTime(seconds);
+                                time.fractionExponent = -9;
+                                time.fractionCoefficient = nanosecs;
+                                time.precision = Timestamp.Precision.fraction;
+                            }
+                            time.toString(keyBuf);
+                            serializer.putKey(keyBuf.data[0 .. keyBuf.length]);
+                        }
+                        else
+                        {
+                            version (D_Exceptions)
+                                throw IonErrorCode.cantParseValueStream.ionException;
+                            else
+                                assert(0, IonErrorCode.cantParseValueStream.ionErrorMsg);
+                        }
+                        break;
                     }
 
                     default:
@@ -201,17 +371,6 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
                         else
                             assert(0, IonErrorCode.expectedStringValue.ionErrorMsg);
                 }
-
-                if (data.length < (keyLength + 1))
-                {
-                    version (D_Exceptions)
-                        throw IonErrorCode.unexpectedEndOfData.ionException;
-                    else
-                        assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
-                }
-
-                serializer.putKey((() @trusted => cast(const(char[]))data[0 .. keyLength])());
-                data = data[keyLength .. $];
 
                 MessagePackFmt valueType = cast(MessagePackFmt)data[0];
                 data = data[1 .. $];
@@ -269,16 +428,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
             }
             else if (type == MessagePackFmt.ext8)
             {
-                if (data.length < 1)
-                {
-                    version (D_Exceptions)
-                        throw IonErrorCode.unexpectedEndOfData.ionException;
-                    else
-                        assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
-                }
-
-                length = data[0];
-                data = data[1 .. $];
+                length = unpackMsgPackVal!ubyte(data);
             }
             else if (type == MessagePackFmt.ext16)
             {
@@ -363,16 +513,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
             }
             else if (type == MessagePackFmt.str8)
             {
-                if (data.length < 1)
-                {
-                    version (D_Exceptions)
-                        throw IonErrorCode.unexpectedEndOfData.ionException;
-                    else
-                        assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
-                }
-
-                length = data[0];
-                data = data[1 .. $];
+                length = unpackMsgPackVal!ubyte(data); 
             }
             else if (type == MessagePackFmt.str16)
             {
@@ -406,15 +547,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
 
             if (type == MessagePackFmt.bin8)
             {
-                if (data.length < 1)
-                {
-                    version (D_Exceptions)
-                        throw IonErrorCode.unexpectedEndOfData.ionException;
-                    else
-                        assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
-                }
-                length = data[0];
-                data = data[1 .. $];
+                length = unpackMsgPackVal!ubyte(data);
             }
             else if (type == MessagePackFmt.bin16)
             {
@@ -867,4 +1000,118 @@ version(mir_ion_test) unittest
     }
     const(ubyte)[] data = [0x82, 0xa7, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x63, 0x74, 0xc3, 0xa6, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x04];
     assert(data.deserializeMsgpack!S == S(true, 4));
+}
+
+@safe pure
+version(mir_ion_test) unittest
+{
+    // fixnint
+    {
+        const(ubyte)[] data = [0x81, 0xe0, 0xcc, 0xfe];
+        assert(data.deserializeMsgpack!(int[string]) == ["-32": 0xfe]);
+    }
+
+    // fixint
+    {
+        const(ubyte)[] data = [0x81, 0x7f, 0xcc, 0xfe];
+        assert(data.deserializeMsgpack!(int[string]) == ["127": 0xfe]);
+    }
+
+    // uint8
+    {
+        const(ubyte)[] data = [0x81, 0xcc, 0xff, 0xcc, 0xfe];
+        assert(data.deserializeMsgpack!(int[string]) == ["255": 0xfe]);
+    }
+
+    // int8
+    {
+        const(ubyte)[] data = [0x81, 0xd0, 0x81, 0xcc, 0xfe];
+        assert(data.deserializeMsgpack!(int[string]) == ["-127": 0xfe]);
+    }
+
+    // uint16
+    {
+        const(ubyte)[] data = [0x81, 0xcd, 0xde, 0xad, 0xcc, 0xfe];
+        assert(data.deserializeMsgpack!(int[string]) == ["57005": 0xfe]);
+    }
+    
+    // int16
+    {
+        const(ubyte)[] data = [0x81, 0xd1, 0xde, 0xad, 0xcc, 0xfe];
+        assert(data.deserializeMsgpack!(int[string]) == ["-8531": 0xfe]);
+    }
+
+    // uint32
+    {
+        const(ubyte)[] data = [0x81, 0xce, 0xde, 0xad, 0xbe, 0xef, 0xcc, 0xfe];
+        assert(data.deserializeMsgpack!(int[string]) == ["3735928559": 0xfe]);
+    }
+
+    // int32
+    {
+        const(ubyte)[] data = [0x81, 0xd2, 0xde, 0xad, 0xbe, 0xef, 0xcc, 0xfe];
+        assert(data.deserializeMsgpack!(int[string]) == ["-559038737": 0xfe]);
+    }
+
+    static if (ulong.sizeof == 8)
+    {
+        // uint64
+        {
+            const(ubyte)[] data = [0x81, 0xcf, 0xde, 0xad, 0xbe, 0xef, 0xde, 0xad, 0xbe, 0xef, 0xcc, 0xfe];
+            assert(data.deserializeMsgpack!(int[string]) == ["16045690984833335023": 0xfe]);
+        }
+
+        // int64
+        {
+            const(ubyte)[] data = [0x81, 0xd3, 0xde, 0xad, 0xbe, 0xef, 0xde, 0xad, 0xbe, 0xef, 0xcc, 0xfe];
+            assert(data.deserializeMsgpack!(int[string]) == ["-2401053088876216593": 0xfe]);
+        }
+    }
+}
+
+@safe pure
+version(mir_ion_test) unittest
+{
+    import mir.ser.msgpack : serializeMsgpack;
+    import mir.timestamp : Timestamp;
+
+    {
+        auto time = Timestamp(2022, 2, 14, 0, 0, 0);
+        const(ubyte)[] data = [0x81];
+        data ~= time.serializeMsgpack;
+        data ~= [0xcc, 0xfe];
+        assert(data.deserializeMsgpack!(int[string]) == [time.toString(): 0xfe]);
+    }
+
+    {
+        auto time = Timestamp(2038, 1, 19, 3, 14, 7);
+        const(ubyte)[] data = [0x81];
+        data ~= time.serializeMsgpack;
+        data ~= [0xcc, 0xfe];
+        assert(data.deserializeMsgpack!(int[string]) == [time.toString(): 0xfe]);
+    }
+
+    {
+        auto time = Timestamp(2299, 12, 31, 23, 59, 59);
+        const(ubyte)[] data = [0x81];
+        data ~= time.serializeMsgpack;
+        data ~= [0xcc, 0xfe];
+        assert(data.deserializeMsgpack!(int[string]) == [Timestamp(2299, 12, 31, 23, 59, 59, -9, 0).toString(): 0xfe]);
+    }
+
+    {
+        auto time = Timestamp(2514, 5, 30, 1, 53, 5);
+        const(ubyte)[] data = [0x81];
+        data ~= time.serializeMsgpack;
+        data ~= [0xcc, 0xfe];
+        assert(data.deserializeMsgpack!(int[string]) == [Timestamp(2514, 5, 30, 1, 53, 5, -9, 0).toString(): 0xfe]);
+    }
+
+    {
+        auto time = Timestamp(2000, 7, 8, 2, 3, 4, -3, 16);
+        const(ubyte)[] data = [0x81];
+        data ~= time.serializeMsgpack;
+        data ~= [0xcc, 0xfe];
+        assert(data.deserializeMsgpack!(int[string]) == [Timestamp(2000, 7, 8, 2, 3, 4, -9, 16000000).toString(): 0xfe]);
+    }
 }
