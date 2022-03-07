@@ -44,14 +44,8 @@ private static T unpackMsgPackVal(T)(scope ref const(ubyte)[] data)
         }
     }
 
-    data.advance(UT.sizeof);
+    data = data[UT.sizeof .. $];
     return cast(typeof(return))ret;
-}
-
-@safe @nogc pure
-private static void advance(scope ref const(ubyte)[] data, size_t newStart)
-{
-    data = data[newStart .. $];
 }
 
 @safe pure
@@ -72,7 +66,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
 
         case MessagePackFmt.uint8:
             serializer.putValue(data[0]);
-            data.advance(1);
+            data = data[1 .. $];
             break;
         
         case MessagePackFmt.uint16:
@@ -89,7 +83,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
 
         case MessagePackFmt.int8:
             serializer.putValue(cast(byte)data[0]);
-            data.advance(1);
+            data = data[1 .. $];
             break;
         
         case MessagePackFmt.int16:
@@ -171,7 +165,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
                 }
 
                 MessagePackFmt keyType = cast(MessagePackFmt)data[0];
-                data.advance(1);
+                data = data[1 .. $];
                 uint keyLength = 0;
                 sw: switch (keyType)
                 {
@@ -208,7 +202,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
                             assert(0, IonErrorCode.expectedStringValue.ionErrorMsg);
                 }
 
-                if (data.length < keyLength)
+                if (data.length < (keyLength + 1))
                 {
                     version (D_Exceptions)
                         throw IonErrorCode.unexpectedEndOfData.ionException;
@@ -217,10 +211,10 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
                 }
 
                 serializer.putKey((() @trusted => cast(const(char[]))data[0 .. keyLength])());
-                data.advance(keyLength);
+                data = data[keyLength .. $];
 
                 MessagePackFmt valueType = cast(MessagePackFmt)data[0];
-                data.advance(1);
+                data = data[1 .. $];
                 handleMsgPackElement(serializer, valueType, data);
             }
             serializer.structEnd(state);
@@ -258,7 +252,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
                 }
 
                 MessagePackFmt elementType = cast(MessagePackFmt)data[0];
-                data.advance(1);
+                data = data[1 .. $];
             
                 serializer.elemBegin;
                 handleMsgPackElement(serializer, elementType, data);
@@ -284,7 +278,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
                 }
 
                 length = data[0];
-                data.advance(1);
+                data = data[1 .. $];
             }
             else if (type == MessagePackFmt.ext16)
             {
@@ -308,7 +302,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
             }
             
             ubyte ext_type = data[0];
-            data.advance(1);
+            data = data[1 .. $];
 
             if (ext_type == cast(ubyte)-1)
             {
@@ -356,7 +350,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
                 serializer.putKey("data");
                 serializer.putValue(Blob(data[0 .. length]));
                 serializer.structEnd(state);
-                data.advance(length);
+                data = data[length .. $];
             }
             break;
         }
@@ -378,7 +372,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
                 }
 
                 length = data[0];
-                data.advance(1);
+                data = data[1 .. $];
             }
             else if (type == MessagePackFmt.str16)
             {
@@ -402,7 +396,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
             }
 
             serializer.putValue((() @trusted => cast(const(char)[])data[0 .. length])());
-            data.advance(length);
+            data = data[length .. $];
             break;
         }
         
@@ -420,7 +414,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
                         assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
                 }
                 length = data[0];
-                data.advance(1);
+                data = data[1 .. $];
             }
             else if (type == MessagePackFmt.bin16)
             {
@@ -443,7 +437,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
                     assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
             }
             serializer.putValue(Blob(data[0 .. length]));
-            data.advance(length);
+            data = data[length .. $];
             break;
         }
         
