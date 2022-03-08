@@ -352,6 +352,14 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
                                 time.fractionCoefficient = nanosecs;
                                 time.precision = Timestamp.Precision.fraction;
                             }
+                            else
+                            {
+                                version (D_Exceptions)
+                                    throw IonErrorCode.cantParseValueStream.ionException;
+                                else
+                                    assert(0, IonErrorCode.cantParseValueStream.ionErrorMsg);
+                            }
+                            
                             time.toString(keyBuf);
                             serializer.putKey(keyBuf.data[0 .. keyBuf.length]);
                         }
@@ -367,9 +375,9 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
 
                     default:
                         version (D_Exceptions)
-                            throw IonErrorCode.expectedStringValue.ionException;
+                            throw IonErrorCode.cantParseValueStream.ionException;
                         else
-                            assert(0, IonErrorCode.expectedStringValue.ionErrorMsg);
+                            assert(0, IonErrorCode.cantParseValueStream.ionErrorMsg);
                 }
 
                 MessagePackFmt valueType = cast(MessagePackFmt)data[0];
@@ -399,7 +407,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
                 assert(0, "Should never happen");
             }
 
-            auto state = serializer.listBegin(length);
+            auto state = serializer.listBegin();
             foreach(i; 0 .. length)
             {
                 if (data.length < 1)
@@ -488,13 +496,6 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
             else
             {
                 // XXX: How do we want to serialize exts that we don't recognize?
-                if (data.length < length)
-                {
-                    version (D_Exceptions)
-                        throw IonErrorCode.unexpectedEndOfData.ionException;
-                    else
-                        assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
-                }
                 auto state = serializer.structBegin();
                 serializer.putKey("type");
                 serializer.putValue(ext_type);
@@ -578,15 +579,6 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
         ReadFloat:
         {
             length = type == MessagePackFmt.float32 ? 4 : 8;
-            if (data.length < length)
-            {
-                version (D_Exceptions)
-                    throw IonErrorCode.unexpectedEndOfData.ionException;
-                else
-                    assert(0, IonErrorCode.unexpectedEndOfData.ionErrorMsg);
-            }
-
-            assert(length == 4 || length == 8);
 
             if (length == 4)
             {
@@ -635,10 +627,12 @@ struct MsgpackValueStream
 ///
 void deserializeMsgpack(T)(ref T value, scope const(ubyte)[] data)
 {
+    import mir.appender : scopedBuffer;
     import mir.deser.ion : deserializeIon;
     import mir.ion.conv : msgpack2ion;
-    auto ion = msgpack2ion(data);
-    return deserializeIon!T(value, ion);
+    auto buf = scopedBuffer!ubyte();
+    data.msgpack2ion(buf);
+    return deserializeIon!T(value, buf.data);
 }
 
 ///
@@ -862,6 +856,33 @@ unittest
     Book book = Book("A Hero of Our Time", true, "", 5, 7.99, 6.88, ["russian", "novel", "19th century"]);
 
     assert(serializeMsgpack(book).deserializeMsgpack!(Book) == book);
+}
+
+/// Test serializing maps (structs), assuming @nogc
+@safe pure @nogc
+version(mir_ion_test)
+unittest
+{
+    import mir.appender : scopedBuffer;
+    import mir.ser.msgpack : serializeMsgpack;
+    // import mir.small_string;
+
+    static struct Book
+    {
+        // SmallStrings apparently cannot be serialized
+        // without allocating?
+        // SmallString!64 title;
+        bool wouldRecommend;
+        // SmallString!64 description;
+        uint numberOfNovellas;
+        double price;
+        float weight;
+    }
+
+    auto buf = scopedBuffer!ubyte();
+    Book book = Book(true, 5, 7.99, 6.88);
+    serializeMsgpack((() @trusted => &buf)(), book);
+    assert(buf.data.deserializeMsgpack!Book() == book);
 }
 
 /// Test round-trip serialization/deserialization of a large map
@@ -1108,11 +1129,208 @@ version(mir_ion_test) unittest
         assert(data.deserializeMsgpack!(int[string]) == [Timestamp(2514, 5, 30, 1, 53, 5, -9, 0).toString(): 0xfe]);
     }
 
+    // ext8
     {
         auto time = Timestamp(2000, 7, 8, 2, 3, 4, -3, 16);
         const(ubyte)[] data = [0x81];
         data ~= time.serializeMsgpack;
         data ~= [0xcc, 0xfe];
         assert(data.deserializeMsgpack!(int[string]) == [Timestamp(2000, 7, 8, 2, 3, 4, -9, 16000000).toString(): 0xfe]);
+    }
+
+    // ext16
+    {
+        const(ubyte)[] data = [0x81, 0xc8, 0x00, 0x08, 0xff, 0x03, 0xd0, 0x90, 0x00, 0x39, 0x66, 0x8b, 0xd8, 0xcc, 0xfe];
+        assert(data.deserializeMsgpack!(int[string]) == [Timestamp(2000, 7, 8, 2, 3, 4, -9, 16_000_000).toString(): 0xfe]);
+    }
+
+    // ext32
+    {
+        const(ubyte)[] data = [0x81, 0xc9, 0x00, 0x00, 0x00, 0x08, 0xff, 0x03, 0xd0, 0x90, 0x00, 0x39, 0x66, 0x8b, 0xd8, 0xcc, 0xfe];
+        assert(data.deserializeMsgpack!(int[string]) == [Timestamp(2000, 7, 8, 2, 3, 4, -9, 16_000_000).toString(): 0xfe]);
+    }
+}
+
+// Test bad MessagePack data
+version (mir_ion_test)
+unittest
+{
+    import mir.ion.exception : IonException;
+
+    // Run out of bytes before a full integer can be read
+    {
+        const(ubyte)[] data = [0xdb, 0x00, 0x00];
+        bool caught = false;
+        try
+        {
+            data.deserializeMsgpack!(string);
+        }
+        catch (IonException e)
+        {
+            caught = true;
+        }
+
+        assert(caught);
+    }
+
+    // Run out of bytes in a map
+    {
+        const(ubyte)[] data = [0x81];
+        bool caught = false;
+        try
+        {
+            data.deserializeMsgpack!(int[string]);
+        }
+        catch (IonException e)
+        {
+            caught = true;
+        }
+
+        assert(caught);
+    }
+    
+    // Run out of bytes in a list
+    {
+        const(ubyte)[] data = [0x91];
+        bool caught = false;
+        try
+        {
+            data.deserializeMsgpack!(int[]);
+        }
+        catch (IonException e)
+        {
+            caught = true;
+        }
+
+        assert(caught);
+    }
+
+    // Run out of bytes in a string
+    {
+        const(ubyte)[] data = [0xa1];
+        bool caught = false;
+        try
+        {
+            data.deserializeMsgpack!(string);
+        }
+        catch (IonException e)
+        {
+            caught = true;
+        }
+
+        assert(caught);
+    }
+    
+    // Run out of bytes in a binary blob
+    {
+        import mir.lob : Blob;
+        const(ubyte)[] data = [0xc4, 0x01];
+        bool caught = false;
+        try
+        {
+            data.deserializeMsgpack!(Blob);
+        }
+        catch (IonException e)
+        {
+            caught = true;
+        }
+        
+        assert(caught);
+    }
+
+    // Run out of bytes in a extension type
+    {
+        const(ubyte)[] data = [0xd4];
+        bool caught = false;
+        try
+        {
+            data.deserializeMsgpack!(MsgpackExtension);
+        }
+        catch (IonException e)
+        {
+            caught = true;
+        }
+
+        assert(caught);
+    }
+
+    // Test a map with a timestamp key that runs out of bytes
+    {
+        const(ubyte)[] data = [0x81, 0xc7, 0xff];
+        bool caught = false;
+        try
+        {
+            data.deserializeMsgpack!(int[string]);
+        }
+        catch (IonException e)
+        {
+            caught = true;
+        }
+
+        assert(caught);
+    }
+
+    // Test a map with a timestamp key that has an invalid length
+    {
+        const(ubyte)[] data = [0x81, 0xc7, 0x01, 0xff, 0x00, 0xcc, 0xfe];
+        bool caught = false;
+        try
+        {
+            data.deserializeMsgpack!(int[string]);
+        }
+        catch (IonException e)
+        {
+            caught = true;
+        }
+
+        assert(caught);
+    }
+
+    // Test a map with an invalid extension type
+    {
+        const(ubyte)[] data = [0x81, 0xc7, 0x01, 0xfe, 0x00, 0xcc, 0xfe];
+        bool caught = false;
+        try
+        {
+            data.deserializeMsgpack!(int[string]);
+        }
+        catch (IonException e)
+        {
+            caught = true;
+        }
+
+        assert(caught);
+    }
+
+    // Test a map with an unrecognized key
+    {
+        const(ubyte)[] data = [0x81, 0xc4];
+        bool caught = false;
+        try
+        {
+            data.deserializeMsgpack!(int[string]);
+        }
+        catch (IonException e)
+        {
+            caught = true;
+        }
+
+        assert(caught);
+    }
+
+    // Test an invalid type descriptor
+    {
+        const(ubyte)[] data = [0xc1];
+        bool caught = false;
+        try
+        {
+            data.deserializeMsgpack!(bool);
+        }
+        catch (IonException e)
+        {
+            caught = true;
+        }
+
+        assert(caught);
     }
 }
