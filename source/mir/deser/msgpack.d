@@ -359,7 +359,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
                                 else
                                     assert(0, IonErrorCode.cantParseValueStream.ionErrorMsg);
                             }
-                            
+
                             time.toString(keyBuf);
                             serializer.putKey(keyBuf.data[0 .. keyBuf.length]);
                         }
@@ -407,7 +407,7 @@ private static void handleMsgPackElement(S)(ref S serializer, MessagePackFmt typ
                 assert(0, "Should never happen");
             }
 
-            auto state = serializer.listBegin();
+            auto state = serializer.listBegin(length);
             foreach(i; 0 .. length)
             {
                 if (data.length < 1)
