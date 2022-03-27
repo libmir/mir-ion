@@ -1,4 +1,4 @@
 deprecated("import mir.ser.ion instead")
 module mir.ion.ser.ion;
 public import mir.ser.ion;
-void _foo__() {}
+pragma(LDC_no_moduleinfo);

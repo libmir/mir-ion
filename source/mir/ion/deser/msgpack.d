@@ -1,4 +1,4 @@
 deprecated("import mir.deser.msgpack instead")
 module mir.ion.deser.msgpack;
 public import mir.deser.msgpack;
-void _foo__() {}
+pragma(LDC_no_moduleinfo);

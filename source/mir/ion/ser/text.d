@@ -1,4 +1,4 @@
 deprecated("import mir.ser.text instead")
 module mir.ion.ser.text;
 public import mir.ser.text;
-void _foo__() {}
+pragma(LDC_no_moduleinfo);
