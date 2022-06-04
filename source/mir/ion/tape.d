@@ -1048,6 +1048,32 @@ version(mir_ion_test) unittest
     // assert(data[0] == 0x50);
 }
 
+///
+size_t ionPutDecimal()(scope ubyte* ptr, bool sign, ulong coefficient, long exponent)
+{
+    version(LDC)
+        pragma(inline, true);
+    size_t length;
+    // if (coefficient == 0)
+    //     goto L;
+    length = ionPutVarInt(ptr + 1, exponent);
+    length += ionPutIntField(ptr + 1 + length, coefficient, sign);
+    if (_expect(length < 0xE, true))
+    {
+    L:
+        *ptr = cast(ubyte)(0x50 | length);
+        return length + 1;
+    }
+    else
+    {
+        memmove(ptr + 2, ptr + 1, 16);
+        *ptr = 0x5E;
+        assert(length < 0x80);
+        ptr[1] = cast(ubyte) (length ^ 0x80);
+        return length + 2;
+    }
+}
+
 /++
 +/
 size_t ionPut(T)(scope ubyte* ptr, const T value)
