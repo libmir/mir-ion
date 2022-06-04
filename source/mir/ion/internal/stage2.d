@@ -18,6 +18,14 @@ version (X86_64)
 
 @system pure nothrow @nogc:
 
+private auto transform()(ulong[2] mask)
+{
+    pragma(inline, true);
+    mask[0] |= mask[1];
+    mask[1] = ~mask[1];
+    return mask;
+}
+
 version (Neon)
 {
     alias stage2 = stage2_impl_neon;
@@ -108,7 +116,7 @@ version (X86_Any)
                 result[1][i] = equal(v[i], b);
                 result[0][i] = equal(m, a);
             }}
-            *pairedMask++ = cast(ulong[2]) result;
+            *pairedMask++ = transform(cast(ulong[2]) result);
         }
         while(--n);
     }
@@ -145,7 +153,7 @@ version (X86_Any)
                 result[1][i] = equal(v[i], b);
                 result[0][i] = equal(m, a);
             }}
-            *pairedMask++ = cast(ulong[2]) result;
+            *pairedMask++ = transform(cast(ulong[2]) result);
         }
         while(--n);
     }
@@ -178,12 +186,12 @@ version (X86_Any)
             {{
                 auto s = v[i] - ',';
                 auto m = v[i] | ubyte(0x20);
-                auto b = __builtin_ia32_pshufb256(whiteSpaceMask, v[i]);
-                auto a = __builtin_ia32_pshufb256(operatorMask, s);
+                auto b = avx2_pshuf_b(whiteSpaceMask, v[i]);
+                auto a = avx2_pshuf_b(operatorMask, s);
                 result[1][i] = equal(v[i], b);
                 result[0][i] = equal(m, a);
             }}
-            *pairedMask++ = cast(ulong[2]) result;
+            *pairedMask++ = transform(cast(ulong[2]) result);
         }
         while(--n);
     }
@@ -217,9 +225,7 @@ version (X86_Any)
             auto v = *cast(__vector(ubyte[64])*)(vector++);
             auto a = __builtin_ia32_pshufb512(operatorMask, v);
             auto b = __builtin_ia32_pshufb512(whiteSpaceMask, v);
-            pairedMask[0][0] = equal(v, a);
-            pairedMask[0][1] = equal(v, b);
-            pairedMask++;
+            *pairedMask++ = transform([equal(v, a), equal(v, b)]);
         }
         while(--n);
     }
@@ -259,7 +265,7 @@ private void stage2_impl_generic(
                     break;
             }
         }
-        *pairedMask++ = maskPair;
+        *pairedMask++ = transform(maskPair);
     }
     while(--n);
 }
@@ -289,20 +295,16 @@ private void stage2_impl_neon(
     {
         import mir.internal.utility;
         auto v =  cast(__vector(ubyte[16])[4])*vector++;
-        align(16) ushort[4][2] result;
-        import mir.stdio;
-        import mir.ndslice.topology: bitwise, as;
-        static foreach (i; Iota!(v.length))
-        {{
-            __vector(ubyte[16]) vim1 = v[i] - 1;
-            __vector(ubyte[16]) mar1 = neon_tbx2_v16i8(v[i], whiteSpaceMask0, whiteSpaceMask1, vim1);
-            ushort meq1 = equal(mar1, v[i]);
-            result[1][i] = cast(ushort) ~cast(uint) meq1;
+        __vector(ubyte[16])[4][2] mar;
+        __vector(ubyte[16])[4] vim;
+        static foreach (i; 0 .. 4)
+        {
+            mar[0][i] = neon_tbl1_v16i8(operatorMask, (v[i] - ',') & 0x8F);
+            mar[1][i] = neon_tbx2_v16i8(v[i], whiteSpaceMask0, whiteSpaceMask1, v[i] - 1);
+            vim[i] = v[i] | ubyte(0x20); 
+        }
 
-            auto a = neon_tbl1_v16i8(operatorMask, (v[i] - ',') & 0x8F);
-            result[0][i] = equal(v[i] | ubyte(0x20), a);
-        }}
-        *pairedMask++ = cast(ulong[2]) result;
+        *pairedMask++ = transform(equalNotEqualMaskArm([vim, v], mar));
     }
     while(--n);
 }
@@ -322,8 +324,8 @@ version(mir_ion_test) unittest
 
     import mir.ndslice;
     auto maskData = pairedMasks.sliced;
-    auto obits = maskData.map!"a[0]".bitwise;
-    auto wbits = maskData.map!"a[1]".bitwise;
+    auto obits = maskData.map!"a[0] & a[1]".bitwise;
+    auto wbits = maskData.map!"~a[1]".bitwise;
     assert(obits.length == 256);
     assert(wbits.length == 256);
 
