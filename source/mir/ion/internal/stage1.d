@@ -132,7 +132,7 @@ private template stage1_impl(string arch)
                     static foreach (_; 0 .. 3)
                     static foreach (i; 0 .. 2)
                     static foreach (j; 0 .. 4)
-                        d[i][j] = __builtin_vpadd_u32(d[i][j], d[i][j]);
+                        d[i][j] = neon_addp_v16i8(d[i][j], d[i][j]);
 
                     __vector(ushort[8]) result;
                     static foreach (i; 0 .. 2)

@@ -178,8 +178,8 @@ version (X86_Any)
             {{
                 auto s = v[i] - ',';
                 auto m = v[i] | ubyte(0x20);
-                auto b = __builtin_ia32_pshufb256(whiteSpaceMask, v[i]);
-                auto a = __builtin_ia32_pshufb256(operatorMask, s);
+                auto b = avx2_pshuf_b(whiteSpaceMask, v[i]);
+                auto a = avx2_pshuf_b(operatorMask, s);
                 result[1][i] = equal(v[i], b);
                 result[0][i] = equal(m, a);
             }}

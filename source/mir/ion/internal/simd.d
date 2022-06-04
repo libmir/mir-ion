@@ -16,23 +16,33 @@ version (X86_64)
 
 @safe pure nothrow @nogc:
 
+// uint _mm_movemask_aarch64(__vector(ubyte[16]) input)
+// {
+//     __vector(ubyte[16]) = [-7,-6,-5,-4,-3,-2,-1,0,-7,-6,-5,-4,-3,-2,-1,0];
+//     __vector(ubyte[16]) vshift = vld1q_u8(ucShift);
+//     __vector(ubyte[16]) vmask = vandq_u8(input, vdupq_n_u8(0x80));
+//     uint ret;
+//     vmask = vshlq_u8(vmask, vshift);
+//     ret = vaddv_u8(vget_low_u8(vmask));
+//     ret += (vaddv_u8(vget_high_u8(vmask)) << 8);
+//     return ret;
+// }
+
+
 version (X86_Any)
 {
     version (LDC)
     {
-        pragma(LDC_intrinsic, "llvm.x86.ssse3.pshuf.b.128")
-            __vector(ubyte[16]) __builtin_ia32_pshufb(__vector(ubyte[16]), __vector(ubyte[16]));
-        pragma(LDC_intrinsic, "llvm.x86.avx2.pshuf.b")
-            __vector(ubyte[32]) __builtin_ia32_pshufb256(__vector(ubyte[32]), __vector(ubyte[32]));
+        public import mir.llvmint: ssse3_pshuf_b_128, avx2_pshuf_b;
         pragma(LDC_intrinsic, "llvm.x86.avx512.pshuf.b.512")
             __vector(ubyte[64]) __builtin_ia32_pshufb512(__vector(ubyte[64]), __vector(ubyte[64]));
     }
 
     version (GDC)
     {
-        import gcc.builtins:
-            __builtin_ia32_pshufb,
-            __builtin_ia32_pshufb256,
+        public import gcc.builtins:
+            ssse3_pshuf_b_128 = __builtin_ia32_pshufb,
+            avx2_pshuf_b = __builtin_ia32_pshufb256,
             __builtin_ia32_pshufb512;
     }
 }
@@ -47,7 +57,7 @@ version (ARM_Any)
 
     version (GDC)
     {
-        import gcc.builtins: __builtin_vceqq_u8;
+        public import gcc.builtins: __builtin_vceqq_u8;
     }
 }
 
@@ -55,25 +65,17 @@ version (AArch64)
 {
     version (LDC)
     {
-        pragma(LDC_intrinsic, "llvm.aarch64.neon.addp.v16i8")
-            __vector(ubyte[16]) __builtin_vpadd_u32(__vector(ubyte[16]), __vector(ubyte[16]));
-
-        pragma(LDC_intrinsic, "llvm.aarch64.neon.tbl2.v16i8")
-            __vector(ubyte[16]) neon_tbl2_v16i8(__vector(ubyte[16]), __vector(ubyte[16]), __vector(ubyte[16]));
-
-        pragma(LDC_intrinsic, "llvm.aarch64.neon.tbl1.v16i8")
-            __vector(ubyte[16]) neon_tbl1_v16i8(__vector(ubyte[16]), __vector(ubyte[16]));
-
-        pragma(LDC_intrinsic, "llvm.aarch64.neon.tbx2.v16i8")
-            __vector(ubyte[16]) neon_tbx2_v16i8(__vector(ubyte[16]), __vector(ubyte[16]), __vector(ubyte[16]),  __vector(ubyte[16]));
-
-        pragma(LDC_intrinsic, "llvm.aarch64.neon.tbx1.v16i8")
-            __vector(ubyte[16]) neon_tbx1_v16i8(__vector(ubyte[16]), __vector(ubyte[16]),  __vector(ubyte[16]));
+        public import mir.llvmint:
+            neon_addp_v16i8,
+            neon_tbl2_v16i8,
+            neon_tbl1_v16i8,
+            neon_tbx2_v16i8,
+            neon_tbx1_v16i8;
     }
-    
+
     version (GNU)
     {
-        import gcc.builtins: __builtin_vpadd_u32;
+        public import gcc.builtins: neon_addp_v16i8 = __builtin_vpadd_u32;
     }
 }
 
@@ -81,20 +83,26 @@ version (ARM)
 {
     version (LDC)
     {
-        pragma(LDC_intrinsic, "llvm.arm.neon.vpaddlu.v8i16.v16i8")
-            __vector(ushort[8]) __builtin_vpaddlq_u8(__vector(ubyte[16]));
-        pragma(LDC_intrinsic, "llvm.arm.neon.vpaddlu.v4i32.v8i16")
-            __vector(uint[4]) __builtin_vpaddlq_u16(__vector(ushort[8]));
-        pragma(LDC_intrinsic, "llvm.arm.neon.vpaddlu.v2i64.v4i32")
-            __vector(ulong[2]) __builtin_vpaddlq_u32(__vector(uint[4]));
+        public import gcc.builtins:
+            neon_vpaddlu_v8i16_v16i8,
+            neon_vpaddlu_v4i32_v8i16,
+            neon_vpaddlu_v2i64_v4i32;
+
+        // vld1q
+        // vandq
+        // vdupq_n
+        // vshlq
+        // vaddv
+        // vget_low
+        // vget_high
     }
 
     version (GNU)
     {
-        import gcc.builtins:
-            __builtin_vpaddlq_u8,
-            __builtin_vpaddlq_u16,
-            __builtin_vpaddlq_u32;
+        public import gcc.builtins:
+            neon_vpaddlu_v8i16_v16i8 = __builtin_vpaddlq_u8,
+            neon_vpaddlu_v4i32_v8i16 = __builtin_vpaddlq_u16,
+            neon_vpaddlu_v2i64_v4i32 = __builtin_vpaddlq_u32;
     }
 }
 
