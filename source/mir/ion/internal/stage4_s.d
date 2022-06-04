@@ -13,6 +13,18 @@ struct IonErrorInfo
     const(char)[] key;
 }
 
+version(measure)
+{
+    import std.traits;
+    auto assumePure(T)(T t)
+    if (isFunctionPointer!T || isDelegate!T)
+    {
+        enum attrs = functionAttributes!T | FunctionAttribute.pure_;
+        return cast(SetFunctionAttributes!(T, functionLinkage!T, attrs)) t;
+    }
+}
+
+
 ///
 IonErrorInfo singleThreadJsonImpl(size_t nMax, alias fillBuffer, SymbolTable, TapeHolder)(
     ref SymbolTable table,
@@ -50,11 +62,19 @@ IonErrorInfo singleThreadJsonImpl(size_t nMax, alias fillBuffer, SymbolTable, Ta
     stage.pairedMask1 = pairedMask1.ptr + 1;
     stage.pairedMask2 = pairedMask2.ptr + 1;
 
+    version(measure)
+    {
+        import std.datetime.stopwatch;
+        StopWatch sw, swt, st1, st2;
+        assumePure({swt.start;})();
+    }
+
     stage3!(() @trusted
         {
             version(LDC) pragma(inline, true);
             tapeHolder.extend(stage.currentTapePosition + extendLength);
 
+            version(measure) assumePure({sw.start;})();
             vector[0] = vector[$ - 2];
             pairedMask1[0] = pairedMask1[$ - 2];
             pairedMask2[0] = pairedMask2[$ - 2];
@@ -68,13 +88,31 @@ IonErrorInfo singleThreadJsonImpl(size_t nMax, alias fillBuffer, SymbolTable, Ta
             {
                 memset(vector.ptr.ptr + 64 + stage.n, ' ', 64 - stage.n % 64);
                 auto vlen = stage.n / 64 + (stage.n % 64 != 0);
+            version(measure) assumePure({st1.start;})();
                 stage1(vlen, cast(const) vector.ptr + 1, pairedMask1.ptr + 1, backwardEscapeBit);
+            version(measure) assumePure({st1.stop;})();
                 pairedMask1[vlen + 1] = 0;
+            version(measure) assumePure({st2.start;})();
                 stage2(vlen, cast(const) vector.ptr + 1, pairedMask2.ptr + 1);
+            version(measure) assumePure({st2.stop;})();
                 pairedMask2[vlen + 1] = 0;
             }
+            version(measure) assumePure({sw.stop;})();
             return true;
         })(stage, table);
+    version(measure)
+    {
+        import mir.stdio;
+                assumePure({swt.stop;})();
+        assumePure({
+            sw.stop;
+            swt.stop;
+            writeln(sw.peek * 100 / swt.peek, "% || ",
+            st1.peek * 100 / sw.peek, "% || ",
+            st2.peek * 100 / sw.peek, "% || ",
+            sw.peek, " | ", swt.peek - sw.peek);
+        })();
+    }
     tapeHolder.currentTapePosition = stage.currentTapePosition;
     stage.location += stage.index;
 R:
@@ -139,8 +177,16 @@ version(mir_ion_test) unittest
     assert(IonValue(jsonToIonTest("12345")).describe.get!IonUInt.get!ulong == 12345);
     assert(IonValue(jsonToIonTest("-12345")).describe.get!IonNInt.get!long == -12345);
     // assert(IonValue(jsonToIonTest("-12.345")).describe.get!IonDecimal.get!double == -12.345);
-    assert(IonValue(jsonToIonTest("\t \r\n-12345e-3 \t\r\n")).describe.get!IonFloat.get!double == -12.345);
-    assert(IonValue(jsonToIonTest(" -12345e-3 ")).describe.get!IonFloat.get!double == -12.345);
+    version (MirDecimalJson)
+    {
+        assert(IonValue(jsonToIonTest("\t \r\n-12345e-3 \t\r\n")).describe.get!IonDecimal.get!double == -12.345);
+        assert(IonValue(jsonToIonTest(" -12345e-3 ")).describe.get!IonDecimal.get!double == -12.345);
+    }
+    else
+    {
+        assert(IonValue(jsonToIonTest("\t \r\n-12345e-3 \t\r\n")).describe.get!IonFloat.get!double == -12.345);
+        assert(IonValue(jsonToIonTest(" -12345e-3 ")).describe.get!IonFloat.get!double == -12.345);
+    }
     assert(IonValue(jsonToIonTest("   null")).describe.get!IonNull == IonNull(IonTypeCode.null_));
     assert(IonValue(jsonToIonTest("true ")).describe.get!bool == true);
     assert(IonValue(jsonToIonTest("  false")).describe.get!bool == false);
