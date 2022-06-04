@@ -501,6 +501,12 @@ value_start: {
         //     goto next;
         // }
         else
+        version(MirDecimalJson)
+        {
+            currentTapePosition += ionPutDecimal(tape.ptr + currentTapePosition, result.sign, result.coefficient, result.exponent);
+            goto next;
+        }
+        else
         {
             import mir.bignum.internal.dec2float: decimalToFloatImpl;
             auto fp = decimalToFloatImpl!double(result.coefficient, result.exponent);
