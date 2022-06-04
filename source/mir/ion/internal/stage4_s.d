@@ -216,38 +216,3 @@ version(mir_ion_test) unittest
     }`);
 
 }
-
-///
-pragma(inline, true)
-IonErrorInfo singleThreadJsonFile(size_t nMax, SymbolTable, TapeHolder)(
-    ref SymbolTable table,
-    ref TapeHolder tapeHolder,
-    scope const(char)[] fileName,
-)
-    if (nMax % 64 == 0 && nMax)
-{
-    version(LDC) pragma(inline, true);
-
-    import core.stdc.stdio: fopen, fread, fclose, ferror, feof;
-    import mir.appender: ScopedBuffer;
-    import mir.utility: _expect;
-
-    ScopedBuffer!(char, 256) filenameBuffer = void;
-    filenameBuffer.initialize;
-    filenameBuffer.put(fileName);
-    filenameBuffer.put('\0');
-
-    auto fp = fopen(filenameBuffer.data.ptr, "r");
-    if (_expect(fp is null, false))
-        return IonErrorInfo(IonErrorCode.unableToOpenFile);
-    scope(exit) fclose(fp);
-    return singleThreadJsonImpl!(nMax, (scope char* data, ref sizediff_t n, ref bool eof) @trusted
-    {
-        version (LDC) pragma(inline, true);
-        n = fread(data, char.sizeof, nMax, fp);
-        if (_expect(ferror(fp), false))
-            return false;
-        eof = feof(fp) != 0;
-        return true;
-    })(table, tapeHolder);
-}
