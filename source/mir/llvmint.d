@@ -19632,6 +19632,12 @@ version (x86_Any) {
     /// The `llvm.x86.xtest` intrinsic; known as `__builtin_ia32_xtest` in GCC.
     pragma(LDC_intrinsic, "llvm.x86.xtest")
     i32 xtest();
+
+    // ======= Mir Addition:
+    pragma(LDC_intrinsic, "llvm.x86.avx512.pshuf.b.512")
+    __vector(ubyte[64]) avx512_pshuf_b_512(__vector(ubyte[64]), __vector(ubyte[64]));
+    // =======
+
     /// The `llvm.x86.avx512.kand.w` intrinsic; known as `__builtin_ia32_kandhi` in GCC.
     pragma(LDC_intrinsic, "llvm.x86.avx512.kand.w")
     i16 avx512_kand_w(i16, i16);

@@ -33,9 +33,10 @@ version (X86_Any)
 {
     version (LDC)
     {
-        public import mir.llvmint: ssse3_pshuf_b_128, avx2_pshuf_b;
-        pragma(LDC_intrinsic, "llvm.x86.avx512.pshuf.b.512")
-            __vector(ubyte[64]) __builtin_ia32_pshufb512(__vector(ubyte[64]), __vector(ubyte[64]));
+        public import mir.llvmint:
+            ssse3_pshuf_b_128,
+            avx2_pshuf_b,
+            avx512_pshuf_b_512;
     }
 
     version (GDC)
@@ -43,7 +44,7 @@ version (X86_Any)
         public import gcc.builtins:
             ssse3_pshuf_b_128 = __builtin_ia32_pshufb,
             avx2_pshuf_b = __builtin_ia32_pshufb256,
-            __builtin_ia32_pshufb512;
+            avx512_pshuf_b_512 = __builtin_ia32_pshufb512;
     }
 }
 
