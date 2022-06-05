@@ -1,5 +1,6 @@
 module mir.ion.internal.simd;
 
+import core.simd;
 version (LDC) import ldc.llvmasm;
 
 version (ARM)
@@ -16,18 +17,127 @@ version (X86_64)
 
 @safe pure nothrow @nogc:
 
-// uint _mm_movemask_aarch64(__vector(ubyte[16]) input)
-// {
-//     __vector(ubyte[16]) = [-7,-6,-5,-4,-3,-2,-1,0,-7,-6,-5,-4,-3,-2,-1,0];
-//     __vector(ubyte[16]) vshift = vld1q_u8(ucShift);
-//     __vector(ubyte[16]) vmask = vandq_u8(input, vdupq_n_u8(0x80));
-//     uint ret;
-//     vmask = vshlq_u8(vmask, vshift);
-//     ret = vaddv_u8(vget_low_u8(vmask));
-//     ret += (vaddv_u8(vget_high_u8(vmask)) << 8);
-//     return ret;
-// }
+version(LDC) version(ARM_Any)
+ulong[2] equalNotEqualMaskArm()(ubyte16[4][2] v, ubyte16[4][2] stringMasks)
+    @trusted
+{
+    pragma(inline, true);
+    import ldc.simd: extractelement, equalMask, notEqualMask;
 
+    const ubyte16 mask = [
+        0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80,
+    ];
+
+    ubyte16[4][2] d;
+    static foreach (j; 0 .. 4)
+        d[0][j] = cast(ubyte16) equalMask!(ubyte16)(v[0][j], stringMasks[0][j]);
+    static foreach (j; 0 .. 4)
+        d[1][j] = cast(ubyte16) notEqualMask!(ubyte16)(v[1][j], stringMasks[1][j]);
+    static foreach (i; 0 .. 2)
+    static foreach (j; 0 .. 4)
+        d[i][j] &= mask;
+    version (AArch64)
+    {
+        version(all)
+        {
+        static foreach (_; 0 .. 3)
+        static foreach (i; 0 .. 2)
+        static foreach (j; 0 .. 4)
+            d[i][j] = neon_addp_v16i8(d[i][j], d[i][j]);
+
+        __vector(ushort[8]) result;
+        static foreach (i; 0 .. 2)
+        static foreach (j; 0 .. 4)
+            result[i * 4 + j] = extractelement!(__vector(ushort[8]), i * 4 + j)(cast(__vector(ushort[8])) d[i][j]);
+        }
+        else
+        {
+        align(8) ubyte[2][4][2] result;
+        static foreach (i; 0 .. 2)
+        static foreach (j; 0 .. 4)
+        {
+            result[i][j][0] = (cast(__vector(ubyte[8])[2])d[i][j])[0].neon_uaddv_i8_v8i8;
+            result[i][j][1] = (cast(__vector(ubyte[8])[2])d[i][j])[1].neon_uaddv_i8_v8i8;
+        }
+        }
+    }
+    else
+    {
+        align(8) ubyte[16] result;
+        static foreach (i; 0 .. 2)
+        static foreach (j; 0 .. 4)
+        {
+            d[i][j] = d[i][j]
+                .__builtin_vpaddlq_u8
+                .__builtin_vpaddlq_u16
+                .__builtin_vpaddlq_u32;
+            result[i * 8 + j * 2 + 0] = extractelement!(ubyte16, 0)(d[i][j]);
+            result[i * 8 + j * 2 + 1] = extractelement!(ubyte16, 8)(d[i][j]);
+        }
+    }
+    return cast(ulong[2]) result;
+}
+
+version(LDC) version(ARM_Any)
+ulong[2] equalMaskArm(ref __vector(ubyte[64]) _v, ubyte16[2] stringMasks)
+    @trusted
+{
+    pragma(inline, true);
+    import ldc.simd: extractelement, equalMask;
+ 
+    const ubyte16 mask = [
+        0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80,
+    ];
+
+    auto v = *cast(ubyte16[4]*)&_v;
+    ubyte16[4][2] d;
+    static foreach (i; 0 .. 2)
+    static foreach (j; 0 .. 4)
+        d[i][j] = cast(ubyte16) equalMask!(ubyte16)(v[j], stringMasks[i]);
+    static foreach (i; 0 .. 2)
+    static foreach (j; 0 .. 4)
+        d[i][j] &= mask;
+    version (AArch64)
+    {
+        version(all)
+        {
+        static foreach (_; 0 .. 3)
+        static foreach (i; 0 .. 2)
+        static foreach (j; 0 .. 4)
+            d[i][j] = neon_addp_v16i8(d[i][j], d[i][j]);
+
+        __vector(ushort[8]) result;
+        static foreach (i; 0 .. 2)
+        static foreach (j; 0 .. 4)
+            result[i * 4 + j] = extractelement!(__vector(ushort[8]), i * 4 + j)(cast(__vector(ushort[8])) d[i][j]);
+        }
+        else
+        {
+        align(8) ubyte[2][4][2] result;
+        static foreach (i; 0 .. 2)
+        static foreach (j; 0 .. 4)
+        {
+            result[i][j][0] = (cast(__vector(ubyte[8])[2])d[i][j])[0].neon_uaddv_i8_v8i8;
+            result[i][j][1] = (cast(__vector(ubyte[8])[2])d[i][j])[1].neon_uaddv_i8_v8i8;
+        }
+        }
+    }
+    else
+    {
+        align(8) ubyte[16] result;
+        static foreach (i; 0 .. 2)
+        static foreach (j; 0 .. 4)
+        {
+            d[i][j] = d[i][j]
+                .__builtin_vpaddlq_u8
+                .__builtin_vpaddlq_u16
+                .__builtin_vpaddlq_u32;
+            result[i * 8 + j * 2 + 0] = extractelement!(ubyte16, 0)(d[i][j]);
+            result[i * 8 + j * 2 + 1] = extractelement!(ubyte16, 8)(d[i][j]);
+        }
+    }
+    return cast(ulong[2]) result;
+}
 
 version (X86_Any)
 {
@@ -48,20 +158,6 @@ version (X86_Any)
     }
 }
 
-version (ARM_Any)
-{
-    version (LDC)
-    {
-        import ldc.simd: equalMask;
-        alias __builtin_vceqq_u8 = equalMask!(__vector(ubyte[16]));
-    }
-
-    version (GDC)
-    {
-        public import gcc.builtins: __builtin_vceqq_u8;
-    }
-}
-
 version (AArch64)
 {
     version (LDC)
@@ -71,7 +167,8 @@ version (AArch64)
             neon_tbl2_v16i8,
             neon_tbl1_v16i8,
             neon_tbx2_v16i8,
-            neon_tbx1_v16i8;
+            neon_tbx1_v16i8,
+            neon_uaddv_i8_v8i8;
     }
 
     version (GNU)

@@ -289,20 +289,18 @@ private void stage2_impl_neon(
     {
         import mir.internal.utility;
         auto v =  cast(__vector(ubyte[16])[4])*vector++;
-        align(16) ushort[4][2] result;
         import mir.stdio;
         import mir.ndslice.topology: bitwise, as;
-        static foreach (i; Iota!(v.length))
-        {{
-            __vector(ubyte[16]) vim1 = v[i] - 1;
-            __vector(ubyte[16]) mar1 = neon_tbx2_v16i8(v[i], whiteSpaceMask0, whiteSpaceMask1, vim1);
-            ushort meq1 = equal(mar1, v[i]);
-            result[1][i] = cast(ushort) ~cast(uint) meq1;
+        __vector(ubyte[16])[4][2] mar;
+        __vector(ubyte[16])[4] vim;
+        static foreach (i; 0 .. 4)
+        {
+            mar[0][i] = neon_tbl1_v16i8(operatorMask, (v[i] - ',') & 0x8F);
+            mar[1][i] = neon_tbx2_v16i8(v[i], whiteSpaceMask0, whiteSpaceMask1, v[i] - 1);
+            vim[i] = v[i] | ubyte(0x20); 
+        }
 
-            auto a = neon_tbl1_v16i8(operatorMask, (v[i] - ',') & 0x8F);
-            result[0][i] = equal(v[i] | ubyte(0x20), a);
-        }}
-        *pairedMask++ = cast(ulong[2]) result;
+        *pairedMask++ = equalNotEqualMaskArm([vim, v], mar);
     }
     while(--n);
 }

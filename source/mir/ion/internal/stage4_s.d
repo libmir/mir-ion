@@ -13,6 +13,8 @@ struct IonErrorInfo
     const(char)[] key;
 }
 
+// version = measure;
+
 version(measure)
 {
     import std.traits;

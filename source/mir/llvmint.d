@@ -2276,6 +2276,10 @@ version (AArch64) {
     pragma(LDC_intrinsic, "llvm.aarch64.neon.uaddv.v16i8.v2f64")
     __vector(i8[16]) neon_uaddv_v16i8_v2f64(__vector(f64[2]));
     /// The `llvm.aarch64.neon.uaddv.i8.v16i8` intrinsic.
+    // =====
+    pragma(LDC_intrinsic, "llvm.aarch64.neon.uaddv.i8.v8i8")
+    i8 neon_uaddv_i8_v8i8(__vector(i8[8]));
+    // =====
     pragma(LDC_intrinsic, "llvm.aarch64.neon.uaddv.i8.v16i8")
     i8 neon_uaddv_i8_v16i8(__vector(i8[16]));
     /// The `llvm.aarch64.neon.uaddv.i8.v8i16` intrinsic.
