@@ -270,9 +270,16 @@ struct IonDescriptor
         @safe pure nothrow @nogc
     {
         assert(reference);
-        this.type = cast(IonTypeCode)((*reference) >> 4);
+        this(*reference);
+    }
+
+    /// ditto
+    this(ubyte value)
+        @safe pure nothrow @nogc
+    {
+        this.type = cast(IonTypeCode)(value >> 4);
         assert(type <= IonTypeCode.max);
-        this.L = cast(uint)((*reference) & 0xF);
+        this.L = cast(uint)(value & 0xF);
     }
 
     /// T
