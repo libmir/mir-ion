@@ -130,96 +130,166 @@ ThunderboltStatus thunderbolt(
 
     auto current = ThunderboltStackMember(IonTypeCode.null_, length, ion);
 
-    for(;;)
+    goto Main;
+Struct_continue:
+    ion.ionPutVarUIntR(joy.parseVarUIntR);
+Struct:
+    assert (current.type == IonTypeCode.struct_);
+    debug tout << joy << current << endl;
+    if (current.position < ion)
     {
-        debug tout << joy << current << endl;
-        if (current.position < ion)
-        {
-            auto descriptorByte = *--joy;
-            debug tout << descriptorByte.hexAddress << endl;
+        auto descriptorByte = *--joy;
+        debug tout << descriptorByte.hexAddress << endl;
 
-            auto descriptor = descriptorByte.IonDescriptor;
-            if (descriptor.type == IonTypeCode.bool_ || descriptor.L == 0 || descriptor.L == 0xF)
-            {
-                *--ion = descriptorByte;
-                if (current.type == IonTypeCode.struct_)
-                    ion.ionPutVarUIntR(joy.parseVarUIntUnsafeR);
-                continue;
-            }
-            if (descriptor.type < IonTypeCode.list)
-            {
-                if (descriptor.L < 0xE)
-                {
-                    // (ion - 16)[0 .. 16] = (joy - 16)[0 .. 16];
-                    (ion - descriptor.L)[0 .. descriptor.L] = (joy - descriptor.L)[0 .. descriptor.L];
-                    ion -= descriptor.L;
-                    joy -= descriptor.L;
-                    *--ion = descriptorByte;
-                    if (current.type == IonTypeCode.struct_)
-                        ion.ionPutVarUIntR(joy.parseVarUIntUnsafeR);
-                    continue;
-                }
-                auto currentLength = joy.parseVarUIntUnsafeR;
-                debug tout << "scalar length = " << currentLength << endl;
-                ion -= currentLength;
-                joy -= currentLength;
-                memmove(ion, joy, currentLength);
-                ion.ionPutVarUIntR(currentLength);
-                *--ion = descriptorByte;
-                if (current.type == IonTypeCode.struct_)
-                    ion.ionPutVarUIntR(joy.parseVarUIntUnsafeR);
-                continue;
-            }
-            stack[stackLength++] = current;
-            size_t currentLength = descriptor.L;
-            if (descriptor.L == 0xE)
-                currentLength = joy.parseVarUIntUnsafeR;
-            if (descriptor.type <= IonTypeCode.struct_)
-            {
-                current = descriptor.type.ThunderboltStackMember(currentLength, ion);
-                continue;
-            }
-            assert(descriptor.type == IonTypeCode.annotations);
-            size_t annotationsLength = joy.parseVarUIntUnsafeR;
-            current = descriptor.type.ThunderboltStackMember(currentLength, ion, annotationsLength);
-            continue;
-        }
-        if (current.type != IonTypeCode.null_)
+        auto descriptor = descriptorByte.IonDescriptor;
+        if (descriptor.type == IonTypeCode.bool_ || descriptor.L == 0 || descriptor.L == 0xF)
         {
-            assert(stackLength);
-            assert(current.position == ion);
-            if (current.type == IonTypeCode.annotations)
+            *--ion = descriptorByte;
+            goto Struct_continue;
+        }
+        if (descriptor.type < IonTypeCode.list)
+        {
+            if (descriptor.L < 0xE)
             {
-                auto targetIon = current.position - current.annotationsLength;
-                assert(current.annotationsLength);
-                do ion.ionPutVarUIntR(joy.parseVarUIntUnsafeR);
-                while(targetIon < ion);
-                assert(targetIon == ion);
-                ion.ionPutVarUIntR(current.annotationsLength);
+                // (ion - 16)[0 .. 16] = (joy - 16)[0 .. 16];
+                (ion - descriptor.L)[0 .. descriptor.L] = (joy - descriptor.L)[0 .. descriptor.L];
+                ion -= descriptor.L;
+                joy -= descriptor.L;
+                *--ion = descriptorByte;
+                goto Struct_continue;
             }
-            if (current.length < 0xE)
+            auto currentLength = joy.parseVarUIntR;
+            debug tout << "scalar length = " << currentLength << endl;
+            ion -= currentLength;
+            joy -= currentLength;
+            memmove(ion, joy, currentLength);
+            ion.ionPutVarUIntR(currentLength);
+            *--ion = descriptorByte;
+            goto Struct_continue;
+        }
+        stack[stackLength++] = current;
+        size_t currentLength = descriptor.L;
+        if (descriptor.L == 0xE)
+            currentLength = joy.parseVarUIntR;
+        if (descriptor.type <= IonTypeCode.struct_)
+        {
+            current = descriptor.type.ThunderboltStackMember(currentLength, ion);
+            if (current.type == IonTypeCode.struct_)
+                goto Struct;
+            goto Main;
+        }
+        assert(descriptor.type == IonTypeCode.annotations);
+        size_t annotationsLength = joy.parseVarUIntR;
+        current = descriptor.type.ThunderboltStackMember(currentLength, ion, annotationsLength);
+        if (current.type == IonTypeCode.struct_)
+            goto Struct;
+        goto Main;
+    }
+    assert(stackLength);
+    assert(current.position == ion);
+    if (current.length < 0xE)
+    {
+        *--ion = cast(ubyte) ((current.type << 4) | current.length);
+        current = stack[--stackLength];
+        if (current.type == IonTypeCode.struct_)
+            goto Struct_continue;
+        goto Main;
+    }
+    ion.ionPutVarUIntR(current.length);
+    *--ion = cast(ubyte) ((current.type << 4) | 0xE);
+    current = stack[--stackLength];
+    if (current.type == IonTypeCode.struct_)
+        goto Struct_continue;
+    goto Main;
+
+Main:
+    assert (current.type != IonTypeCode.struct_);
+    debug tout << joy << current << endl;
+    if (current.position < ion)
+    {
+        auto descriptorByte = *--joy;
+        debug tout << descriptorByte.hexAddress << endl;
+
+        auto descriptor = descriptorByte.IonDescriptor;
+        if (descriptor.type == IonTypeCode.bool_ || descriptor.L == 0 || descriptor.L == 0xF)
+        {
+            *--ion = descriptorByte;
+            goto Main;
+        }
+        if (descriptor.type < IonTypeCode.list)
+        {
+            if (descriptor.L < 0xE)
             {
-                *--ion = cast(ubyte) ((current.type << 4) | current.length);
-                current = stack[--stackLength];
-                if (current.type == IonTypeCode.struct_)
-                    ion.ionPutVarUIntR(joy.parseVarUIntUnsafeR);
-                continue;
+                // (ion - 16)[0 .. 16] = (joy - 16)[0 .. 16];
+                (ion - descriptor.L)[0 .. descriptor.L] = (joy - descriptor.L)[0 .. descriptor.L];
+                ion -= descriptor.L;
+                joy -= descriptor.L;
+                *--ion = descriptorByte;
+                goto Main;
             }
-            ion.ionPutVarUIntR(current.length);
-            *--ion = cast(ubyte) ((current.type << 4) | 0xE);
+            auto currentLength = joy.parseVarUIntR;
+            debug tout << "scalar length = " << currentLength << endl;
+            ion -= currentLength;
+            joy -= currentLength;
+            memmove(ion, joy, currentLength);
+            ion.ionPutVarUIntR(currentLength);
+            *--ion = descriptorByte;
+            goto Main;
+        }
+        stack[stackLength++] = current;
+        size_t currentLength = descriptor.L;
+        if (descriptor.L == 0xE)
+            currentLength = joy.parseVarUIntR;
+        if (descriptor.type <= IonTypeCode.struct_)
+        {
+            current = descriptor.type.ThunderboltStackMember(currentLength, ion);
+            if (current.type == IonTypeCode.struct_)
+                goto Struct;
+            goto Main;
+        }
+        assert(descriptor.type == IonTypeCode.annotations);
+        size_t annotationsLength = joy.parseVarUIntR;
+        current = descriptor.type.ThunderboltStackMember(currentLength, ion, annotationsLength);
+        if (current.type == IonTypeCode.struct_)
+            goto Struct;
+        goto Main;
+    }
+    if (current.type != IonTypeCode.null_)
+    {
+        assert(stackLength);
+        assert(current.position == ion);
+        if (current.type == IonTypeCode.annotations)
+        {
+            auto targetIon = current.position - current.annotationsLength;
+            assert(current.annotationsLength);
+            do ion.ionPutVarUIntR(joy.parseVarUIntR);
+            while(targetIon < ion);
+            assert(targetIon == ion);
+            ion.ionPutVarUIntR(current.annotationsLength);
+        }
+        if (current.length < 0xE)
+        {
+            *--ion = cast(ubyte) ((current.type << 4) | current.length);
             current = stack[--stackLength];
             if (current.type == IonTypeCode.struct_)
-                ion.ionPutVarUIntR(joy.parseVarUIntUnsafeR);
-            continue;
+                goto Struct_continue;;
+            goto Main;
         }
-        assert(current.position <= ion);
-        assert(current.position >= ion);
-        return ThunderboltStatus.success;
+        ion.ionPutVarUIntR(current.length);
+        *--ion = cast(ubyte) ((current.type << 4) | 0xE);
+        current = stack[--stackLength];
+        if (current.type == IonTypeCode.struct_)
+            goto Struct_continue;;
+        goto Main;
     }
+
+    assert(current.position <= ion);
+    assert(current.position >= ion);
+    return ThunderboltStatus.success;
 }
 
 
-package size_t parseVarUIntUnsafeR(ref inout(ubyte)* s)
+package size_t parseVarUIntR(ref inout(ubyte)* s)
     pure nothrow @nogc
 {
     size_t result;
