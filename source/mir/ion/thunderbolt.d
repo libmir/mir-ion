@@ -4,6 +4,7 @@ module mir.ion.thunderbolt;
 import mir.ion.type_code;
 import mir.ion.value: IonDescriptor;
 import core.stdc.string: memmove;
+import mir.utility: _expect;
 
 enum ThunderboltStackDepth = 1024;
 
@@ -108,7 +109,6 @@ unittest
     import mir.stdio;
     import mir.format;
 
-
 // pure nothrow @nogc
 ThunderboltStatus thunderbolt(
            ubyte* ion,
@@ -119,11 +119,7 @@ ThunderboltStatus thunderbolt(
      || joy + length <= ion)
 {
     ThunderboltStackMember[ThunderboltStackDepth] stack = void;
-    size_t stackLength;
-
-    debug auto f = tout;
-            debug f.printHexArray!(char, AssumeNothrowFile, ubyte)(joy[0 .. length]);
-            debug tout << endl;
+    sizediff_t stackPos = stack.length;
 
     ion += length;
     joy += length;
@@ -135,14 +131,12 @@ Struct_continue:
     ion.ionPutVarUIntR(joy.parseVarUIntR);
 Struct:
     assert (current.type == IonTypeCode.struct_);
-    debug tout << joy << current << endl;
     if (current.position < ion)
     {
         auto descriptorByte = *--joy;
-        debug tout << descriptorByte.hexAddress << endl;
 
         auto descriptor = descriptorByte.IonDescriptor;
-        if (descriptor.type == IonTypeCode.bool_ || descriptor.L == 0 || descriptor.L == 0xF)
+        if (descriptor.type == IonTypeCode.bool_ || descriptor.L == 0xF)
         {
             *--ion = descriptorByte;
             goto Struct_continue;
@@ -159,7 +153,6 @@ Struct:
                 goto Struct_continue;
             }
             auto currentLength = joy.parseVarUIntR;
-            debug tout << "scalar length = " << currentLength << endl;
             ion -= currentLength;
             joy -= currentLength;
             memmove(ion, joy, currentLength);
@@ -167,7 +160,9 @@ Struct:
             *--ion = descriptorByte;
             goto Struct_continue;
         }
-        stack[stackLength++] = current;
+        if (_expect(--stackPos < 0, false))
+            return ThunderboltStatus.stackOverflow;
+        stack[stackPos] = current;
         size_t currentLength = descriptor.L;
         if (descriptor.L == 0xE)
             currentLength = joy.parseVarUIntR;
@@ -185,33 +180,31 @@ Struct:
             goto Struct;
         goto Main;
     }
-    assert(stackLength);
+    assert(stackPos < stack.length);
     assert(current.position == ion);
     if (current.length < 0xE)
     {
         *--ion = cast(ubyte) ((current.type << 4) | current.length);
-        current = stack[--stackLength];
+        current = stack[stackPos++];
         if (current.type == IonTypeCode.struct_)
             goto Struct_continue;
         goto Main;
     }
     ion.ionPutVarUIntR(current.length);
     *--ion = cast(ubyte) ((current.type << 4) | 0xE);
-    current = stack[--stackLength];
+    current = stack[stackPos++];
     if (current.type == IonTypeCode.struct_)
         goto Struct_continue;
     goto Main;
 
 Main:
     assert (current.type != IonTypeCode.struct_);
-    debug tout << joy << current << endl;
     if (current.position < ion)
     {
         auto descriptorByte = *--joy;
-        debug tout << descriptorByte.hexAddress << endl;
 
         auto descriptor = descriptorByte.IonDescriptor;
-        if (descriptor.type == IonTypeCode.bool_ || descriptor.L == 0 || descriptor.L == 0xF)
+        if (descriptor.type == IonTypeCode.bool_ || descriptor.L == 0xF)
         {
             *--ion = descriptorByte;
             goto Main;
@@ -228,7 +221,6 @@ Main:
                 goto Main;
             }
             auto currentLength = joy.parseVarUIntR;
-            debug tout << "scalar length = " << currentLength << endl;
             ion -= currentLength;
             joy -= currentLength;
             memmove(ion, joy, currentLength);
@@ -236,7 +228,9 @@ Main:
             *--ion = descriptorByte;
             goto Main;
         }
-        stack[stackLength++] = current;
+        if (_expect(--stackPos < 0, false))
+            return ThunderboltStatus.stackOverflow;
+        stack[stackPos] = current;
         size_t currentLength = descriptor.L;
         if (descriptor.L == 0xE)
             currentLength = joy.parseVarUIntR;
@@ -256,30 +250,39 @@ Main:
     }
     if (current.type != IonTypeCode.null_)
     {
-        assert(stackLength);
+        assert(stackPos < stack.length);
         assert(current.position == ion);
         if (current.type == IonTypeCode.annotations)
         {
-            auto targetIon = current.position - current.annotationsLength;
             assert(current.annotationsLength);
-            do ion.ionPutVarUIntR(joy.parseVarUIntR);
-            while(targetIon < ion);
-            assert(targetIon == ion);
-            ion.ionPutVarUIntR(current.annotationsLength);
+            if (_expect(current.annotationsLength <= 16, true))
+            {
+                (ion - 16)[0 .. 16] = (joy - 16)[0 .. 16];
+                ion -= current.annotationsLength;
+                joy -= current.annotationsLength;
+                *--ion = cast(ubyte) current.annotationsLength | 0x80;
+            }
+            else
+            {
+                ion -= current.annotationsLength;
+                joy -= current.annotationsLength;
+                memmove(ion, joy, current.annotationsLength);
+                ion.ionPutVarUIntR(current.annotationsLength);
+            }
         }
         if (current.length < 0xE)
         {
             *--ion = cast(ubyte) ((current.type << 4) | current.length);
-            current = stack[--stackLength];
+            current = stack[stackPos++];
             if (current.type == IonTypeCode.struct_)
-                goto Struct_continue;;
+                goto Struct_continue;
             goto Main;
         }
         ion.ionPutVarUIntR(current.length);
         *--ion = cast(ubyte) ((current.type << 4) | 0xE);
-        current = stack[--stackLength];
+        current = stack[stackPos++];
         if (current.type == IonTypeCode.struct_)
-            goto Struct_continue;;
+            goto Struct_continue;
         goto Main;
     }
 
@@ -299,7 +302,6 @@ package size_t parseVarUIntR(ref inout(ubyte)* s)
         byte b = *--s;
         result <<= 7;
         result |= b & 0x7F;
-        debug tout << "  b " << ubyte(b).hexAddress << " temp var len = " << result << endl;
         if (b < 0)
             return result;
     }
