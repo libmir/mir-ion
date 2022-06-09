@@ -277,15 +277,10 @@ scope:
         }
 
         ///
-        auto annotationsBegin()
-        {
-            return size_t(0);
-        }
-
-        ///
-        void annotationsEnd(size_t state)
+        auto annotationsEnd(size_t state)
         {
             bool _annotation = false;
+            return 0;
         }
 
         ///
@@ -732,6 +727,8 @@ version(mir_ion_test) unittest
 @safe pure
 version(mir_ion_test) unittest
 {
+    import mir.test;
+
     assert(serializeMsgpack(float.min_normal) == [0xca, 0x00, 0x80, 0x00, 0x00]);
     assert(serializeMsgpack(float.max) == [0xca, 0x7f, 0x7f, 0xff, 0xff]);
     assert(serializeMsgpack(double.min_normal) == [0xcb, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
@@ -744,8 +741,8 @@ version(mir_ion_test) unittest
 
     // Mir's Decimal
     import mir.bignum.decimal : Decimal;
-    assert(serializeMsgpack(Decimal!2("777.777")) == [0xcb,0x40,0x88,0x4e,0x37,0x4b,0xc6,0xa7,0xf0]);
-    assert(serializeMsgpack(Decimal!2("-777.7")) == [0xcb,0xc0,0x88,0x4d,0x99,0x99,0x99,0x99,0x9a]);
+    serializeMsgpack(Decimal!2("777.777")).should == [0xcb,0x40,0x88,0x4e,0x37,0x4b,0xc6,0xa7,0xf0];
+    serializeMsgpack(Decimal!2("-777.7")).should == [0xcb,0xc0,0x88,0x4d,0x99,0x99,0x99,0x99,0x9a];
 }
 
 /// Test serializing timestamps

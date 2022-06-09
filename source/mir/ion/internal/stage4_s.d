@@ -83,7 +83,7 @@ IonErrorInfo singleThreadJsonImpl(size_t nMax, alias fillBuffer, SymbolTable, Ta
             stage.index -= stage.n;
             stage.location += stage.n;
 
-            stage.tape = tapeHolder.data;
+            stage.tape = tapeHolder.allData;
             if (_expect(!fillBuffer(cast(char*)(vector.ptr.ptr + 64), stage.n, stage.eof), false))
                 return false;
             if (stage.n)
@@ -169,7 +169,7 @@ version(mir_ion_test) unittest
         if (errorInfo.code)
             throw new SerdeMirException(errorInfo.code.ionErrorMsg, ". location = ", errorInfo.location, ", last input key = ", errorInfo.key);
 
-        return tapeHolder.tapeData.dup;
+        return tapeHolder.data.dup;
     }
 
     import mir.ion.value;

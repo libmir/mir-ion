@@ -573,7 +573,8 @@ version(mir_ion_test) unittest
     }
 
     assert(S([`a`, `b`]).serializeText == `{strings:["_a","_b"]}`);
-    assert(`{strings:["a","b"]}`.deserializeText!S.stringsApp.data == [`a`, `b`]);
+    import mir.test;
+    `{strings:["a","b"]}`.deserializeText!S.stringsApp.data.should == [`a`, `b`];
 
     @serdeLikeList
     @serdeProxy!string // input element type of
@@ -823,6 +824,7 @@ version(mir_ion_test) unittest
 ///
 version(mir_ion_test) @safe pure unittest
 {
+    import mir.test;
     import mir.serde : serdeFallbackStruct;
     import mir.algebraic;
     import mir.deser.text;
@@ -830,8 +832,8 @@ version(mir_ion_test) @safe pure unittest
     @serdeFallbackStruct struct S { string path; }
     alias V = Variant!(string, S);
     static immutable res = [V("str"), V(S("root"))];
-    assert(q{["str", {path: root}]}.deserializeText!(V[]) == res);
-    assert(q{["str", {"path": "root"}]}.deserializeDynamicJson!(V[]) == res);
+    q{["str", {path: root}]}.deserializeText!(V[]).should == res;
+    q{["str", {"path": "root"}]}.deserializeDynamicJson!(V[]).should == res;
 }
 
 /// Date serialization
@@ -1303,6 +1305,7 @@ version(mir_ion_test) unittest
 /// RC Series de/serialization
 @safe version(mir_ion_test) unittest
 {
+    import mir.test;
     import mir.deser.text;
     import mir.ser.text;
     import mir.ndslice.allocation: rcslice;
@@ -1312,7 +1315,7 @@ version(mir_ion_test) unittest
     auto t = `{index:["a","b"],data:[5,6]}`;
     auto r = `{index:["b","a"],data:[6,5]}`;
     assert(s.serializeText == t);
-    assert(r.deserializeText!(typeof(s)) == s, r.deserializeText!(typeof(s)).serializeText);
+    assert(r.deserializeText!(typeof(s)) == s);
 }
 
 // Const RC Series de/serialization

@@ -2857,12 +2857,11 @@ struct IonAnnotationWrapper
         auto value = unwrap(annotations);
 
         auto state = serializer.annotationWrapperBegin;
-        auto annotationsState = serializer.annotationsBegin;
         foreach(symbolID; annotations)
         {
             serializer.putAnnotationId(symbolID);
         }
-        serializer.annotationsEnd(annotationsState);
+        auto annotationsState = serializer.annotationsEnd(state);
 
         value.serializeImpl(serializer);
         if (false)

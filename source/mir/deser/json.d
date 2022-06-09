@@ -95,7 +95,7 @@ private template deserializeJsonImpl(bool file)
 
                 IonDescribedValue ionValue;
 
-                if (auto error = IonValue(tapeHolder.tapeData).describe(ionValue))
+                if (auto error = IonValue(tapeHolder.data).describe(ionValue))
                     throw error.ionException;
 
                 auto params = DeserializationParams!(TableKind.compiletime)(ionValue); 
@@ -237,7 +237,7 @@ alias deserializeJson = deserializeJsonImpl!false;
 //         if (error.code)
 //             throw new MirException(error.code.ionErrorMsg, ". location = ", error.location, ", last input key = ", error.key);
 
-//         auto ionValue = IonDescribedValue(tapeHolder.tapeData);
+//         auto ionValue = IonDescribedValue(tapeHolder.data);
 
 //         import mir.ion.value: IonList, IonDescribedValue;
 
@@ -271,7 +271,7 @@ alias deserializeJson = deserializeJsonImpl!false;
 
 //             IonDescribedValue ionValue;
 
-//             if (auto error = IonValue(tapeHolder.tapeData).describe(ionValue))
+//             if (auto error = IonValue(tapeHolder.data).describe(ionValue))
 //                 throw error.ionException;
 
 //             ScopedBuffer!(uint, 1024) tableMapBuffer = void;

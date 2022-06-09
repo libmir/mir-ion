@@ -25,16 +25,17 @@ static struct ThunderboltStackMember
 
 @system pure nothrow @nogc:
 
-    this(IonTypeCode type, size_t length, ubyte* currentPosition, size_t annotationsLength = 0)
+    this(IonTypeCode type, size_t length, ubyte* position, size_t annotationsLength = 0)
     {
         this.annotationsLength = annotationsLength;
         this.length = length;
-        this.position = currentPosition - length + annotationsLength;
+        this.position = position;
         this.type = type;
     }
 }
 
 // pure
+pure @trusted
 ubyte[] thunderbolt(const(ubyte)[] joy)
 {
     import mir.exception: MirException;
@@ -102,29 +103,35 @@ unittest
     [0xD6, 0x84, 0x10, 0x85, 0xB2, 0x11, 0x0F];
 
     // annotation
-    [0x87, 0x88, 0x84, 0x10, 0x85, 0x11, 0x0F, 0xB2, 0x89, 0x11, 0xD8, 0x82, 0xEB].thunderbolt.should ==
-    [0xEB, 0x82, 0x87, 0x88, 0xD8, 0x84, 0x10, 0x85, 0xB2, 0x11, 0x0F, 0x89, 0x11];
+    [0x8A, 0x01, 0x21, 0x81, 0xE4].thunderbolt.should == [0xE4, 0x81, 0x8A, 0x21, 0x01];
+
+    [0x87, 0x88, 0x84, 0x10, 0x85, 0x11, 0x0F, 0xB2, 0x89, 0x11, 0xD8, 0x82, 0xEC].thunderbolt.should ==
+    [0xEC, 0x82, 0x87, 0x88, 0xD8, 0x84, 0x10, 0x85, 0xB2, 0x11, 0x0F, 0x89, 0x11];
+
 }
 
     import mir.stdio;
     import mir.format;
 
-// pure nothrow @nogc
+pure nothrow @nogc @trusted
 ThunderboltStatus thunderbolt(
            ubyte* ion,
     const(ubyte)* joy,
            size_t length
 )
-    in (ion + 16     <= joy  // 16 bytes are enough
-     || joy + length <= ion)
+    in (joy + 15     <= ion  // 15 bytes are enough
+     || ion + length <= joy - 15)
 {
     ThunderboltStackMember[ThunderboltStackDepth] stack = void;
     sizediff_t stackPos = stack.length;
 
-    ion += length;
-    joy += length;
+    import mir.format;
+    import mir.stdio;
 
     auto current = ThunderboltStackMember(IonTypeCode.null_, length, ion);
+
+    ion += length;
+    joy += length;
 
     goto Main;
 Struct_continue:
@@ -145,8 +152,8 @@ Struct:
         {
             if (descriptor.L < 0xE)
             {
-                // (ion - 16)[0 .. 16] = (joy - 16)[0 .. 16];
-                (ion - descriptor.L)[0 .. descriptor.L] = (joy - descriptor.L)[0 .. descriptor.L];
+                (ion - 16)[0 .. 16] = (joy - 16)[0 .. 16];
+                // (ion - descriptor.L)[0 .. descriptor.L] = (joy - descriptor.L)[0 .. descriptor.L];
                 ion -= descriptor.L;
                 joy -= descriptor.L;
                 *--ion = descriptorByte;
@@ -168,16 +175,15 @@ Struct:
             currentLength = joy.parseVarUIntR;
         if (descriptor.type <= IonTypeCode.struct_)
         {
-            current = descriptor.type.ThunderboltStackMember(currentLength, ion);
+            current = descriptor.type.ThunderboltStackMember(currentLength, ion - currentLength);
             if (current.type == IonTypeCode.struct_)
                 goto Struct;
             goto Main;
         }
         assert(descriptor.type == IonTypeCode.annotations);
+        auto oldJoy = joy;
         size_t annotationsLength = joy.parseVarUIntR;
-        current = descriptor.type.ThunderboltStackMember(currentLength, ion, annotationsLength);
-        if (current.type == IonTypeCode.struct_)
-            goto Struct;
+        current = IonTypeCode.annotations.ThunderboltStackMember(currentLength, ion - (currentLength - annotationsLength - (oldJoy - joy)), annotationsLength);
         goto Main;
     }
     assert(stackPos < stack.length);
@@ -195,7 +201,7 @@ Struct:
     current = stack[stackPos++];
     if (current.type == IonTypeCode.struct_)
         goto Struct_continue;
-    goto Main;
+    // goto Main;
 
 Main:
     assert (current.type != IonTypeCode.struct_);
@@ -213,8 +219,8 @@ Main:
         {
             if (descriptor.L < 0xE)
             {
-                // (ion - 16)[0 .. 16] = (joy - 16)[0 .. 16];
-                (ion - descriptor.L)[0 .. descriptor.L] = (joy - descriptor.L)[0 .. descriptor.L];
+                (ion - 16)[0 .. 16] = (joy - 16)[0 .. 16];
+                // (ion - descriptor.L)[0 .. descriptor.L] = (joy - descriptor.L)[0 .. descriptor.L];
                 ion -= descriptor.L;
                 joy -= descriptor.L;
                 *--ion = descriptorByte;
@@ -236,22 +242,21 @@ Main:
             currentLength = joy.parseVarUIntR;
         if (descriptor.type <= IonTypeCode.struct_)
         {
-            current = descriptor.type.ThunderboltStackMember(currentLength, ion);
+            current = descriptor.type.ThunderboltStackMember(currentLength, ion - currentLength);
             if (current.type == IonTypeCode.struct_)
                 goto Struct;
             goto Main;
         }
         assert(descriptor.type == IonTypeCode.annotations);
+        auto oldJoy = joy;
         size_t annotationsLength = joy.parseVarUIntR;
-        current = descriptor.type.ThunderboltStackMember(currentLength, ion, annotationsLength);
-        if (current.type == IonTypeCode.struct_)
-            goto Struct;
+        current = IonTypeCode.annotations.ThunderboltStackMember(currentLength, ion - (currentLength - annotationsLength - (oldJoy - joy)), annotationsLength);
         goto Main;
     }
     if (current.type != IonTypeCode.null_)
     {
         assert(stackPos < stack.length);
-        assert(current.position == ion);
+        assert(current.position >= ion);
         if (current.type == IonTypeCode.annotations)
         {
             assert(current.annotationsLength);
@@ -310,7 +315,8 @@ package size_t parseVarUIntR(ref inout(ubyte)* s)
 private void ionPutVarUIntR(ref ubyte* ptr, size_t value)
     pure nothrow @nogc
 {
+    auto safe = ptr;
     do *--ptr = value & 0x7F;
     while (value >>>= 7);
-    *ptr |= 0x80;
+    *(safe - 1) |= 0x80;
 }

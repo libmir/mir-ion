@@ -56,13 +56,10 @@ interface ISerializer
     void putSymbol(scope const char[] symbol);
 
     ///
-    size_t annotationsBegin();
-
-    ///
     void putAnnotation(scope const(char)[] annotation);
 
     ///
-    void annotationsEnd(size_t state);
+    size_t annotationsEnd(size_t state);
 
     ///
     size_t annotationWrapperBegin();
@@ -224,17 +221,12 @@ final class SerializerWrapper(S) : ISerializer
         return serializer.putSymbol(symbol);
     }
 
-    size_t annotationsBegin()
-    {
-        return serializer.annotationsBegin();
-    }
-
     void putAnnotation(scope const(char)[] annotation)
     {
         return serializer.putAnnotation(annotation);
     }
 
-    void annotationsEnd(size_t state)
+    size_t annotationsEnd(size_t state)
     {
         return serializer.annotationsEnd(state);
     }
@@ -345,6 +337,7 @@ final class SerializerWrapper(S) : ISerializer
     }
 }
 
+version(mir_ion_test)
 unittest
 {
     static struct Wrapper(T)
@@ -385,6 +378,7 @@ unittest
 }
 
 ///
+version(mir_ion_test)
 unittest
 {
     static struct Wrapper(T)

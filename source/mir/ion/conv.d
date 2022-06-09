@@ -30,27 +30,25 @@ template serde(T)
         import mir.deser.ion: deserializeIon;
         import mir.ion.internal.data_holder: ionPrefix, ionTapeHolder, IonTapeHolder;
         import mir.ser: serializeValue;
-        import mir.ser.ion: IonSerializer;
+        import mir.ser.ion: ionSerializer;
         import mir.ion.symbol_table: IonSymbolTable, removeSystemSymbols, IonSystemSymbolTable_v1;
         import mir.ion.value: IonValue, IonDescribedValue, IonList;
         import mir.serde: serdeGetSerializationKeysRecurse;
         import mir.utility: _expect;
 
-        enum nMax = 4096u;
+        enum nMax = 4096;
         enum keys = serdeGetSerializationKeysRecurse!V.removeSystemSymbols;
 
         const(string)[] symbolTable;
 
         import mir.appender : scopedBuffer;
         auto symbolTableBuffer = scopedBuffer!string;
-        auto tapeHolder = ionTapeHolder!(nMax * 8);
-        tapeHolder.initialize;
-        IonSymbolTable!true table;
-        auto serializer = IonSerializer!(IonTapeHolder!(nMax * 8), keys, true)(
-            ()@trusted { return &tapeHolder; }(),
-            ()@trusted { return &table; }(),
-            serdeTarget);
+
+        auto table = () @trusted { IonSymbolTable!false ret = void; ret.initializeNull; return ret; }();
+        auto serializer = ionSerializer!(nMax * 8, keys, false);
+        serializer.initialize(table);
         serializeValue(serializer, value);
+        serializer.finalize;
 
         // use runtime table
         if (table.initialized)
@@ -69,7 +67,8 @@ template serde(T)
             symbolTable = compileTimeTable;
         }
         IonDescribedValue ionValue;
-        auto error = tapeHolder.data.IonValue.describe(ionValue);
+        auto error = serializer.data.IonValue.describe(ionValue);
+        assert(!error);
         return deserializeIon!T(target, symbolTable, ionValue);
     }
 
@@ -125,7 +124,7 @@ immutable(ubyte)[] json2ion(scope const(char)[] text)
     import mir.ion.symbol_table: IonSymbolTable;
     import mir.utility: _expect;
 
-    enum nMax = 4096u;
+    enum nMax = 4096;
 
     IonTapeHolder!(nMax * 8) tapeHolder = void;
     tapeHolder.initialize;
@@ -138,7 +137,7 @@ immutable(ubyte)[] json2ion(scope const(char)[] text)
 
     return ()@trusted {
         table.finalize;
-        return cast(immutable(ubyte)[])(ionPrefix ~ table.tapeData ~ tapeHolder.tapeData);
+        return cast(immutable(ubyte)[])(ionPrefix ~ table.data ~ tapeHolder.data);
     }();
 }
 
@@ -166,7 +165,7 @@ void json2ion(Appender)(scope const(char)[] text, scope ref Appender appender)
     import mir.ion.internal.data_holder: ionPrefix, IonTapeHolder;
     import mir.ion.internal.stage4_s;
     import mir.ion.symbol_table: IonSymbolTable;
-    import mir.ser.ion : IonSerializer;
+    import mir.ser.ion : ionSerializer;
     import mir.serde : SerdeTarget;
 
     enum nMax = 4096;
@@ -183,9 +182,9 @@ void json2ion(Appender)(scope const(char)[] text, scope ref Appender appender)
     if (table.initialized)
     {
         table.finalize;
-        appender.put(table.tapeData);
+        appender.put(table.data);
     }
-    appender.put(tapeHolder.tapeData);
+    appender.put(tapeHolder.data);
 }
 
 ///
@@ -279,27 +278,27 @@ immutable(ubyte)[] text2ion(scope const(char)[] text)
     import mir.ion.internal.data_holder: ionPrefix, IonTapeHolder;
     import mir.ion.symbol_table: IonSymbolTable;
     import mir.ion.internal.data_holder: ionPrefix;
-    import mir.ser.ion : IonSerializer;
+    import mir.ser.ion : ionSerializer;
     import mir.serde : SerdeTarget;
     import mir.deser.text : IonTextDeserializer;
     enum nMax = 4096;
-    IonTapeHolder!(nMax * 8, true) tapeHolder = void;
-    tapeHolder.initialize;
+
     IonSymbolTable!true table;
-    auto ser = IonSerializer!(typeof(tapeHolder), null, true)(&tapeHolder, &table, SerdeTarget.ion);
+    auto serializer = ionSerializer!(nMax * 8, null, true);
+    serializer.initialize(table);
 
-    auto deser = IonTextDeserializer!(typeof(ser))(&ser);
-
+    auto deser = IonTextDeserializer!(typeof(serializer))(&serializer);
     deser(text);
+    serializer.finalize;
 
     if (table.initialized)
     {
         table.finalize;
-        return cast(immutable) (ionPrefix ~ table.tapeData ~ tapeHolder.tapeData);
+        return cast(immutable) (ionPrefix ~ table.data ~ serializer.data);
     }
     else
     {
-        return cast(immutable) (ionPrefix ~ tapeHolder.tapeData);
+        return cast(immutable) (ionPrefix ~ serializer.data);
     }
 }
 ///
@@ -343,27 +342,28 @@ void text2ion(Appender)(scope const(char)[] text, scope ref Appender appender)
     import mir.ion.internal.data_holder: ionPrefix, IonTapeHolder;
     import mir.ion.symbol_table: IonSymbolTable;
     import mir.ion.internal.data_holder: ionPrefix;
-    import mir.ser.ion : IonSerializer;
+    import mir.ser.ion : ionSerializer;
     import mir.serde : SerdeTarget;
     import mir.deser.text : IonTextDeserializer;
     enum nMax = 4096;
-    IonTapeHolder!(nMax * 8) tapeHolder = void;
-    tapeHolder.initialize;
     IonSymbolTable!false table = void;
     table.initialize;
-    auto ser = IonSerializer!(typeof(tapeHolder), null, false)(&tapeHolder, &table, SerdeTarget.ion);
 
-    auto deser = IonTextDeserializer!(typeof(ser))(&ser);
+    auto serializer = ionSerializer!(nMax * 8, null, false);
+    serializer.initialize(table);
+
+    auto deser = IonTextDeserializer!(typeof(serializer))(&serializer);
 
     deser(text);
+    serializer.finalize;
 
     appender.put(ionPrefix);
     if (table.initialized)
     {
         table.finalize;
-        appender.put(table.tapeData);
+        appender.put(table.data);
     }
-    appender.put(tapeHolder.tapeData);
+    appender.put(serializer.data);
 }
 ///
 @safe pure @nogc
@@ -437,25 +437,26 @@ void msgpack2ion(Appender)(scope const(ubyte)[] data, scope ref Appender appende
     import mir.ion.internal.data_holder: ionPrefix, IonTapeHolder;
     import mir.ion.symbol_table: IonSymbolTable;
     import mir.ion.internal.data_holder: ionPrefix;
-    import mir.ser.ion : IonSerializer;
+    import mir.ser.ion : ionSerializer;
     import mir.serde : SerdeTarget;
     import mir.deser.msgpack : MsgpackValueStream;
     enum nMax = 4096;
-    IonTapeHolder!(nMax * 8) tapeHolder = void;
-    tapeHolder.initialize;
-    IonSymbolTable!false table = void;
+
+    IonSymbolTable!false table;
     table.initialize;
-    auto ser = IonSerializer!(typeof(tapeHolder), null, false)(&tapeHolder, &table, SerdeTarget.ion);
+    auto serializer = ionSerializer!(nMax * 8, null, false);
+    serializer.initialize(table);
   
-    data.MsgpackValueStream.serialize(ser);
+    data.MsgpackValueStream.serialize(serializer);
+    serializer.finalize;
   
     appender.put(ionPrefix);
     if (table.initialized)
     {
         table.finalize;
-        appender.put(table.tapeData);
+        appender.put(table.data);
     }
-    appender.put(tapeHolder.tapeData);
+    appender.put(serializer.data);
 }
 
 /++

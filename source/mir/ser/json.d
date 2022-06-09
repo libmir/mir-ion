@@ -193,12 +193,6 @@ scope:
     alias sexpEnd = listEnd;
 
     ///
-    auto annotationsBegin()
-    {
-        return size_t(0);
-    }
-
-    ///
     void putSymbol(scope const char[] symbol)
     {
         putValue(symbol);
@@ -214,9 +208,10 @@ scope:
     }
 
     ///
-    void annotationsEnd(size_t state)
+    auto annotationsEnd(size_t state)
     {
         bool _annotation = false;
+        return state;
     }
 
     ///

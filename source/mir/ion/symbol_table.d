@@ -136,7 +136,7 @@ pure nothrow:
     }
 
     ///
-    void initialize()
+    void initializeNull() @property
     {
         entries = null;
         nextKeyPosition = 0;
@@ -145,7 +145,12 @@ pure nothrow:
         elementCount = 0;
         startId = IonSystemSymbol.max + 1;
         keySpace = null;
+    }
 
+    ///
+    void initialize()
+    {
+        initializeNull;
         static if (gc)
         {
             entries = new Entry[initialLength + initialMaxProbe].ptr;
@@ -206,7 +211,7 @@ pure nothrow:
         }
     }
 
-    inout(ubyte)[] tapeData() inout @property
+    inout(ubyte)[] data() inout @property
     {
         return keySpace[0 .. nextKeyPosition];
     }
@@ -226,14 +231,14 @@ pure nothrow:
         return cast(const(char)[])data[0 .. length];
     }
 
-    private inout(Entry)[] data() inout @property
+    private inout(Entry)[] currentEntries() inout @property
     {
         return entries[0 .. lengthMinusOne + 1 + maxProbe];
     }
 
     private void grow()
     {
-        auto currentEntries = data[0 .. $-1];
+        auto currentEntries = this.currentEntries[0 .. $-1];
 
         lengthMinusOne = lengthMinusOne * 2 + 1;
         maxProbe++;
@@ -249,8 +254,8 @@ pure nothrow:
                 assert(0);
         }
 
-        data[] = Entry.init;
-        data[$ - 1].probeCount = 0;
+        this.currentEntries[] = Entry.init;
+        this.currentEntries[$ - 1].probeCount = 0;
 
         foreach (i, ref entry; currentEntries)
         {
