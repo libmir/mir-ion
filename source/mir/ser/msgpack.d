@@ -295,7 +295,10 @@ scope:
         }
 
         ///
-        alias annotationWrapperEnd = structEnd;
+        void annotationWrapperEnd(size_t, size_t state)
+        {
+            return structEnd(state);
+        }
 
         ///
         void putKey(scope const char[] key)

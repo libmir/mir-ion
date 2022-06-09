@@ -9,6 +9,316 @@ module mir.ser.ion;
 import mir.primitives: isOutputRange;
 public import mir.serde;
 
+struct JoySerializer(uint bufferStackSize, string[] compiletimeSymbolTable, bool tableGC = true)
+{
+    import mir.bignum.decimal: Decimal;
+    import mir.bignum.integer: BigInt;
+    import mir.bignum.low_level_view: BigIntView;
+    import mir.ion.symbol_table: IonSymbolTable, IonSystemSymbolTable_v1;
+    import mir.ion.tape;
+    import mir.ion.type_code;
+    import mir.lob;
+    import mir.string_table: createTable, minimalIndexType;
+    import mir.timestamp;
+    import mir.utility: _expect;
+    import std.traits: isNumeric;
+
+    private alias createTableChar = createTable!char;
+    private alias U = minimalIndexType!(IonSystemSymbolTable_v1.length + compiletimeSymbolTable.length);
+
+    private static immutable compiletimeTable = createTableChar!(IonSystemSymbolTable_v1 ~ compiletimeSymbolTable, false);
+    static immutable U[IonSystemSymbolTable_v1.length + compiletimeTable.sortedKeys.length] compiletimeIndex = () {
+        U[IonSystemSymbolTable_v1.length + compiletimeTable.sortedKeys.length] index;
+        foreach (i, key; IonSystemSymbolTable_v1 ~ compiletimeSymbolTable)
+            index[compiletimeTable[key]] = cast(U) i;
+        return index;
+    } ();
+    static immutable ubyte[] compiletimeTableTape = () {
+        IonSymbolTable!true table;
+        table.initialize;
+        foreach (key; compiletimeSymbolTable)
+            table.insert(key);
+        table.finalize;
+        return table.tapeData;
+    } ();
+
+    ///
+    ubyte* joy;
+    ///
+    ScopedBuffer!bufferStackSize buffer;
+
+    ///
+    void reserve(size_t n)
+    {
+        joy = buffer.reserve(n).ptr;
+    }
+
+    ///
+    void apdateBuffer()
+    {
+        buffer._currentLength = joy - buffer.data.ptr;
+    }
+
+    ///
+    IonSymbolTable!tableGC* runtimeTable;
+
+    /// Mutable value used to choose format specidied or user-defined serialization specializations
+    int serdeTarget = SerdeTarget.ion;
+
+@trusted:
+
+    private void _putVarUInt(size_t value)
+    {
+        do *joy++ = value | 0x7F;
+        while(value >>>= 7);
+    }
+
+    private void putEnd(size_t length, IonTypeCode typeCode)
+    {
+        tapeHolder.reserve(11);
+        if (length < 0xE)
+        {
+            *joy++ = cast(ubyte) ((typeCode << 4) | length);
+        }
+        else
+        {
+            _putVarUInt(length);
+            *joy++ = cast(ubyte) ((typeCode << 4) | 0xE);
+        }
+        apdateBuffer;
+    }
+
+    ///
+    size_t structBegin(size_t length = size_t.max)
+    {
+        return buffer.data.length;
+    }
+
+    ///
+    void structEnd(size_t state)
+    {
+        putEnd(state, IonTypeCode.struct_);
+    }
+
+    ///
+    alias listBegin = structBegin;
+
+    ///
+    void listEnd(size_t state)
+    {
+        putEnd(state, IonTypeCode.list);
+    }
+
+    ///
+    alias sexpBegin = listBegin;
+
+    ///
+    void sexpEnd(size_t state)
+    {
+        putEnd(state, IonTypeCode.sexp);
+    }
+
+    ///
+    alias stringBegin = structBegin;
+
+    /++
+    Puts string part. The implementation allows to split string unicode points.
+    +/
+    void putStringPart(scope const(char)[] str)
+    {
+        buffer.put(str);
+        apdateBuffer();
+    }
+
+    ///
+    void stringEnd(size_t state)
+    {
+        putEnd(state, IonTypeCode.string);
+    }
+
+    ///
+    size_t annotationsBegin()
+    {
+        return buffer.data.length;
+    }
+
+    ///
+    void annotationsEnd(size_t state)
+    {
+        size_t totalElementLength = tapeHolder.currentTapePosition - (state + ionPutAnnotationsListStartLength);
+        if (_expect(totalElementLength >= 0x80, false))
+            tapeHolder.reserve(9);
+        tapeHolder.currentTapePosition = state + ionPutAnnotationsListEnd(tapeHolder.data.ptr + state, totalElementLength);
+    }
+
+    ///
+    alias annotationWrapperBegin = structBegin;
+
+    ///
+    void annotationWrapperEnd(size_t annotationsState, size_t state)
+    {
+        putEnd(state, IonTypeCode.annotations);
+    }
+
+    ///
+    void putCompiletimeKey(string key)()
+    {
+        enum id = compiletimeTable[key];
+        putKeyId(compiletimeIndex[id]);
+    }
+
+    ///
+    alias putCompiletimeAnnotation = putCompiletimeKey;
+
+    uint _getId(scope const char[] key)
+    {
+        import mir.utility: _expect;
+        uint id;
+        if (_expect(compiletimeTable.get(key, id), true))
+        {
+            return id = compiletimeIndex[id];
+        }
+        else // use GC CTFE symbol table because likely `putKey` is used either for Associative array of for similar types.
+        {
+            if (_expect(!runtimeTable.initialized, false))
+            {
+                runtimeTable.initialize;
+                foreach (ctKey; compiletimeSymbolTable)
+                {
+                    runtimeTable.insert(ctKey);
+                }
+             }
+            return runtimeTable.insert(cast(const(char)[])key);
+        }
+    }
+
+    ///
+    void putKey()(scope const char[] key)
+    {
+        putKeyId(_getId(key));
+    }
+
+    ///
+    alias putAnnotation = putKey;
+
+    ///
+    void putKeyId(T)(const T id)
+        if (__traits(isUnsigned, T))
+    {
+        tapeHolder.reserve(19);
+        tapeHolder.currentTapePosition += ionPutVarUInt(tapeHolder.data.ptr + tapeHolder.currentTapePosition, id);
+    }
+
+    ///
+    alias putAnnotationId = putKeyId;
+
+    ///
+    void putSymbolId(size_t id)
+    {
+        tapeHolder.reserve(19);
+        tapeHolder.currentTapePosition += ionPutSymbolId(tapeHolder.data.ptr + tapeHolder.currentTapePosition, id);
+    }
+
+    ///
+    void putSymbol(scope const char[] key)
+    {
+        import mir.utility: _expect;
+        putSymbolId(_getId(key));
+    }
+
+    ///
+    void putValue(Num)(const Num num)
+        if (isNumeric!Num && !is(Num == enum))
+    {
+        tapeHolder.reserve(Num.sizeof + 2 + 1);
+        tapeHolder.currentTapePosition += ionPut(tapeHolder.data.ptr + tapeHolder.currentTapePosition, num);
+    }
+
+    ///
+    void putValue(W)(BigIntView!W view)
+    {
+        auto len = view.unsigned.coefficients.length;
+        tapeHolder.reserve(len * size_t.sizeof + 16);
+        tapeHolder.currentTapePosition += ionPut(tapeHolder.data.ptr + tapeHolder.currentTapePosition, view);
+    }
+
+    ///
+    void putValue(size_t size)(auto ref const BigInt!size num)
+    {
+        putValue(num.view);
+    }
+
+    ///
+    void putValue(size_t size)(auto ref const Decimal!size num)
+    {
+        auto view = num.view;
+        auto len = view.coefficient.coefficients.length + 1; // +1 for exponent
+        tapeHolder.reserve(len * size_t.sizeof + 16);
+        tapeHolder.currentTapePosition += ionPut(tapeHolder.data.ptr + tapeHolder.currentTapePosition, view);
+    }
+
+    ///
+    void putValue(typeof(null))
+    {
+        putNull(IonTypeCode.null_);
+    }
+
+    ///
+    void putNull(IonTypeCode code)
+    {
+        tapeHolder.reserve(1);
+        tapeHolder.currentTapePosition += ionPut(tapeHolder.data.ptr + tapeHolder.currentTapePosition, null, code);
+    }
+
+    ///
+    void putValue(bool b)
+    {
+        tapeHolder.reserve(1);
+        tapeHolder.currentTapePosition += ionPut(tapeHolder.data.ptr + tapeHolder.currentTapePosition, b);
+    }
+
+    ///
+    void putValue(scope const char[] value)
+    {
+        tapeHolder.reserve(value.length + size_t.sizeof + 1);
+        tapeHolder.currentTapePosition += ionPut(tapeHolder.data.ptr + tapeHolder.currentTapePosition, value);
+    }
+
+    ///
+    void putValue(Clob value)
+    {
+        tapeHolder.reserve(value.data.length + size_t.sizeof + 1);
+        tapeHolder.currentTapePosition += ionPut(tapeHolder.data.ptr + tapeHolder.currentTapePosition, value);
+    }
+
+    ///
+    void putValue(Blob value)
+    {
+        tapeHolder.reserve(value.data.length + size_t.sizeof + 1);
+        tapeHolder.currentTapePosition += ionPut(tapeHolder.data.ptr + tapeHolder.currentTapePosition, value);
+    }
+
+    ///
+    void putValue(Timestamp value)
+    {
+        tapeHolder.reserve(20);
+        tapeHolder.currentTapePosition += ionPut(tapeHolder.data.ptr + tapeHolder.currentTapePosition, value);
+    }
+
+    ///
+    void elemBegin()
+    {
+    }
+
+    ///
+    alias sexpElemBegin = elemBegin;
+
+    ///
+    void nextTopLevelValue()
+    {
+    }
+}
+
 /++
 Ion serialization back-end
 +/
@@ -135,7 +445,7 @@ struct IonSerializer(TapeHolder, string[] compiletimeSymbolTable, bool tableGC =
     alias annotationWrapperBegin = structBegin;
 
     ///
-    void annotationWrapperEnd(size_t state)
+    void annotationWrapperEnd(size_t annotationsState, size_t state)
     {
         putEnd(state, IonTypeCode.annotations);
     }

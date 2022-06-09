@@ -2857,13 +2857,18 @@ struct IonAnnotationWrapper
         auto value = unwrap(annotations);
 
         auto state = serializer.annotationWrapperBegin;
+        auto annotationsState = serializer.annotationsBegin;
+        foreach(symbolID; annotations)
         {
-            annotations.serialize(serializer);
-            value.serializeImpl(serializer);
-            if (false)
-                value.serializeDummy(serializer);
+            serializer.putAnnotationId(symbolID);
         }
-        serializer.annotationWrapperEnd(state);
+        serializer.annotationsEnd(annotationsState);
+
+        value.serializeImpl(serializer);
+        if (false)
+            value.serializeDummy(serializer);
+
+        serializer.annotationWrapperEnd(annotationsState, state);
     }
 }
 
@@ -3066,22 +3071,6 @@ const:
     @system
     int opApply(scope int delegate(IonErrorCode error, size_t symbolID)
     @system dg) { return opApply(cast(DG) dg); }
-
-    /++
-    Params:
-        serializer = serializer
-    +/
-    void serialize(S)(scope ref S serializer) const
-    {
-        IonAnnotations annotations;
-
-        auto state = serializer.annotationsBegin;
-        foreach(symbolID; this)
-        {
-            serializer.putAnnotationId(symbolID);
-        }
-        serializer.annotationsEnd(state);
-    }
 }
 
 package IonErrorCode parseVarUInt(bool checkInput = true, U)(scope ref const(ubyte)[] data, scope out U result)

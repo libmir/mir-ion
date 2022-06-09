@@ -223,7 +223,10 @@ scope:
     alias annotationWrapperBegin = structBegin;
 
     ///
-    alias annotationWrapperEnd = structEnd;
+    void annotationWrapperEnd(size_t annotationsState, size_t state)
+    {
+        return structEnd(state);
+    }
 
     ///
     void nextTopLevelValue()

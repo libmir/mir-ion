@@ -324,7 +324,7 @@ struct TextSerializer(string sep, Appender)
     }
 
     ///
-    void annotationWrapperEnd(size_t pos)
+    void annotationWrapperEnd(size_t, size_t)
     {
         static if (sep.length)
             appender.put(' ');

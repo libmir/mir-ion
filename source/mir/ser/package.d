@@ -478,7 +478,7 @@ private void serializeAnnotatedValue(S, V)(scope ref S serializer, auto ref V va
             serializeValueImpl(serializer, value);
         else
             serializeValue(serializer, value);
-        serializer.annotationWrapperEnd(wrapperState);
+        serializer.annotationWrapperEnd(annotationsState, wrapperState);
     }
 }
 

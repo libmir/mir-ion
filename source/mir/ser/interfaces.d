@@ -68,7 +68,7 @@ interface ISerializer
     size_t annotationWrapperBegin();
 
     ///
-    void annotationWrapperEnd(size_t state);
+    void annotationWrapperEnd(size_t annotationsState, size_t state);
 
     ///
     void nextTopLevelValue();
@@ -244,9 +244,9 @@ final class SerializerWrapper(S) : ISerializer
         return serializer.annotationWrapperBegin();
     }
 
-    void annotationWrapperEnd(size_t state)
+    void annotationWrapperEnd(size_t annotationsState, size_t state)
     {
-        return serializer.annotationWrapperEnd(state);
+        return serializer.annotationWrapperEnd(annotationsState, state);
     }
 
     void nextTopLevelValue()

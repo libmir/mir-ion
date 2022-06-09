@@ -715,7 +715,7 @@ private:
                         // if not, this is where we end
                         ser.annotationsEnd(arrayStart);
                         ser.putSymbol(buf.data);
-                        ser.annotationWrapperEnd(wrapperStart);
+                        ser.annotationWrapperEnd(arrayStart, wrapperStart);
                         break;
                     }
                 }
@@ -724,7 +724,7 @@ private:
                     // if the current token is a value type (a non-symbol), then we should also end the annotation array
                     ser.annotationsEnd(arrayStart);
                     handleToken(t.currentToken);
-                    ser.annotationWrapperEnd(wrapperStart);
+                    ser.annotationWrapperEnd(arrayStart, wrapperStart);
                     break;
                 }
             }
