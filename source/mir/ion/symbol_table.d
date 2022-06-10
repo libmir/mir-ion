@@ -104,6 +104,7 @@ struct IonSymbolTableSequental
     // }
     void initialize()(size_t n = 64)
     {
+        pragma(inline, true);
         auto llen = n / ulong.sizeof + (n % ulong.sizeof != 0);
         auto temporalStoragePtr = cast(ulong*) malloc(llen * ulong.sizeof);
         this.temporalStorage = temporalStoragePtr[0 .. llen];
