@@ -74,6 +74,30 @@ package(mir) string[] removeSystemSymbols(const(string)[] keys) @safe pure nothr
     return ret;
 }
 
+struct IonSymbolTableBinary()
+{
+    import core.stdc.string;
+    import core.stdc.stdio;
+
+    static struct Entry
+    {
+        uint position;
+        uint id;
+    }
+
+    Entry[][] entries;
+
+    ~this() 
+    {
+        if (entries.ptr)
+        {
+            foreach(ref array; entries)
+                array.ptr.free;
+            entries.ptr.free;
+        }
+    }
+}
+
 /++
 +/
 struct IonSymbolTable(bool gc)
@@ -238,6 +262,7 @@ pure nothrow:
 
     private void grow()
     {
+        pragma(inline, false);
         auto currentEntries = this.currentEntries[0 .. $-1];
 
         lengthMinusOne = lengthMinusOne * 2 + 1;
@@ -304,12 +329,14 @@ pure nothrow:
     ///
     uint find(scope const(char)[] key) const
     {
-        return find(key, cast(uint)hashOf(key));
+        pragma(inline, true);
+        return find(key, cast(uint)dlang_hll_murmurhash(key));
     }
 
     ///
     uint find(scope const(char)[] key, uint hash) const
     {
+        pragma(inline, true);
         auto current = entries + (hash & lengthMinusOne);
         for (size_t probeCount; ;)
         {
@@ -328,8 +355,8 @@ pure nothrow:
     ///
     uint insert(scope const(char)[] key)
     {
-        pragma(inline, false);
-        uint ret = insert(key, cast(uint)hashOf(key));
+        pragma(inline, true);
+        uint ret = insert(key, cast(uint)dlang_hll_murmurhash(key));
         return ret;
     }
 
@@ -337,6 +364,7 @@ pure nothrow:
     uint insert(scope const(char)[] key, uint hash)
     {
     L0:
+        pragma(inline, true);
         auto current = entries + (hash & lengthMinusOne);
         int probeCount;
         for (;;)
@@ -506,4 +534,61 @@ package(mir) auto findKey()(const string[] symbolTable, string key)
     auto ret = symbolTable.findIndex!(a => a == key);
     assert(ret != size_t.max, "Missing key: " ~ key);
     return ret;
+}
+
+private:
+
+pragma(inline, true)
+uint dlang_hll_murmurhash(scope const(char)[] data)
+    @trusted pure nothrow @nogc
+{
+    if (__ctfe)
+        return cast(uint) hashOf(data);
+    return murmur3_32(cast(const ubyte*)data.ptr, data.length);
+}
+
+
+pragma(inline, true)
+    @safe pure nothrow @nogc
+static uint murmur_32_scramble(uint k) {
+    k *= 0xcc9e2d51;
+    k = (k << 15) | (k >> 17);
+    k *= 0x1b873593;
+    return k;
+}
+pragma(inline, true)
+    @trusted pure nothrow @nogc
+uint murmur3_32(const(ubyte)* key, size_t len, uint seed = 0)
+{
+	uint h = seed;
+    uint k;
+    /* Read in groups of 4. */
+    for (size_t i = len >> 2; i; i--) {
+        import core.stdc.string;
+        // Here is a source of differing results across endiannesses.
+        // A swap here has no effects on hash properties though.
+        k = *cast(const uint*) key;
+        key += 4;
+        h ^= murmur_32_scramble(k);
+        h = (h << 13) | (h >> 19);
+        h = h * 5 + 0xe6546b64;
+    }
+    /* Read the rest. */
+    k = 0;
+    for (size_t i = len & 3; i; i--) {
+        k <<= 8;
+        k |= key[i - 1];
+    }
+    // A swap is *not* necessary here because the preceding loop already
+    // places the low bytes in the low places according to whatever endianness
+    // we use. Swaps only apply when the memory is copied in a chunk.
+    h ^= murmur_32_scramble(k);
+    /* Finalize. */
+	h ^= len;
+	h ^= h >> 16;
+	h *= 0x85ebca6b;
+	h ^= h >> 13;
+	h *= 0xc2b2ae35;
+	h ^= h >> 16;
+	return h;
 }

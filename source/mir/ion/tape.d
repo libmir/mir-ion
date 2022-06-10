@@ -1921,37 +1921,6 @@ size_t ionPutEnd()(ubyte* startPtr, IonTypeCode tc, size_t totalElementLength)
     version(LDC) pragma(inline, true);
     assert (tc == IonTypeCode.string || tc == IonTypeCode.list || tc == IonTypeCode.sexp || tc == IonTypeCode.struct_ || tc == IonTypeCode.annotations);
     auto tck = tc << 4;
-    // if (totalElementLength < 0x80)
-    // {
-    //     if (totalElementLength >= 0xE)
-    //     {
-    //         *startPtr = cast(ubyte)(tck | 0xE);
-    //         startPtr[1] = cast(ubyte) (0x80 | totalElementLength);
-    //         if (__ctfe)
-    //             foreach (i; 0 .. totalElementLength)
-    //                 startPtr[i + 2] = startPtr[i + 3];
-    //         else
-    //             memmove(startPtr + 2, startPtr + 3, 128);
-    //         debug {
-    //             startPtr[totalElementLength + 2] = 0xFF;
-    //         }
-    //         return 2 + totalElementLength;
-    //     }
-    //     else
-    //     {
-    //         *startPtr = cast(ubyte) (tck | totalElementLength);
-    //         if (__ctfe)
-    //             foreach (i; 0 .. totalElementLength)
-    //                 startPtr[i + 1] = startPtr[i + 3];
-    //         else
-    //             memmove(startPtr + 1, startPtr + 3, 16);
-    //         debug {
-    //             startPtr[totalElementLength + 1] = 0xFF;
-    //             startPtr[totalElementLength + 2] = 0xFF;
-    //         }
-    //         return 1 + totalElementLength;
-    //     }
-    // }
     if (totalElementLength < 0xE)
     {
         *startPtr = cast(ubyte) (tck | totalElementLength);
@@ -1966,9 +1935,9 @@ size_t ionPutEnd()(ubyte* startPtr, IonTypeCode tc, size_t totalElementLength)
         }
         return 1 + totalElementLength;
     }
+    *startPtr = cast(ubyte)(tck | 0xE);
     if (totalElementLength < 0x80)
     {
-        *startPtr = cast(ubyte)(tck | 0xE);
         startPtr[1] = cast(ubyte) (0x80 | totalElementLength);
         if (__ctfe)
             foreach (i; 0 .. totalElementLength)
@@ -1980,7 +1949,6 @@ size_t ionPutEnd()(ubyte* startPtr, IonTypeCode tc, size_t totalElementLength)
         }
         return 2 + totalElementLength;
     }
-    *startPtr = cast(ubyte)(tck | 0xE);
     if (totalElementLength < 0x4000)
     {
         startPtr[1] = cast(ubyte) (totalElementLength >> 7);
@@ -2009,7 +1977,7 @@ version(mir_ion_test) unittest
     import mir.ion.type_code;
 
     ubyte[1024] data;
-    auto pos = ionPutStartLength();
+    auto pos = ionPutStartLength;
 
     ubyte[] result = [0xB0];
     assert(data[0 .. ionPutEnd(data.ptr, IonTypeCode.list, 0)] == result);
@@ -2097,107 +2065,6 @@ Running ./mir-ion-test-library`;
 
 /++
 +/
-size_t ionPutStartLength()(ubyte* startPtr, IonTypeCode tc)
-{
-    *startPtr = cast(ubyte)(tc << 4);
-    return ionPutStartLength;
-}
-
-/++
-+/
-size_t ionPutEnd()(ubyte* startPtr, size_t totalElementLength)
-{
-    version(LDC) pragma(inline, true);
-
-    // if (totalElementLength < 0x80)
-    // {
-    //     if (totalElementLength >= 0xE)
-    //     {
-    //         *startPtr |= cast(ubyte)(0xE);
-    //         startPtr[1] = cast(ubyte) (0x80 | totalElementLength);
-    //         if (__ctfe)
-    //             foreach (i; 0 .. totalElementLength)
-    //                 startPtr[i + 2] = startPtr[i + 3];
-    //         else
-    //             memmove(startPtr + 2, startPtr + 3, 128);
-    //         debug
-    //         {
-    //             startPtr[totalElementLength + 2] = 0xFF;
-    //         }
-    //         return 2 + totalElementLength;
-    //     }
-    //     else
-    //     {
-    //         *startPtr |= cast(ubyte) (totalElementLength);
-    //         if (__ctfe)
-    //             foreach (i; 0 .. totalElementLength)
-    //                 startPtr[i + 1] = startPtr[i + 3];
-    //         else
-    //             memmove(startPtr + 1, startPtr + 3, 16);
-    //         debug
-    //         {
-    //             startPtr[totalElementLength + 1] = 0xFF;
-    //             startPtr[totalElementLength + 2] = 0xFF;
-    //         }
-    //         return 1 + totalElementLength;
-    //     }
-    // }
-
-    if (totalElementLength < 0xE)
-    {
-        *startPtr |= cast(ubyte) (totalElementLength);
-        if (__ctfe)
-            foreach (i; 0 .. totalElementLength)
-                startPtr[i + 1] = startPtr[i + 3];
-        else
-            memmove(startPtr + 1, startPtr + 3, 16);
-        debug
-        {
-            startPtr[totalElementLength + 1] = 0xFF;
-            startPtr[totalElementLength + 2] = 0xFF;
-        }
-        return 1 + totalElementLength;
-    }
-    if (totalElementLength < 0x80)
-    {
-        *startPtr |= cast(ubyte)(0xE);
-        startPtr[1] = cast(ubyte) (0x80 | totalElementLength);
-        if (__ctfe)
-            foreach (i; 0 .. totalElementLength)
-                startPtr[i + 2] = startPtr[i + 3];
-        else
-            memmove(startPtr + 2, startPtr + 3, 128);
-        debug
-        {
-            startPtr[totalElementLength + 2] = 0xFF;
-        }
-        return 2 + totalElementLength;
-    }
-    *startPtr |= cast(ubyte)(0xE);
-    if (totalElementLength < 0x4000)
-    {
-        startPtr[1] = cast(ubyte) (totalElementLength >> 7);
-        startPtr[2] = cast(ubyte) (totalElementLength | 0x80);
-        return 3 + totalElementLength;
-    }
-    ubyte[19] lengthPayload  = void;
-    auto lengthLength = ionPutVarUInt(lengthPayload.ptr, totalElementLength);
-    if (__ctfe)
-    {
-        foreach_reverse (i; 0 .. totalElementLength)
-            startPtr[i + 1 + lengthLength] = startPtr[i + 3];
-        startPtr[1 .. lengthLength + 1] = lengthPayload[0 .. lengthLength];
-    }
-    else
-    {
-        memmove(startPtr + 1 + lengthLength, startPtr + 3, totalElementLength);
-        memcpy(startPtr + 1, lengthPayload.ptr, lengthLength);
-    }
-    return totalElementLength + 1 + lengthLength;
-}
-
-/++
-+/
 size_t ionPutAnnotationsListStartLength()()
 {
     return 1;
@@ -2229,45 +2096,4 @@ size_t ionPutAnnotationsListEnd()(ubyte* startPtr, size_t totalElementLength)
         }
         return totalElementLength + lengthLength;
     }
-}
-
-///
-version(mir_ion_test) unittest
-{
-    import mir.ion.type_code;
-
-    ubyte[1024] data;
-    auto pos = ionPutStartLength(data.ptr, IonTypeCode.list);
-
-    ubyte[] result = [0xB0];
-    assert(data[0 .. ionPutEnd(data.ptr, 0)] == result);
-
-    result = [ubyte(0xB6), ubyte(0x85)] ~ cast(ubyte[])"hello";
-    pos = ionPutStartLength(data.ptr, IonTypeCode.list);
-    auto len = ionPut(data.ptr + pos, "hello");
-    assert(data[0 .. ionPutEnd(data.ptr, len)] == result);
-
-    result = [0xCE, 0x90, 0x8E, 0x8E];
-    result ~= cast(ubyte[])"hello world!!!";
-    pos = ionPutStartLength(data.ptr, IonTypeCode.sexp);
-    len = ionPut(data.ptr + pos, "hello world!!!");
-    assert(data[0 .. ionPutEnd(data.ptr, len)] == result);
-
-    auto bm = `
-Generating test runner configuration 'mir-ion-test-library' for 'library' (library).
-Performing "unittest" build using /Users/9il/dlang/ldc2/bin/ldc2 for x86_64.
-mir-core 1.1.7: target for configuration "library" is up to date.
-mir-algorithm 3.9.2: target for configuration "default" is up to date.
-mir-cpuid 1.2.6: target for configuration "library" is up to date.
-mir-ion 0.5.7+commit.70.g7dcac11: building configuration "mir-ion-test-library"...
-Linking...
-To force a rebuild of up-to-date targets, run again with --force.
-Running ./mir-ion-test-library`;
-
-    result = [0xBE, 0x04, 0xB0, 0x8E, 0x04, 0xAD];
-    result ~= cast(ubyte[])bm;
-    pos = ionPutStartLength(data.ptr, IonTypeCode.list);
-    len = ionPut(data.ptr + pos, bm);
-    len = ionPutEnd(data.ptr, len);
-    assert(data[0 .. len] == result);
 }
