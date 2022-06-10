@@ -121,7 +121,7 @@ immutable(ubyte)[] json2ion(scope const(char)[] text)
     import mir.ion.exception: ionErrorMsg;
     import mir.ion.internal.data_holder: ionPrefix, IonTapeHolder;
     import mir.ion.internal.stage4_s;
-    import mir.ion.symbol_table: IonSymbolTable;
+    import mir.ion.symbol_table: IonSymbolTableSequental;
     import mir.utility: _expect;
 
     enum nMax = 4096;
@@ -129,7 +129,7 @@ immutable(ubyte)[] json2ion(scope const(char)[] text)
     IonTapeHolder!(nMax * 8) tapeHolder = void;
     tapeHolder.initialize;
 
-    IonSymbolTable!false table = void;
+    IonSymbolTableSequental table = void;
     table.initialize;
     auto error = singleThreadJsonText!nMax(table, tapeHolder, text);
     if (error.code)
@@ -137,7 +137,7 @@ immutable(ubyte)[] json2ion(scope const(char)[] text)
 
     return ()@trusted {
         table.finalize;
-        return cast(immutable(ubyte)[])(ionPrefix ~ table.data ~ tapeHolder.data);
+        return cast(immutable(ubyte)[])(ionPrefix ~ table.serializer.data ~ tapeHolder.data);
     }();
 }
 
@@ -149,6 +149,7 @@ version(mir_ion_test) unittest
     assert(`{"a":1,"b":2}`.json2ion == data);
 }
 
+version = TableSequental;
 /++
 Convert an JSON value to a Ion Value Stream.
 
@@ -164,21 +165,29 @@ void json2ion(Appender)(scope const(char)[] text, scope ref Appender appender)
     import mir.ion.exception: ionErrorMsg;
     import mir.ion.internal.data_holder: ionPrefix, IonTapeHolder;
     import mir.ion.internal.stage4_s;
-    import mir.ion.symbol_table: IonSymbolTable;
+    import mir.ion.symbol_table: IonSymbolTable, IonSymbolTableSequental;
     import mir.ser.ion : ionSerializer;
     import mir.serde : SerdeTarget;
 
     enum nMax = 4096;
     IonTapeHolder!(nMax * 8) tapeHolder = void;
     tapeHolder.initialize;
+    version(TableSequental)
+    IonSymbolTableSequental table = void;
+    else
     IonSymbolTable!false table = void;
     table.initialize;
 
     auto error = singleThreadJsonText!nMax(table, tapeHolder, text);
     if (error.code)
         throw new MirException(error.code.ionErrorMsg, ". location = ", error.location, ", last input key = ", error.key);
+    version(TableSequental)
+    table.finalize;
 
     appender.put(ionPrefix);
+    version(TableSequental)
+    appender.put(table.serializer.data);
+    else
     if (table.initialized)
     {
         table.finalize;
@@ -191,11 +200,12 @@ void json2ion(Appender)(scope const(char)[] text, scope ref Appender appender)
 @safe pure
 version(mir_ion_test) unittest
 {
+    import mir.test;
     import mir.appender : scopedBuffer;
-    static immutable data = [0xe0, 0x01, 0x00, 0xea, 0xe9, 0x81, 0x83, 0xd6, 0x87, 0xb4, 0x81, 0x61, 0x81, 0x62, 0xd6, 0x8a, 0x21, 0x01, 0x8b, 0x21, 0x02];
+    static immutable ubyte[] data = [0xe0, 0x01, 0x00, 0xea, 0xe9, 0x81, 0x83, 0xd6, 0x87, 0xb4, 0x81, 0x61, 0x81, 0x62, 0xd6, 0x8a, 0x21, 0x01, 0x8b, 0x21, 0x02];
     auto buf = scopedBuffer!ubyte;
     json2ion(`{"a":1,"b":2}`, buf);
-    assert(buf.data == data);
+    buf.data.should == data;
 }
 
 /++
@@ -442,14 +452,14 @@ void msgpack2ion(Appender)(scope const(ubyte)[] data, scope ref Appender appende
     import mir.deser.msgpack : MsgpackValueStream;
     enum nMax = 4096;
 
-    IonSymbolTable!false table;
+    IonSymbolTable!false table = void;
     table.initialize;
     auto serializer = ionSerializer!(nMax * 8, null, false);
     serializer.initialize(table);
-  
+
     data.MsgpackValueStream.serialize(serializer);
     serializer.finalize;
-  
+
     appender.put(ionPrefix);
     if (table.initialized)
     {

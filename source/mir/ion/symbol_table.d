@@ -163,6 +163,12 @@ struct IonSymbolTableSequental
         temporalStorage.ptr[0] = 0;
         memcpy(cast(ubyte*)(temporalStorage.ptr + llen) - str.length, str.ptr, str.length);
 
+        // {
+        //     auto tempPtr0 = cast(ubyte*)(temporalStorage.ptr + llen) - str.length;
+        //     foreach (i; 0 .. str.length)
+        //         tempPtr0[i] = str[i];
+        // }
+
         with(entries[n])
         {
             if (_expect(ids.length == 0, false))
@@ -276,6 +282,7 @@ struct IonSymbolTable(bool gc)
         int probeCount = -1;
         uint hash;
         uint keyPosition;
+        uint keyLength;
         uint value;
 
     @safe pure nothrow @nogc @property:
@@ -409,21 +416,6 @@ pure nothrow:
         return keySpace[0 .. nextKeyPosition];
     }
 
-    private const(char)[] getStringKey(uint keyPosition) scope const
-    {
-        version (LDC) pragma(inline, true);
-        import mir.ion.value;
-        uint length;
-        uint s = keySpace[keyPosition++];
-        assert(s >> 4 == 8); //string
-        s &= 0xF;
-        if (s < 0xE)
-            return cast(const(char)[])keySpace[keyPosition .. s + keyPosition];
-        auto data = keySpace[keyPosition .. $];
-        parseVarUInt!false(data, length);
-        return cast(const(char)[])data[0 .. length];
-    }
-
     private inout(Entry)[] currentEntries() inout @property
     {
         return entries[0 .. lengthMinusOne + 1 + maxProbe];
@@ -496,32 +488,6 @@ pure nothrow:
     }
 
     ///
-    uint find(scope const(char)[] key) const
-    {
-        pragma(inline, true);
-        return find(key, cast(uint)dlang_hll_murmurhash(key));
-    }
-
-    ///
-    uint find(scope const(char)[] key, uint hash) const
-    {
-        pragma(inline, true);
-        auto current = entries + (hash & lengthMinusOne);
-        for (size_t probeCount; ;)
-        {
-            if (current[probeCount].probeCount < probeCount)
-            {
-                return 0;
-            }
-            probeCount++;
-            if (hash != current[probeCount - 1].hash)
-                continue;
-            if (key == getStringKey(current[probeCount - 1].keyPosition))
-                return current[probeCount - 1].value;
-        }
-    }
-
-    ///
     uint insert(scope const(char)[] key)
     {
         pragma(inline, true);
@@ -543,7 +509,9 @@ pure nothrow:
             probeCount++;
             if (hash != current[probeCount - 1].hash)
                 continue;
-            if (key == getStringKey(current[probeCount - 1].keyPosition))
+            auto pos = current[probeCount - 1].keyPosition;
+            auto len = current[probeCount - 1].keyLength;
+            if (key == keySpace[pos .. pos + len])
                 return current[probeCount - 1].value;
         }
 
@@ -552,13 +520,6 @@ pure nothrow:
             grow();
             goto L0;
         }
-
-        Entry entry;
-        entry.probeCount = probeCount;
-        entry.hash = hash;
-        entry.value = elementCount++ + startId;
-        entry.keyPosition = nextKeyPosition;
-        current += entry.probeCount;
 
         // add key
         if (_expect(nextKeyPosition + key.length + 16 > keySpace.length, false))
@@ -589,6 +550,14 @@ pure nothrow:
             }
         }
         nextKeyPosition += cast(uint) ionPut(keySpace.ptr + nextKeyPosition, key);
+
+        Entry entry;
+        entry.probeCount = probeCount;
+        entry.hash = hash;
+        entry.value = elementCount++ + startId;
+        entry.keyPosition = nextKeyPosition - cast(uint)key.length;
+        entry.keyLength = cast(uint)key.length;
+        current += entry.probeCount;
 
         auto ret = entry.value;
 
@@ -626,61 +595,6 @@ pure nothrow:
         }
         goto L1;
     }
-}
-
-version(mir_ion_test_table) unittest
-{
-    IonSymbolTable!false table = void;
-    table.initialize;
-
-    import mir.format;
-
-    foreach(i; IonSystemSymbol.max + 1 ..10_000_000)
-    {
-        auto key = stringBuf() << i;
-        auto j = table.insert(key.data);
-        assert(i == j);
-        auto k = table.find(key.data);
-        assert (i == k);
-        if (i == 9 || i == 99 || i == 999 || i == 9_999 || i == 99_999 || i == 999_999 || i == 9_999_999)
-        {
-            foreach (l; IonSystemSymbol.max + 1 .. i + 1)
-            {
-                auto vkey = stringBuf() << l;
-                assert(table.find(vkey.data));
-            }
-        }
-    }
-
-    table.finalize;
-}
-
-
-version(mir_ion_test) unittest
-{
-    IonSymbolTable!true table;
-    table.initialize;
-
-    import mir.format;
-
-    foreach(i; IonSystemSymbol.max + 1 ..10_000_00)
-    {
-        auto key = stringBuf() << i;
-        auto j = table.insert(key.data);
-        assert(i == j);
-        auto k = table.find(key.data);
-        assert (i == k);
-        if (i == 9 || i == 99 || i == 999 || i == 9_999 || i == 99_999 || i == 999_999 || i == 9_999_999)
-        {
-            foreach (l; IonSystemSymbol.max + 1 .. i + 1)
-            {
-                auto vkey = stringBuf() << l;
-                assert(table.find(vkey.data));
-            }
-        }
-    }
-
-    table.finalize;
 }
 
 version(mir_ion_test) unittest
