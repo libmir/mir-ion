@@ -441,9 +441,6 @@ value_start: {
             }
         }
 
-        if (startC == ',')
-            goto unexpected_comma;
-
         if (!prepareSmallInput)
             goto errorReadingFile;
         auto indexG = index >> 6;
