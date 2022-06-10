@@ -183,9 +183,10 @@ struct IonSymbolTableSequental
                 L: do
                 {
                     sizediff_t j = llen - 1;
+                    auto datai = data + i * llen;
                     for(;;)
                     {
-                        if (data[i * llen + j] == temporalStorage[j])
+                        if (datai[j] == temporalStorage[j])
                         {
                             if (--j >= 0)
                                 continue;
