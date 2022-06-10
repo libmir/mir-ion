@@ -83,6 +83,16 @@ nothrow pure @trusted:
             buffer._currentLength = 15;
     }
 
+    void initializeNoTable(int serdeTarget = SerdeTarget.ion) @trusted
+    {
+        pragma(inline, true);
+        buffer.initialize;
+        this.runtimeTable = null;
+        this.serdeTarget = serdeTarget;
+        version (thunderbolt)
+            buffer._currentLength = 15;
+    }
+
     void finalize() @trusted
     {
         import mir.ion.thunderbolt;

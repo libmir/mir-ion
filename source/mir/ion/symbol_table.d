@@ -74,29 +74,196 @@ package(mir) string[] removeSystemSymbols(const(string)[] keys) @safe pure nothr
     return ret;
 }
 
-struct IonSymbolTableBinary()
+struct IonSymbolTableSequental
 {
+    import mir.ser.ion: IonSerializer;
+    import mir.ndslice.slice;
     import core.stdc.string;
     import core.stdc.stdio;
 
     static struct Entry
     {
-        uint position;
-        uint id;
+        ulong* data;
+        uint[] ids;
     }
 
-    Entry[][] entries;
+    ulong[] temporalStorage;
+    Entry[] entries;
+    uint nextID = IonSystemSymbol.max + 1;
+    IonSerializer!(1024, null, false) serializer = void;
+    size_t annotationWrapperState;
+    size_t annotationsState;
+    size_t structState;
+    size_t listState;
 
-    ~this() 
+@trusted pure nothrow @nogc:
+
+    // $ion_symbol_table::
+    // {
+    //     symbols:[ ... ]
+    // }
+    void initialize()(size_t n = 64)
     {
-        if (entries.ptr)
+        auto llen = n / ulong.sizeof + (n % ulong.sizeof != 0);
+        auto temporalStoragePtr = cast(ulong*) malloc(llen * ulong.sizeof);
+        this.temporalStorage = temporalStoragePtr[0 .. llen];
+        auto entriesPtr = cast(Entry*) malloc(n * Entry.sizeof);
+        this.entries = entriesPtr[0 .. n];
+        this.entries[] = Entry.init;
+        this.nextID = IonSystemSymbol.max + 1;
+        this.serializer.initializeNoTable;
+
+        this.annotationWrapperState = serializer.annotationWrapperBegin;
+        serializer.putAnnotationId(IonSystemSymbol.ion_symbol_table);
+        this.annotationsState = serializer.annotationsEnd(annotationWrapperState);
+        this.structState = serializer.structBegin();
+        serializer.putKeyId(IonSystemSymbol.symbols);
+        this.listState = serializer.listBegin();
+    }
+
+    void finalize()()
+    {
+        pragma(inline, true);
+        if (nextID > IonSystemSymbol.max + 1)
         {
-            foreach(ref array; entries)
-                array.ptr.free;
-            entries.ptr.free;
+            serializer.listEnd(listState);
+            serializer.structEnd(structState);
+            serializer.annotationWrapperEnd(annotationsState, annotationWrapperState);
+        }
+        else
+        {
+            serializer.buffer._currentLength = 0;
+        }
+
+        temporalStorage.ptr.free;
+        foreach(ref e; entries)
+        {
+            e.data.free;
+            e.ids.ptr.free;
+        }
+        entries.ptr.free;
+    }
+
+    uint insert()(scope const(char)[] str)
+    {
+        pragma(inline, true);
+        auto n = str.length;
+        auto llen = n / ulong.sizeof + (n % ulong.sizeof != 0);
+        if (_expect(n > entries.length, false))
+        {
+            auto oldLength = entries.length;
+            auto temporalStoragePtr = cast(ulong*) realloc(temporalStorage.ptr, llen * ulong.sizeof);
+            this.temporalStorage = temporalStoragePtr[0 .. llen];
+            this.temporalStorage.ptr[0] = 0;
+            auto entriesPtr = cast(Entry*) realloc(entries.ptr, n * Entry.sizeof);
+            this.entries = entriesPtr[0 .. n];
+            this.entries[oldLength .. $] = Entry.init;
+        }
+        temporalStorage.ptr[0] = 0;
+        memcpy(cast(ubyte*)(temporalStorage.ptr + llen) - str.length, str.ptr, str.length);
+
+        with(entries[n])
+        {
+            if (_expect(ids.length == 0, false))
+            {
+                auto idsPtr = cast(uint*)malloc(uint.sizeof);
+                ids = idsPtr[0 .. 1];
+                if (llen)
+                {
+                    data = cast(ulong*) malloc(ulong.sizeof * llen);
+                    memcpy(data, temporalStorage.ptr, llen * ulong.sizeof);
+                }
+                goto R;
+            }
+            if (llen == 0)
+                return ids[0];
+            {
+                sizediff_t i = ids.length - 1;
+                L: do
+                {
+                    sizediff_t j = llen - 1;
+                    for(;;)
+                    {
+                        if (data[i * llen + j] == temporalStorage[j])
+                        {
+                            if (--j >= 0)
+                                continue;
+                            return ids.ptr[i];
+                        }
+                        break;
+                    }
+                }
+                while (--i >= 0);
+            }
+
+            {
+                auto idsPtr = cast(uint*)realloc(ids.ptr, (ids.length + 1) * uint.sizeof);
+                ids = idsPtr[0 .. ids.length + 1];
+                data = cast(ulong*) realloc(data, ids.length * ulong.sizeof * llen);
+                memcpy(data + llen * (ids.length - 1), temporalStorage.ptr, llen * ulong.sizeof);
+            }
+        R:
+            serializer.putValue(str);
+            return ids.ptr[ids.length - 1] = nextID++;
         }
     }
 }
+
+unittest
+{
+    import mir.test;
+    import mir.ion.conv: text2ion;
+
+    {
+        IonSymbolTableSequental symbolTable = void;
+        symbolTable.initialize;
+        symbolTable.finalize;
+        symbolTable.serializer.data.should == [];
+    }
+
+
+    {
+        IonSymbolTableSequental symbolTable = void;
+        symbolTable.initialize;
+        symbolTable.insert(`id`);
+        symbolTable.finalize;
+        symbolTable.serializer.data.should == [0xE8, 0x81, 0x83, 0xD5, 0x87, 0xB3, 0x82, 0x69, 0x64];
+    }
+
+    {
+        IonSymbolTableSequental symbolTable = void;
+        symbolTable.initialize;
+        symbolTable.insert(`id`);
+        symbolTable.insert(`id`);
+        symbolTable.insert(`id`);
+        symbolTable.insert(`id`);
+        symbolTable.finalize;
+        symbolTable.serializer.data.should == [0xE8, 0x81, 0x83, 0xD5, 0x87, 0xB3, 0x82, 0x69, 0x64];
+    }
+
+    {
+        IonSymbolTableSequental symbolTable = void;
+        symbolTable.initialize;
+        auto d = symbolTable.insert(`id`);
+        auto D = symbolTable.insert(`qwertyuioplkjhgfdszxcvbnm`);
+        assert(symbolTable.insert(`id`) == d);
+        assert(symbolTable.insert(`qwertyuioplkjhgfdszxcvbnm`) == D);
+        symbolTable.finalize;
+        symbolTable.serializer.data.should == [0xEE, 0xA5, 0x81, 0x83, 0xDE, 0xA1, 0x87, 0xBE, 0x9E, 0x82, 0x69, 0x64, 0x8E, 0x99, 0x71, 0x77, 0x65, 0x72, 0x74, 0x79, 0x75, 0x69, 0x6F, 0x70, 0x6C, 0x6B, 0x6A, 0x68, 0x67, 0x66, 0x64, 0x73, 0x7A, 0x78, 0x63, 0x76, 0x62, 0x6E, 0x6D];
+    }
+
+    {
+        IonSymbolTableSequental symbolTable = void;
+        symbolTable.initialize;
+        auto d = symbolTable.insert(`id`);
+        assert(symbolTable.insert(`qwertyuioOlkjhgfdszxcvbnm`) == d + 1);
+        assert(symbolTable.insert(`ID`) == d + 2);
+        assert(symbolTable.insert(`qwertyuioplkjhgfdszxcvbnm`) == d + 3);
+        symbolTable.finalize;
+        symbolTable.serializer.data.should == `[id, qwertyuioOlkjhgfdszxcvbnm, ID, qwertyuioplkjhgfdszxcvbnm]`.text2ion[4 .. $ - 9];
+    }
+}
+
 
 /++
 +/
