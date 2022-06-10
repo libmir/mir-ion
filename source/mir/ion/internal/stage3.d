@@ -518,7 +518,7 @@ value_start: {
         }
     }
 
-    if ((startC | 0x20) == '{')
+    if (startC == '{')
     {
         index++;
         bool seof;
@@ -529,23 +529,36 @@ value_start: {
         assert(stackPos <= stack.length);
         if (--stackPos < 0)
             goto stack_overflow;
-        bool isStruct = startC == '{';
-        stack[stackPos] = (currentTapePosition << 1) ^ isStruct;
+        stack[stackPos] = (currentTapePosition << 1) | 1;
         currentTapePosition += ionPutStartLength;
-        if (isStruct)
-        {
-            if (strPtr[index] != '}')
-                goto key_start;
-        }
-        else
-        {
-            if (strPtr[index] != ']')
-                goto value_start;
-        }
+        if (strPtr[index] != '}')
+            goto key_start;
         currentTapePosition -= ionPutStartLength;
         index++;
         stackPos++;
-        tape[currentTapePosition++] = startC == '{' ? IonTypeCode.struct_ << 4 : IonTypeCode.list << 4;
+        tape[currentTapePosition++] = IonTypeCode.struct_ << 4;
+        goto next;
+    }
+
+    if (startC == '[')
+    {
+        index++;
+        bool seof;
+        if (!skipSpaces(seof))
+            goto errorReadingFile;
+        if (seof)
+            goto next_unexpectedEnd;
+        assert(stackPos <= stack.length);
+        if (--stackPos < 0)
+            goto stack_overflow;
+        stack[stackPos] = (currentTapePosition << 1);
+        currentTapePosition += ionPutStartLength;
+        if (strPtr[index] != ']')
+            goto value_start;
+        currentTapePosition -= ionPutStartLength;
+        index++;
+        stackPos++;
+        tape[currentTapePosition++] = IonTypeCode.list << 4;
         goto next;
     }
 
