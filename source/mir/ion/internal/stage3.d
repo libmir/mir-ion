@@ -444,40 +444,17 @@ value_start: {
         if (startC == ',')
             goto unexpected_comma;
 
-        version(none)
-        {                    
-            size_t numberLength; 
-            for(;;)
-            {
-                if (!prepareSmallInput)
-                    goto errorReadingFile;
-                auto indexG = index >> 6;
-                auto indexL = index & 0x3F;
-                auto endMask = (pairedMask2[indexG][0] | pairedMask2[indexG][1]) >> indexL;
-                // TODO: memcpy optimisation for DMD
-                auto additive = endMask == 0 ? 64 - indexL : cttz(endMask);
-                *cast(ubyte[64]*)(tape.ptr + currentTapePosition + numberLength) = *cast(const ubyte[64]*)(strPtr + index);
-                numberLength += additive;
-                index += additive;
-                if (endMask != 0)
-                    break;
-            }
-            auto numberStringView = cast(const(char)[]) (tape.ptr + currentTapePosition)[0 .. numberLength];
-        }
-        else
-        {
-            if (!prepareSmallInput)
-                goto errorReadingFile;
-            auto indexG = index >> 6;
-            auto indexL = index & 0x3F;
-                auto endMask = (pairedMask2[indexG][0] | pairedMask2[indexG][1]) >> indexL;
-            endMask |= indexL != 0 ? (pairedMask2[indexG + 1][0] | pairedMask2[indexG + 1][1]) << (64 - indexL) : 0;
-            if (endMask == 0)
-                goto integerOverflow;
-            auto numberLength = cast(size_t)cttz(endMask);
-            auto numberStringView = cast(const(char)[]) (strPtr + index)[0 .. numberLength];
-            index += numberLength;
-        }
+        if (!prepareSmallInput)
+            goto errorReadingFile;
+        auto indexG = index >> 6;
+        auto indexL = index & 0x3F;
+            auto endMask = (pairedMask2[indexG][0] | pairedMask2[indexG][1]) >> indexL;
+        endMask |= indexL != 0 ? (pairedMask2[indexG + 1][0] | pairedMask2[indexG + 1][1]) << (64 - indexL) : 0;
+        if (endMask == 0)
+            goto integerOverflow;
+        auto numberLength = cast(size_t)cttz(endMask);
+        auto numberStringView = cast(const(char)[]) (strPtr + index)[0 .. numberLength];
+        index += numberLength;
 
         import mir.bignum.internal.parse: parseJsonNumberImpl;
         auto result = numberStringView.parseJsonNumberImpl;
@@ -488,18 +465,7 @@ value_start: {
         {
             currentTapePosition += ionPut(tape.ptr + currentTapePosition, result.coefficient, result.coefficient && result.sign);
             goto next;
-            // // else
-            // {
-            //     currentTapePosition += ionPut(tape.ptr + currentTapePosition, decimal.coefficient.view);
-            //     goto next;
-            // }
         }
-        // else
-        // if ((exponentKey | 0x20) != DecimalExponentKey.e) // decimal
-        // {
-        //     currentTapePosition += ionPut(tape.ptr + currentTapePosition, decimal.view);
-        //     goto next;
-        // }
         else
         version(MirDecimalJson)
         {
