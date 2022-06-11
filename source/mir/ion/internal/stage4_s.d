@@ -65,19 +65,11 @@ IonErrorInfo singleThreadJson(size_t nMax, SymbolTable, TapeHolder)(
     stage.pairedMask1 = pairedMask1.ptr + 1;
     stage.pairedMask2 = pairedMask2.ptr + 1;
 
-    version(measure)
-    {
-        import std.datetime.stopwatch;
-        StopWatch sw, swt, st1, st2;
-        assumePure({swt.start;})();
-    }
-
     stage3!(() @trusted
         {
             version(LDC) pragma(inline, true);
             tapeHolder.extend(stage.currentTapePosition + extendLength);
 
-            version(measure) assumePure({sw.start;})();
             vector[0] = vector[$ - 2];
             pairedMask1[0] = pairedMask1[$ - 2];
             pairedMask2[0] = pairedMask2[$ - 2];
@@ -96,31 +88,13 @@ IonErrorInfo singleThreadJson(size_t nMax, SymbolTable, TapeHolder)(
             {
                 memset(vector.ptr.ptr + 64 + stage.n, ' ', 64 - stage.n % 64);
                 auto vlen = stage.n / 64 + (stage.n % 64 != 0);
-            version(measure) assumePure({st1.start;})();
                 stage1(vlen, cast(const) vector.ptr + 1, pairedMask1.ptr + 1, backwardEscapeBit);
-            version(measure) assumePure({st1.stop;})();
                 pairedMask1[vlen + 1] = 0;
-            version(measure) assumePure({st2.start;})();
                 stage2(vlen, cast(const) vector.ptr + 1, pairedMask2.ptr + 1);
-            version(measure) assumePure({st2.stop;})();
                 pairedMask2[vlen + 1] = 0;
             }
-            version(measure) assumePure({sw.stop;})();
             return true;
         })(stage, table);
-    version(measure)
-    {
-        import mir.stdio;
-                assumePure({swt.stop;})();
-        assumePure({
-            sw.stop;
-            swt.stop;
-            writeln(sw.peek * 100 / swt.peek, "% || ",
-            st1.peek * 100 / sw.peek, "% || ",
-            st2.peek * 100 / sw.peek, "% || ",
-            sw.peek, " | ", swt.peek - sw.peek);
-        })();
-    }
     tapeHolder.currentTapePosition = stage.currentTapePosition;
     stage.location += stage.index;
 R:
