@@ -66,7 +66,7 @@ private template deserializeJsonImpl(bool file)
                 import mir.ion.exception: IonException, ionException;
                 import mir.ion.exception: ionErrorMsg;
                 import mir.ion.internal.data_holder;
-                import mir.ion.internal.stage4_s;
+                import mir.ion.internal.stage3;
                 import mir.ion.value: IonDescribedValue, IonValue;
                 import mir.serde: serdeGetDeserializationKeysRecurse, SerdeMirException, SerdeException;
                 import mir.string_table: createTable;
@@ -84,7 +84,7 @@ private template deserializeJsonImpl(bool file)
                 // nMax * 4 is enough. We use larger multiplier to reduce memory allocation count
                 auto tapeHolder = ionTapeHolder!(nMax * 8);
                 tapeHolder.initialize;
-                auto errorInfo = () @trusted { return singleThreadJson!nMax(table, tapeHolder, text); } ();
+                auto errorInfo = () @trusted { return stage3!nMax(table, tapeHolder, text); } ();
                 if (errorInfo.code)
                 {
                     static if (__traits(compiles, () @nogc { throw new Exception(""); }))

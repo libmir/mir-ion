@@ -120,7 +120,7 @@ immutable(ubyte)[] json2ion(scope const(char)[] text)
     import mir.exception: MirException;
     import mir.ion.exception: ionErrorMsg;
     import mir.ion.internal.data_holder: ionPrefix, IonTapeHolder;
-    import mir.ion.internal.stage4_s;
+    import mir.ion.internal.stage3;
     import mir.ion.symbol_table: IonSymbolTableSequental;
     import mir.utility: _expect;
 
@@ -131,7 +131,7 @@ immutable(ubyte)[] json2ion(scope const(char)[] text)
 
     IonSymbolTableSequental table = void;
     table.initialize;
-    auto error = singleThreadJson!nMax(table, tapeHolder, text);
+    auto error = stage3!nMax(table, tapeHolder, text);
     if (error.code)
         throw new MirException(error.code.ionErrorMsg, ". location = ", error.location, ", last input key = ", error.key);
 
@@ -164,7 +164,7 @@ void json2ion(Appender)(scope const(char)[] text, scope ref Appender appender)
     import mir.exception: MirException;
     import mir.ion.exception: ionErrorMsg;
     import mir.ion.internal.data_holder: ionPrefix, IonTapeHolder;
-    import mir.ion.internal.stage4_s;
+    import mir.ion.internal.stage3;
     import mir.ion.symbol_table: IonSymbolTable, IonSymbolTableSequental;
     import mir.ser.ion : ionSerializer;
     import mir.serde : SerdeTarget;
@@ -178,7 +178,7 @@ void json2ion(Appender)(scope const(char)[] text, scope ref Appender appender)
     IonSymbolTable!false table = void;
     table.initialize;
 
-    auto error = singleThreadJson!nMax(table, tapeHolder, text);
+    auto error = stage3!nMax(table, tapeHolder, text);
     if (error.code)
         throw new MirException(error.code.ionErrorMsg, ". location = ", error.location, ", last input key = ", error.key);
     version(TableSequental)
