@@ -149,7 +149,6 @@ version(mir_ion_test) unittest
     assert(`{"a":1,"b":2}`.json2ion == data);
 }
 
-version = TableSequental;
 /++
 Convert an JSON value to a Ion Value Stream.
 
@@ -172,27 +171,17 @@ void json2ion(Appender)(scope const(char)[] text, scope ref Appender appender)
     enum nMax = 4096;
     IonTapeHolder!(nMax * 8) tapeHolder = void;
     tapeHolder.initialize;
-    version(TableSequental)
+
     IonSymbolTableSequental table = void;
-    else
-    IonSymbolTable!false table = void;
     table.initialize;
 
     auto error = stage3!nMax(table, tapeHolder, text);
     if (error.code)
         throw new MirException(error.code.ionErrorMsg, ". location = ", error.location, ", last input key = ", error.key);
-    version(TableSequental)
     table.finalize;
 
     appender.put(ionPrefix);
-    version(TableSequental)
     appender.put(table.serializer.data);
-    else
-    if (table.initialized)
-    {
-        table.finalize;
-        appender.put(table.data);
-    }
     appender.put(tapeHolder.data);
 }
 
