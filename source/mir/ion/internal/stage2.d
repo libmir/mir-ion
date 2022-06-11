@@ -18,6 +18,14 @@ version (X86_64)
 
 @system pure nothrow @nogc:
 
+private auto transform()(ulong[2] mask)
+{
+    pragma(inline, true);
+    mask[0] |= mask[1];
+    mask[1] = ~mask[1];
+    return mask;
+}
+
 version (Neon)
 {
     alias stage2 = stage2_impl_neon;
@@ -108,7 +116,7 @@ version (X86_Any)
                 result[1][i] = equal(v[i], b);
                 result[0][i] = equal(m, a);
             }}
-            *pairedMask++ = cast(ulong[2]) result;
+            *pairedMask++ = transform(cast(ulong[2]) result);
         }
         while(--n);
     }
@@ -145,7 +153,7 @@ version (X86_Any)
                 result[1][i] = equal(v[i], b);
                 result[0][i] = equal(m, a);
             }}
-            *pairedMask++ = cast(ulong[2]) result;
+            *pairedMask++ = transform(cast(ulong[2]) result);
         }
         while(--n);
     }
@@ -183,7 +191,7 @@ version (X86_Any)
                 result[1][i] = equal(v[i], b);
                 result[0][i] = equal(m, a);
             }}
-            *pairedMask++ = cast(ulong[2]) result;
+            *pairedMask++ = transform(cast(ulong[2]) result);
         }
         while(--n);
     }
@@ -217,9 +225,7 @@ version (X86_Any)
             auto v = *cast(__vector(ubyte[64])*)(vector++);
             auto a = __builtin_ia32_pshufb512(operatorMask, v);
             auto b = __builtin_ia32_pshufb512(whiteSpaceMask, v);
-            pairedMask[0][0] = equal(v, a);
-            pairedMask[0][1] = equal(v, b);
-            pairedMask++;
+            *pairedMask++ = transform([equal(v, a), equal(v, b)]);
         }
         while(--n);
     }
@@ -259,7 +265,7 @@ private void stage2_impl_generic(
                     break;
             }
         }
-        *pairedMask++ = maskPair;
+        *pairedMask++ = transform(maskPair);
     }
     while(--n);
 }
@@ -300,7 +306,7 @@ private void stage2_impl_neon(
             vim[i] = v[i] | ubyte(0x20); 
         }
 
-        *pairedMask++ = equalNotEqualMaskArm([vim, v], mar);
+        *pairedMask++ = transform(equalNotEqualMaskArm([vim, v], mar));
     }
     while(--n);
 }
@@ -320,8 +326,8 @@ version(mir_ion_test) unittest
 
     import mir.ndslice;
     auto maskData = pairedMasks.sliced;
-    auto obits = maskData.map!"a[0]".bitwise;
-    auto wbits = maskData.map!"a[1]".bitwise;
+    auto obits = maskData.map!"a[0] & a[1]".bitwise;
+    auto wbits = maskData.map!"~a[1]".bitwise;
     assert(obits.length == 256);
     assert(wbits.length == 256);
 

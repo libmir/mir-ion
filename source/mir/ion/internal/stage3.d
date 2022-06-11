@@ -84,7 +84,7 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
             stage1(vlen, cast(const) vector.ptr + 1, pairedMaskBuf1.ptr + 1, backwardEscapeBit);
             pairedMaskBuf1[vlen + 1] = 0;
             stage2(vlen, cast(const) vector.ptr + 1, pairedMaskBuf2.ptr + 1);
-            pairedMaskBuf2[vlen + 1] = 0;
+            pairedMaskBuf2[vlen + 1] = [0, ulong.max];
         }
     }
 
@@ -102,7 +102,7 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
         L:
             auto indexG = index >> 6;
             auto indexL = index & 0x3F;
-            auto spacesMask = ~pairedMask2[indexG][1] >> indexL;
+            auto spacesMask = pairedMask2[indexG][1] >> indexL;
             if (spacesMask != 0)
             {
                 auto oldIndex = index;
@@ -387,8 +387,8 @@ value_start: {
         }
         auto indexG = index >> 6;
         auto indexL = index & 0x3F;
-        ulong endMask = (pairedMask2[indexG][0] | pairedMask2[indexG][1]) >> indexL;
-        endMask |= indexL != 0 ? (pairedMask2[indexG + 1][0] | pairedMask2[indexG + 1][1]) << (64 - indexL) : 0;
+        ulong endMask = pairedMask2[indexG][0] >> indexL;
+        endMask |= indexL != 0 ? pairedMask2[indexG + 1][0] << (64 - indexL) : 0;
         if (endMask == 0)
             goto integerOverflow;
         auto numberLength = cast(size_t)cttz(endMask);
