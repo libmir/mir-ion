@@ -68,7 +68,7 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
     pairedMask1 = pairedMaskBuf1.ptr + 1;
     pairedMask2 = pairedMaskBuf2.ptr + 1;
 
-    auto fetchNext()
+    void fetchNext()
     {
         version(LDC) pragma(inline, true);
         tapeHolder.extend(currentTapePosition + extendLength);
@@ -95,7 +95,6 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
             stage2(vlen, cast(const) vector.ptr + 1, pairedMaskBuf2.ptr + 1);
             pairedMaskBuf2[vlen + 1] = 0;
         }
-        return true;
     }
 
     enum stackLength = 1024;
@@ -103,19 +102,7 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
     sizediff_t stackPos = stackLength;
     size_t[stackLength] stack = void;
 
-    bool prepareSmallInput()
-    {
-        version(LDC) pragma(inline, true);
-        if (_expect(n - index < 64 && text.length, false))
-        {
-            if (!fetchNext())
-                return false;
-            assert(n - index > 0);
-        }
-        return true;
-    }
-
-    bool skipSpaces(ref bool seof)
+    bool skipSpaces()
     {
         version(LDC) pragma(inline, true);
 
@@ -131,8 +118,7 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
             {
                 auto oldIndex = index;
                 index += cttz(spacesMask);
-                seof = false;
-                return true;
+                return false;
             }
             else
             {
@@ -143,15 +129,13 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
         else
         if (text.length == 0)
         {
-            seof = true;
             return true;
         }
         else
-        if (!fetchNext())
         {
-            return false;
+            fetchNext;
+            goto L;
         }
-        goto L;
     }
 
     int readUnicode()(ref dchar d)
@@ -175,15 +159,12 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
         return 0;
     }
 
-    if (_expect(!fetchNext(), false))
-        goto errorReadingFile;
+    fetchNext;
 
 next: for(;;)
 {
     {
-        bool seof;
-        if (!skipSpaces(seof))
-            goto errorReadingFile;
+        auto seof = skipSpaces;
         if (stackPos == stack.length)
         {
             if (seof)
@@ -204,9 +185,7 @@ next: for(;;)
     const v = strPtr[index++];
     if (v == ',')
     {
-        bool seof;
-        if (!skipSpaces(seof))
-            goto errorReadingFile;
+        auto seof = skipSpaces;
         if (seof)
             goto value_unexpectedEnd;
         if (isStruct)
@@ -236,8 +215,11 @@ key_start: {
     currentTapePosition += ionPutStartLength;
     for(;;) 
     {
-        if (!prepareSmallInput)
-            goto errorReadingFile;
+        if (_expect(n - index < 64 && text.length, false))
+        {
+            fetchNext;
+            assert(n - index > 0);
+        }
         auto indexG = index >> 6;
         auto indexL = index & 0x3F;
         auto mask = pairedMask1[indexG];
@@ -272,19 +254,13 @@ key_start: {
         // TODO find id using the key
         currentTapePosition += ionPutVarUInt(tape.ptr + currentTapePosition, id);
         {
-            bool seof;
-            if (!skipSpaces(seof))
-                goto errorReadingFile;
-            if (seof)
+            if (skipSpaces)
                 goto unexpectedEnd;
         }
         if (strPtr[index++] != ':')
             goto object_after_key_is_missing;
         {
-            bool seof;
-            if (!skipSpaces(seof))
-                goto errorReadingFile;
-            if (seof)
+            if (skipSpaces)
                 goto unexpectedEnd;
         }
         goto value_start;
@@ -302,8 +278,11 @@ value_start: {
         currentTapePosition += ionPutStartLength;
         for(;;) 
         {
-            if (!prepareSmallInput)
-                goto errorReadingFile;
+            if (_expect(n - index < 64 && text.length, false))
+            {
+                fetchNext;
+                assert(n - index > 0);
+            }
             auto indexG = index >> 6;
             auto indexL = index & 0x3F;
             auto mask = pairedMask1[indexG];
@@ -412,8 +391,11 @@ value_start: {
         if (startC == ',')
             goto unexpected_comma;
 
-        if (!prepareSmallInput)
-            goto errorReadingFile;
+        if (_expect(n - index < 64 && text.length, false))
+        {
+            fetchNext;
+            assert(n - index > 0);
+        }
         auto indexG = index >> 6;
         auto indexL = index & 0x3F;
             auto endMask = (pairedMask2[indexG][0] | pairedMask2[indexG][1]) >> indexL;
@@ -455,10 +437,7 @@ value_start: {
     if (startC == '{')
     {
         index++;
-        bool seof;
-        if (!skipSpaces(seof))
-            goto errorReadingFile;
-        if (seof)
+        if (skipSpaces)
             goto next_unexpectedEnd;
         assert(stackPos <= stack.length);
         if (--stackPos < 0)
@@ -477,10 +456,7 @@ value_start: {
     if (startC == '[')
     {
         index++;
-        bool seof;
-        if (!skipSpaces(seof))
-            goto errorReadingFile;
-        if (seof)
+        if (skipSpaces)
             goto next_unexpectedEnd;
         assert(stackPos <= stack.length);
         if (--stackPos < 0)
@@ -496,8 +472,11 @@ value_start: {
         goto next;
     }
 
-    if (!prepareSmallInput)
-        goto errorReadingFile;
+    if (_expect(n - index < 64 && text.length, false))
+    {
+        fetchNext;
+        assert(n - index > 0);
+    }
     static foreach(name; AliasSeq!("true", "false", "null"))
     {
         if (*cast(ubyte[name.length]*)(strPtr + index) == cast(ubyte[name.length]) name)
