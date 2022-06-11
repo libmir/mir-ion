@@ -53,8 +53,8 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
 
     ptrdiff_t index;
     ptrdiff_t n;
-    ulong[2]* pairedMask1;
-    ulong[2]* pairedMask2;
+    const ulong[2]* pairedMask1 = pairedMaskBuf1.ptr + 1;
+    const ulong[2]* pairedMask2 = pairedMaskBuf2.ptr + 1;
     const(char)* strPtr;
     const(char)[] key; // Last key, it is the reference to the tape
     size_t location;
@@ -63,8 +63,6 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
     version(LDC) pragma(inline, true);
 
     strPtr = cast(const(char)*)vector.ptr.ptr + 64;
-    pairedMask1 = pairedMaskBuf1.ptr + 1;
-    pairedMask2 = pairedMaskBuf2.ptr + 1;
 
     void fetchNext()
     {
@@ -218,7 +216,7 @@ key_start: {
         }
         auto indexG = index >> 6;
         auto indexL = index & 0x3F;
-        auto mask = pairedMask1[indexG];
+        ulong[2] mask = pairedMask1[indexG];
         mask[0] >>= indexL;
         mask[1] >>= indexL;
         auto strMask = mask[0] | mask[1];
@@ -281,7 +279,7 @@ value_start: {
             }
             auto indexG = index >> 6;
             auto indexL = index & 0x3F;
-            auto mask = pairedMask1[indexG];
+            ulong[2] mask = pairedMask1[indexG];
             mask[0] >>= indexL;
             mask[1] >>= indexL;
             auto strMask = mask[0] | mask[1];
@@ -394,7 +392,7 @@ value_start: {
         }
         auto indexG = index >> 6;
         auto indexL = index & 0x3F;
-            auto endMask = (pairedMask2[indexG][0] | pairedMask2[indexG][1]) >> indexL;
+        ulong endMask = (pairedMask2[indexG][0] | pairedMask2[indexG][1]) >> indexL;
         endMask |= indexL != 0 ? (pairedMask2[indexG + 1][0] | pairedMask2[indexG + 1][1]) << (64 - indexL) : 0;
         if (endMask == 0)
             goto integerOverflow;
