@@ -995,7 +995,7 @@ version(mir_ion_test) unittest
 
         void serdeUnexpectedKeyHandler(scope const(char)[] key) scope @safe pure nothrow @nogc
         {
-            assert(key == "b");
+            assert(key == "");
         }
     }
     auto value = json.deserializeJson!(double[][string]);

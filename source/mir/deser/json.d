@@ -76,7 +76,7 @@ private template deserializeJsonImpl(bool file)
                 static if (hasDeserializeFromIon!T)
                     enum keys = string[].init;
                 else
-                    enum keys = serdeGetDeserializationKeysRecurse!T;
+                    enum keys = [""] ~ serdeGetDeserializationKeysRecurse!T;
 
                 alias createTableChar = createTable!char;
                 static immutable table = createTableChar!(keys, false);

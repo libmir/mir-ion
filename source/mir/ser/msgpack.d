@@ -130,7 +130,6 @@ struct MsgpackSerializer(Appender)
         import mir.ion.type_code;
         import mir.lob;
         import mir.serde: SerdeTarget;
-        import mir.string_table: createTable, minimalIndexType;
         import mir.timestamp: Timestamp;
         import mir.utility: _expect;
         import std.traits: isNumeric;

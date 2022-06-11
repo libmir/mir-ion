@@ -101,7 +101,6 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
     enum stackLength = 1024;
     size_t currentTapePositionSkip;
     sizediff_t stackPos = stackLength;
-    sizediff_t stackPosSkip = -1;
     size_t[stackLength] stack = void;
 
     bool prepareSmallInput()
@@ -196,11 +195,6 @@ next: for(;;)
         {
             if (seof)
                 goto next_unexpectedEnd;
-            if (stackPosSkip == stackPos)
-            {
-                currentTapePosition = currentTapePositionSkip;
-                stackPosSkip = -1;
-            }
         }
     }
     assert(stackPos >= 0);
@@ -272,19 +266,8 @@ key_start: {
         else // mir string table
         {
             uint id;
-            if (_expect(!symbolTable.get(key, id), false))
-            {
-                debug(ion) if (!__ctfe)
-                {
-                    import core.stdc.stdio: stderr, fprintf;
-                    fprintf(stderr, "Error: (debug) can't insert key %*.*s\n", cast(int)key.length, cast(int)key.length, key.ptr);
-                }
-                if (stackPos > stackPosSkip)
-                {
-                    currentTapePositionSkip = currentTapePosition;
-                    stackPosSkip = stackPos;
-                }
-            }
+            if (!symbolTable.get(key, id))
+                id = 0;
         }
         // TODO find id using the key
         currentTapePosition += ionPutVarUInt(tape.ptr + currentTapePosition, id);
