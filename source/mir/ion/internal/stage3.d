@@ -26,19 +26,100 @@ struct Stage3State
     IonErrorCode errorCode;
 }
 
-void stage3(alias fetchNext, Table)(ref Stage3State stage, ref Table symbolTable)
-@trusted nothrow @nogc
+///
+struct IonErrorInfo
 {
+    ///
+    IonErrorCode code;
+    ///
+    size_t location;
+    /// refers tape or text
+    const(char)[] key;
+}
+
+IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
+    ref SymbolTable symbolTable,
+    ref TapeHolder tapeHolder,
+    scope const(char)[] text,
+)
+    if (nMax % 64 == 0 && nMax)
+{
+    version (LDC) pragma(inline, true);
+
+    import core.stdc.string: memset, memcpy;
+    import mir.ion.internal.stage1;
+    import mir.ion.internal.stage2;
+    import mir.ion.internal.stage3;
+    import mir.utility: _expect, min;
+
+    enum k = nMax / 64;
+    enum extendLength = nMax * 4;
+
+    ulong[2][k + 2] pairedMaskBuf1 = void;
+    ulong[2][k + 2] pairedMaskBuf2 = void;
+    align(64) ubyte[64][k + 2] vector = void;
+
+    bool backwardEscapeBit;
+
+    // vector[$ - 1] = ' ';
+    // pairedMask1[$ - 1] = [0UL,  0UL];
+    // pairedMask2[$ - 1] = [0UL,  ulong.max];
+
+
+    ubyte[] tape;
+    ptrdiff_t currentTapePosition;
+    ptrdiff_t index;
+    ptrdiff_t n;
+    ulong[2]* pairedMask1;
+    ulong[2]* pairedMask2;
+    const(char)* strPtr;
+    const(char)[] key; // Last key, it is the reference to the tape
+    size_t location;
+    bool eof;
+    IonErrorCode errorCode;
+
     version(LDC) pragma(inline, true);
 
+    strPtr = cast(const(char)*)vector.ptr.ptr + 64;
+    pairedMask1 = pairedMaskBuf1.ptr + 1;
+    pairedMask2 = pairedMaskBuf2.ptr + 1;
+
+    auto fetchNext()
+    {
+        version(LDC) pragma(inline, true);
+        tapeHolder.extend(currentTapePosition + extendLength);
+
+        vector[0] = vector[$ - 2];
+        pairedMaskBuf1[0] = pairedMaskBuf1[$ - 2];
+        pairedMaskBuf2[0] = pairedMaskBuf2[$ - 2];
+        index -= n;
+        location += n;
+
+        tape = tapeHolder.allData;
+
+        n = min(text.length, nMax);
+        size_t spaceStart = n / 64 * 64;
+        memcpy(cast(char*)(vector.ptr.ptr + 64), text.ptr, n);
+        text = text[n .. text.length];
+        eof = text.length == 0;
+
+        if (n)
+        {
+            memset(vector.ptr.ptr + 64 + n, ' ', 64 - n % 64);
+            auto vlen = n / 64 + (n % 64 != 0);
+            stage1(vlen, cast(const) vector.ptr + 1, pairedMaskBuf1.ptr + 1, backwardEscapeBit);
+            pairedMaskBuf1[vlen + 1] = 0;
+            stage2(vlen, cast(const) vector.ptr + 1, pairedMaskBuf2.ptr + 1);
+            pairedMaskBuf2[vlen + 1] = 0;
+        }
+        return true;
+    }
 
     enum stackLength = 1024;
     size_t currentTapePositionSkip;
     sizediff_t stackPos = stackLength;
     sizediff_t stackPosSkip = -1;
     size_t[stackLength] stack = void;
-
-    with(stage){
 
     bool prepareSmallInput()
     {
@@ -201,7 +282,7 @@ key_start: {
             currentTapePosition = stringCodeStart;
             key = cast(const(char)[]) tape[currentTapePosition + ionPutStartLength .. currentTapePosition + ionPutStartLength + aLength];
         }
-        static if (__traits(hasMember, Table, "insert"))
+        static if (__traits(hasMember, SymbolTable, "insert"))
         {
             auto id = symbolTable.insert(key);
         }
@@ -464,7 +545,10 @@ value_start: {
 }
 
 ret_final:
-    return;
+    tapeHolder.currentTapePosition = currentTapePosition;
+    location += index;
+    return typeof(return)(errorCode, location, key);
+
 errorReadingFile:
     errorCode = IonErrorCode.errorReadingFile;
     goto ret_final;
@@ -566,7 +650,7 @@ invalid_utf_value:
 stack_overflow:
     // _lastError = "overflow of internal stack";
     goto unexpectedValue;
-}}
+}
 
 private __gshared immutable byte[256] uniFlags = [
  //  0  1  2  3  4  5  6  7    8  9  A  B  C  D  E  F

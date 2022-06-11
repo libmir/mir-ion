@@ -16,7 +16,7 @@ import mir.ser.ion;
 import mir.serde;
 import mir.format; // Quoted symbol support
 import mir.ion.internal.data_holder;
-import mir.ion.internal.stage4_s : IonErrorInfo;
+import mir.ion.internal.stage3 : IonErrorInfo;
 import mir.bignum.integer;
 import std.traits : hasUDA, getUDAs;
 
