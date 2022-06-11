@@ -11,21 +11,6 @@ import mir.utility: _expect;
 import std.meta: AliasSeq, aliasSeqOf;
 import std.traits;
 
-struct Stage3State
-{
-    ubyte[] tape;
-    ptrdiff_t currentTapePosition;
-    ptrdiff_t index;
-    ptrdiff_t n;
-    const(char)* strPtr;
-    ulong[2]* pairedMask1;
-    ulong[2]* pairedMask2;
-    const(char)[] key; // Last key, it is the reference to the tape
-    size_t location;
-    bool eof;
-    IonErrorCode errorCode;
-}
-
 ///
 struct IonErrorInfo
 {
@@ -75,7 +60,6 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
     const(char)* strPtr;
     const(char)[] key; // Last key, it is the reference to the tape
     size_t location;
-    bool eof;
     IonErrorCode errorCode;
 
     version(LDC) pragma(inline, true);
@@ -101,7 +85,6 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
         size_t spaceStart = n / 64 * 64;
         memcpy(cast(char*)(vector.ptr.ptr + 64), text.ptr, n);
         text = text[n .. text.length];
-        eof = text.length == 0;
 
         if (n)
         {
@@ -124,7 +107,7 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
     bool prepareSmallInput()
     {
         version(LDC) pragma(inline, true);
-        if (_expect(n - index < 64 && !eof, false))
+        if (_expect(n - index < 64 && text.length, false))
         {
             if (!fetchNext())
                 return false;
@@ -159,7 +142,7 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
             }
         }
         else
-        if (eof)
+        if (text.length == 0)
         {
             seof = true;
             return true;
@@ -363,7 +346,7 @@ value_start: {
             }
             else
             {
-                if (n - index < 64 && !eof)
+                if (n - index < 64 && text.length)
                     continue;
                 --currentTapePosition;
                 assert(strPtr[index - 1] == '\\', cast(string)strPtr[index .. index + 1]);
