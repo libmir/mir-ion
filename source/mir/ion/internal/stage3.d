@@ -39,6 +39,8 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
 
     enum k = nMax / 64;
     enum extendLength = nMax * 4;
+    enum stackLength = 1024;
+
 
     ulong[2][k + 2] pairedMaskBuf1 = void;
     ulong[2][k + 2] pairedMaskBuf2 = void;
@@ -46,23 +48,18 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
 
     bool backwardEscapeBit;
 
-    // vector[$ - 1] = ' ';
-    // pairedMask1[$ - 1] = [0UL,  0UL];
-    // pairedMask2[$ - 1] = [0UL,  ulong.max];
-
-
     ptrdiff_t index;
     ptrdiff_t n;
     const ulong[2]* pairedMask1 = pairedMaskBuf1.ptr + 1;
     const ulong[2]* pairedMask2 = pairedMaskBuf2.ptr + 1;
-    const(char)* strPtr;
+    const(char)* strPtr = cast(const(char)*)vector.ptr.ptr + 64;
     const(char)[] key; // Last key, it is the reference to the tape
     size_t location;
     IonErrorCode errorCode;
 
-    version(LDC) pragma(inline, true);
-
-    strPtr = cast(const(char)*)vector.ptr.ptr + 64;
+    // vector[$ - 1] = ' ';
+    // pairedMask1[$ - 1] = [0UL,  0UL];
+    // pairedMask2[$ - 1] = [0UL,  ulong.max];
 
     void fetchNext()
     {
@@ -91,8 +88,6 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
         }
     }
 
-    enum stackLength = 1024;
-    size_t currentTapePositionSkip;
     sizediff_t stackPos = stackLength;
     size_t[stackLength] stack = void;
 
