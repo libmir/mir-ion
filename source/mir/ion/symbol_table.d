@@ -91,10 +91,10 @@ struct IonSymbolTableSequental
     Entry[] entries;
     uint nextID = IonSystemSymbol.max + 1;
     IonSerializer!(1024, null, false) serializer = void;
-    size_t annotationWrapperState;
-    size_t annotationsState;
-    size_t structState;
-    size_t listState;
+    enum size_t annotationWrapperState = 0;
+    enum size_t annotationsState = 5;
+    enum size_t structState = 5;
+    enum size_t listState = 9;
 
 @trusted pure nothrow @nogc:
 
@@ -114,12 +114,16 @@ struct IonSymbolTableSequental
         this.nextID = IonSystemSymbol.max + 1;
         this.serializer.initializeNoTable;
 
-        this.annotationWrapperState = serializer.annotationWrapperBegin;
+        auto annotationWrapperState = serializer.annotationWrapperBegin;
+        assert(annotationWrapperState == this.annotationWrapperState);
         serializer.putAnnotationId(IonSystemSymbol.ion_symbol_table);
-        this.annotationsState = serializer.annotationsEnd(annotationWrapperState);
-        this.structState = serializer.structBegin();
+        auto annotationsState = serializer.annotationsEnd(annotationWrapperState);
+        assert(annotationsState == this.annotationsState);
+        auto structState = serializer.structBegin();
+        assert(structState == this.structState);
         serializer.putKeyId(IonSystemSymbol.symbols);
-        this.listState = serializer.listBegin();
+        auto listState = serializer.listBegin();
+        assert(listState == this.listState);
     }
 
     void finalize()()
