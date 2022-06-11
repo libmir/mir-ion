@@ -246,120 +246,124 @@ key_start: {
 
 value_start: {
     auto startC = strPtr[index];
-    if (startC <= '9')
+
+    if (startC == '"')
     {
-        if (startC == '"')
+        assert(strPtr[index] == '"', "Internal Mir Ion logic error. Please report an issue.");
+        index++;
+        const stringCodeStart = currentTapePosition;
+        currentTapePosition += ionPutStartLength;
+        for(;;) 
         {
-            assert(strPtr[index] == '"', "Internal Mir Ion logic error. Please report an issue.");
-            index++;
-            const stringCodeStart = currentTapePosition;
-            currentTapePosition += ionPutStartLength;
-            for(;;) 
+            if (!prepareSmallInput)
+                goto errorReadingFile;
+            auto indexG = index >> 6;
+            auto indexL = index & 0x3F;
+            auto mask = pairedMask1[indexG];
+            mask[0] >>= indexL;
+            mask[1] >>= indexL;
+            auto strMask = mask[0] | mask[1];
+            // TODO: memcpy optimisation for DMD
+            assert(currentTapePosition + 64 <= tape.length);
+            *cast(ubyte[64]*)(tape.ptr + currentTapePosition) = *cast(const ubyte[64]*)(strPtr + index);
+            auto value = strMask == 0 ? 64 - indexL : cttz(strMask);
+            currentTapePosition += value;
+            index += value;
+            if (strMask == 0)
+                continue;
+            if (_expect(((mask[1] >> value) & 1) == 0, true)) // no escape value
             {
-                if (!prepareSmallInput)
-                    goto errorReadingFile;
-                auto indexG = index >> 6;
-                auto indexL = index & 0x3F;
-                auto mask = pairedMask1[indexG];
-                mask[0] >>= indexL;
-                mask[1] >>= indexL;
-                auto strMask = mask[0] | mask[1];
-                // TODO: memcpy optimisation for DMD
-                assert(currentTapePosition + 64 <= tape.length);
-                *cast(ubyte[64]*)(tape.ptr + currentTapePosition) = *cast(const ubyte[64]*)(strPtr + index);
-                auto value = strMask == 0 ? 64 - indexL : cttz(strMask);
-                currentTapePosition += value;
-                index += value;
-                if (strMask == 0)
+                assert(strPtr[index] == '"');
+                index++;
+                auto stringLength = currentTapePosition - (stringCodeStart + ionPutStartLength);
+                currentTapePosition = stringCodeStart;
+                currentTapePosition += ionPutEnd(tape.ptr + currentTapePosition, IonTypeCode.string, stringLength);
+                goto next;
+            }
+            else
+            {
+                if (n - index < 64 && !eof)
                     continue;
-                if (_expect(((mask[1] >> value) & 1) == 0, true)) // no escape value
+                --currentTapePosition;
+                assert(strPtr[index - 1] == '\\', cast(string)strPtr[index .. index + 1]);
+                dchar d = void;
+                auto c = strPtr[index];
+                index += 1;
+                switch(c)
                 {
-                    assert(strPtr[index] == '"');
-                    index++;
-                    auto stringLength = currentTapePosition - (stringCodeStart + ionPutStartLength);
-                    currentTapePosition = stringCodeStart;
-                    currentTapePosition += ionPutEnd(tape.ptr + currentTapePosition, IonTypeCode.string, stringLength);
-                    goto next;
-                }
-                else
-                {
-                    if (n - index < 64 && !eof)
-                        continue;
-                    --currentTapePosition;
-                    assert(strPtr[index - 1] == '\\', cast(string)strPtr[index .. index + 1]);
-                    dchar d = void;
-                    auto c = strPtr[index];
-                    index += 1;
-                    switch(c)
-                    {
-                        case '/' :
-                        case '\"':
-                        case '\\':
-                            d = cast(ubyte) c;
-                            goto PutASCII;
-                        case 'b' : d = '\b'; goto PutASCII;
-                        case 'f' : d = '\f'; goto PutASCII;
-                        case 'n' : d = '\n'; goto PutASCII;
-                        case 'r' : d = '\r'; goto PutASCII;
-                        case 't' : d = '\t'; goto PutASCII;
-                        case 'u' :
-                            if (auto r = readUnicode(d))
+                    case '/' :
+                    case '\"':
+                    case '\\':
+                        d = cast(ubyte) c;
+                        goto PutASCII;
+                    case 'b' : d = '\b'; goto PutASCII;
+                    case 'f' : d = '\f'; goto PutASCII;
+                    case 'n' : d = '\n'; goto PutASCII;
+                    case 'r' : d = '\r'; goto PutASCII;
+                    case 't' : d = '\t'; goto PutASCII;
+                    case 'u' :
+                        if (auto r = readUnicode(d))
+                            goto unexpected_escape_unicode_value; //unexpected \u
+                        if (_expect(0xD800 <= d && d <= 0xDFFF, false))
+                        {
+                            if (d >= 0xDC00)
+                                goto invalid_utf_value;
+                            if (strPtr[index++] != '\\')
+                                goto invalid_utf_value;
+                            if (strPtr[index++] != 'u')
+                                goto invalid_utf_value;
+                            d = (d & 0x3FF) << 10;
+                            dchar trailing = void;
+                            if (auto r = readUnicode(trailing))
                                 goto unexpected_escape_unicode_value; //unexpected \u
-                            if (_expect(0xD800 <= d && d <= 0xDFFF, false))
-                            {
-                                if (d >= 0xDC00)
-                                    goto invalid_utf_value;
-                                if (strPtr[index++] != '\\')
-                                    goto invalid_utf_value;
-                                if (strPtr[index++] != 'u')
-                                    goto invalid_utf_value;
-                                d = (d & 0x3FF) << 10;
-                                dchar trailing = void;
-                                if (auto r = readUnicode(trailing))
-                                    goto unexpected_escape_unicode_value; //unexpected \u
-                                if (!(0xDC00 <= trailing && trailing <= 0xDFFF))
-                                    goto invalid_trail_surrogate;
-                                {
-                                    d |= trailing & 0x3FF;
-                                    d += 0x10000;
-                                }
-                            }
-                            if (d < 0x80)
-                            {
-                            PutASCII:
-                                tape[currentTapePosition] = cast(ubyte) (d);
-                                currentTapePosition += 1;
-                                continue;
-                            }
-                            if (d < 0x800)
-                            {
-                                tape[currentTapePosition + 0] = cast(ubyte) (0xC0 | (d >> 6));
-                                tape[currentTapePosition + 1] = cast(ubyte) (0x80 | (d & 0x3F));
-                                currentTapePosition += 2;
-                                continue;
-                            }
-                            if (!(d < 0xD800 || (d > 0xDFFF && d <= 0x10FFFF)))
+                            if (!(0xDC00 <= trailing && trailing <= 0xDFFF))
                                 goto invalid_trail_surrogate;
-                            if (d < 0x10000)
                             {
-                                tape[currentTapePosition + 0] = cast(ubyte) (0xE0 | (d >> 12));
-                                tape[currentTapePosition + 1] = cast(ubyte) (0x80 | ((d >> 6) & 0x3F));
-                                tape[currentTapePosition + 2] = cast(ubyte) (0x80 | (d & 0x3F));
-                                currentTapePosition += 3;
-                                continue;
+                                d |= trailing & 0x3FF;
+                                d += 0x10000;
                             }
-                            //    assert(d < 0x200000);
-                            tape[currentTapePosition + 0] = cast(ubyte) (0xF0 | (d >> 18));
-                            tape[currentTapePosition + 1] = cast(ubyte) (0x80 | ((d >> 12) & 0x3F));
-                            tape[currentTapePosition + 2] = cast(ubyte) (0x80 | ((d >> 6) & 0x3F));
-                            tape[currentTapePosition + 3] = cast(ubyte) (0x80 | (d & 0x3F));
-                            currentTapePosition += 4;
+                        }
+                        if (d < 0x80)
+                        {
+                        PutASCII:
+                            tape[currentTapePosition] = cast(ubyte) (d);
+                            currentTapePosition += 1;
                             continue;
-                        default: goto unexpected_escape_value; // unexpected escape
-                    }
+                        }
+                        if (d < 0x800)
+                        {
+                            tape[currentTapePosition + 0] = cast(ubyte) (0xC0 | (d >> 6));
+                            tape[currentTapePosition + 1] = cast(ubyte) (0x80 | (d & 0x3F));
+                            currentTapePosition += 2;
+                            continue;
+                        }
+                        if (!(d < 0xD800 || (d > 0xDFFF && d <= 0x10FFFF)))
+                            goto invalid_trail_surrogate;
+                        if (d < 0x10000)
+                        {
+                            tape[currentTapePosition + 0] = cast(ubyte) (0xE0 | (d >> 12));
+                            tape[currentTapePosition + 1] = cast(ubyte) (0x80 | ((d >> 6) & 0x3F));
+                            tape[currentTapePosition + 2] = cast(ubyte) (0x80 | (d & 0x3F));
+                            currentTapePosition += 3;
+                            continue;
+                        }
+                        //    assert(d < 0x200000);
+                        tape[currentTapePosition + 0] = cast(ubyte) (0xF0 | (d >> 18));
+                        tape[currentTapePosition + 1] = cast(ubyte) (0x80 | ((d >> 12) & 0x3F));
+                        tape[currentTapePosition + 2] = cast(ubyte) (0x80 | ((d >> 6) & 0x3F));
+                        tape[currentTapePosition + 3] = cast(ubyte) (0x80 | (d & 0x3F));
+                        currentTapePosition += 4;
+                        continue;
+                    default: goto unexpected_escape_value; // unexpected escape
                 }
             }
         }
+    }
+
+    if (startC <= '9')
+    {
+        if (startC == ',')
+            goto unexpected_comma;
 
         if (!prepareSmallInput)
             goto errorReadingFile;
