@@ -144,7 +144,8 @@ private template stage1_impl(string arch)
             beb = false;
             auto inversion = addu(odds, maskPair[1], beb) << 1;
             maskPair[1] = (evenBits ^ inversion) & followsEscape;
-            maskPair[0] &= ~maskPair[1];
+            // maskPair[0] &= ~maskPair[1];
+            maskPair[0] |= maskPair[1];
             *pairedMask++ = maskPair;
         }
         while(--n);
@@ -169,7 +170,7 @@ version(mir_ion_test) unittest
 
     import mir.ndslice;
     auto maskData = pairedMasks.sliced;
-    auto qbits = maskData.map!"a[0]".bitwise;
+    auto qbits = maskData.map!"a[0] & ~a[1]".bitwise;
     auto ebits = maskData.map!"a[1]".bitwise;
     assert(qbits.length == 256);
     assert(ebits.length == 256);
@@ -219,7 +220,7 @@ version(mir_ion_test) unittest
 
     import mir.ndslice;
     auto maskData = pairedMasks.sliced;
-    auto qbits = maskData.map!"a[0]".bitwise;
+    auto qbits = maskData.map!"a[0] & ~a[1]".bitwise;
     auto ebits = maskData.map!"a[1]".bitwise;
 
     foreach (i; 0 .. 68)

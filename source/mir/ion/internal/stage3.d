@@ -211,10 +211,7 @@ key_start: {
         }
         auto indexG = index >> 6;
         auto indexL = index & 0x3F;
-        ulong[2] mask = pairedMask1[indexG];
-        mask[0] >>= indexL;
-        mask[1] >>= indexL;
-        auto strMask = mask[0] | mask[1];
+        auto strMask = pairedMask1[indexG][0] >> indexL;
         // TODO: memcpy optimisation for DMD
         assert(tapeHolder.currentTapePosition + 64 <= tapeHolder.allData.length);
         *cast(ubyte[64]*)(tapeHolder.allData.ptr + tapeHolder.currentTapePosition) = *cast(const ubyte[64]*)(strPtr + index);
@@ -274,10 +271,7 @@ value_start: {
             }
             auto indexG = index >> 6;
             auto indexL = index & 0x3F;
-            ulong[2] mask = pairedMask1[indexG];
-            mask[0] >>= indexL;
-            mask[1] >>= indexL;
-            auto strMask = mask[0] | mask[1];
+            auto strMask = pairedMask1[indexG][0] >> indexL;
             // TODO: memcpy optimisation for DMD
             assert(tapeHolder.currentTapePosition + 64 <= tapeHolder.allData.length);
             *cast(ubyte[64]*)(tapeHolder.allData.ptr + tapeHolder.currentTapePosition) = *cast(const ubyte[64]*)(strPtr + index);
@@ -286,7 +280,7 @@ value_start: {
             index += value;
             if (strMask == 0)
                 continue;
-            if (_expect(((mask[1] >> value) & 1) == 0, true)) // no escape value
+            if (_expect((((pairedMask1[indexG][1] >> indexL) >> value) & 1) == 0, true)) // no escape value
             {
                 assert(strPtr[index] == '"');
                 index++;
