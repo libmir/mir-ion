@@ -18,7 +18,7 @@ struct IonErrorInfo
     IonErrorCode code;
     ///
     size_t location;
-    /// refers tape or text
+    /// refers tapeHolder.allData or text
     const(char)[] key;
 }
 
@@ -51,7 +51,6 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
     // pairedMask2[$ - 1] = [0UL,  ulong.max];
 
 
-    ubyte[] tape;
     ptrdiff_t currentTapePosition;
     ptrdiff_t index;
     ptrdiff_t n;
@@ -78,8 +77,6 @@ IonErrorInfo stage3(size_t nMax, SymbolTable, TapeHolder)(
         pairedMaskBuf2[0] = pairedMaskBuf2[$ - 2];
         index -= n;
         location += n;
-
-        tape = tapeHolder.allData;
 
         n = min(text.length, nMax);
         size_t spaceStart = n / 64 * 64;
@@ -202,7 +199,7 @@ next: for(;;)
     auto aLength = currentTapePosition - (stackValue + ionPutStartLength);
     stackPos++;
     currentTapePosition = stackValue;
-    currentTapePosition += ionPutEnd(tape.ptr + currentTapePosition, aCode, aLength);
+    currentTapePosition += ionPutEnd(tapeHolder.allData.ptr + currentTapePosition, aCode, aLength);
 }
 
 ///////////
@@ -227,8 +224,8 @@ key_start: {
         mask[1] >>= indexL;
         auto strMask = mask[0] | mask[1];
         // TODO: memcpy optimisation for DMD
-        assert(currentTapePosition + 64 <= tape.length);
-        *cast(ubyte[64]*)(tape.ptr + currentTapePosition) = *cast(const ubyte[64]*)(strPtr + index);
+        assert(currentTapePosition + 64 <= tapeHolder.allData.length);
+        *cast(ubyte[64]*)(tapeHolder.allData.ptr + currentTapePosition) = *cast(const ubyte[64]*)(strPtr + index);
         auto value = strMask == 0 ? 64 - indexL : cttz(strMask);
         currentTapePosition += value;
         index += value;
@@ -239,7 +236,7 @@ key_start: {
             index++;
             auto aLength = currentTapePosition - (stringCodeStart + ionPutStartLength);
             currentTapePosition = stringCodeStart;
-            key = cast(const(char)[]) tape[currentTapePosition + ionPutStartLength .. currentTapePosition + ionPutStartLength + aLength];
+            key = cast(const(char)[]) tapeHolder.allData[currentTapePosition + ionPutStartLength .. currentTapePosition + ionPutStartLength + aLength];
         }
         static if (__traits(hasMember, SymbolTable, "insert"))
         {
@@ -252,7 +249,7 @@ key_start: {
                 id = 0;
         }
         // TODO find id using the key
-        currentTapePosition += ionPutVarUInt(tape.ptr + currentTapePosition, id);
+        currentTapePosition += ionPutVarUInt(tapeHolder.allData.ptr + currentTapePosition, id);
         {
             if (skipSpaces)
                 goto unexpectedEnd;
@@ -290,8 +287,8 @@ value_start: {
             mask[1] >>= indexL;
             auto strMask = mask[0] | mask[1];
             // TODO: memcpy optimisation for DMD
-            assert(currentTapePosition + 64 <= tape.length);
-            *cast(ubyte[64]*)(tape.ptr + currentTapePosition) = *cast(const ubyte[64]*)(strPtr + index);
+            assert(currentTapePosition + 64 <= tapeHolder.allData.length);
+            *cast(ubyte[64]*)(tapeHolder.allData.ptr + currentTapePosition) = *cast(const ubyte[64]*)(strPtr + index);
             auto value = strMask == 0 ? 64 - indexL : cttz(strMask);
             currentTapePosition += value;
             index += value;
@@ -303,7 +300,7 @@ value_start: {
                 index++;
                 auto stringLength = currentTapePosition - (stringCodeStart + ionPutStartLength);
                 currentTapePosition = stringCodeStart;
-                currentTapePosition += ionPutEnd(tape.ptr + currentTapePosition, IonTypeCode.string, stringLength);
+                currentTapePosition += ionPutEnd(tapeHolder.allData.ptr + currentTapePosition, IonTypeCode.string, stringLength);
                 goto next;
             }
             else
@@ -352,14 +349,14 @@ value_start: {
                         if (d < 0x80)
                         {
                         PutASCII:
-                            tape[currentTapePosition] = cast(ubyte) (d);
+                            tapeHolder.allData[currentTapePosition] = cast(ubyte) (d);
                             currentTapePosition += 1;
                             continue;
                         }
                         if (d < 0x800)
                         {
-                            tape[currentTapePosition + 0] = cast(ubyte) (0xC0 | (d >> 6));
-                            tape[currentTapePosition + 1] = cast(ubyte) (0x80 | (d & 0x3F));
+                            tapeHolder.allData[currentTapePosition + 0] = cast(ubyte) (0xC0 | (d >> 6));
+                            tapeHolder.allData[currentTapePosition + 1] = cast(ubyte) (0x80 | (d & 0x3F));
                             currentTapePosition += 2;
                             continue;
                         }
@@ -367,17 +364,17 @@ value_start: {
                             goto invalid_trail_surrogate;
                         if (d < 0x10000)
                         {
-                            tape[currentTapePosition + 0] = cast(ubyte) (0xE0 | (d >> 12));
-                            tape[currentTapePosition + 1] = cast(ubyte) (0x80 | ((d >> 6) & 0x3F));
-                            tape[currentTapePosition + 2] = cast(ubyte) (0x80 | (d & 0x3F));
+                            tapeHolder.allData[currentTapePosition + 0] = cast(ubyte) (0xE0 | (d >> 12));
+                            tapeHolder.allData[currentTapePosition + 1] = cast(ubyte) (0x80 | ((d >> 6) & 0x3F));
+                            tapeHolder.allData[currentTapePosition + 2] = cast(ubyte) (0x80 | (d & 0x3F));
                             currentTapePosition += 3;
                             continue;
                         }
                         //    assert(d < 0x200000);
-                        tape[currentTapePosition + 0] = cast(ubyte) (0xF0 | (d >> 18));
-                        tape[currentTapePosition + 1] = cast(ubyte) (0x80 | ((d >> 12) & 0x3F));
-                        tape[currentTapePosition + 2] = cast(ubyte) (0x80 | ((d >> 6) & 0x3F));
-                        tape[currentTapePosition + 3] = cast(ubyte) (0x80 | (d & 0x3F));
+                        tapeHolder.allData[currentTapePosition + 0] = cast(ubyte) (0xF0 | (d >> 18));
+                        tapeHolder.allData[currentTapePosition + 1] = cast(ubyte) (0x80 | ((d >> 12) & 0x3F));
+                        tapeHolder.allData[currentTapePosition + 2] = cast(ubyte) (0x80 | ((d >> 6) & 0x3F));
+                        tapeHolder.allData[currentTapePosition + 3] = cast(ubyte) (0x80 | (d & 0x3F));
                         currentTapePosition += 4;
                         continue;
                     default: goto unexpected_escape_value; // unexpected escape
@@ -413,13 +410,13 @@ value_start: {
 
         if (!result.key) // integer
         {
-            currentTapePosition += ionPut(tape.ptr + currentTapePosition, result.coefficient, result.coefficient && result.sign);
+            currentTapePosition += ionPut(tapeHolder.allData.ptr + currentTapePosition, result.coefficient, result.coefficient && result.sign);
             goto next;
         }
         else
         version(MirDecimalJson)
         {
-            currentTapePosition += ionPutDecimal(tape.ptr + currentTapePosition, result.sign, result.coefficient, result.exponent);
+            currentTapePosition += ionPutDecimal(tapeHolder.allData.ptr + currentTapePosition, result.sign, result.coefficient, result.exponent);
             goto next;
         }
         else
@@ -429,7 +426,7 @@ value_start: {
             if (result.sign)
                 fp = -fp;
             // sciencific
-            currentTapePosition += ionPut(tape.ptr + currentTapePosition, fp);
+            currentTapePosition += ionPut(tapeHolder.allData.ptr + currentTapePosition, fp);
             goto next;
         }
     }
@@ -449,7 +446,7 @@ value_start: {
         currentTapePosition -= ionPutStartLength;
         index++;
         stackPos++;
-        tape[currentTapePosition++] = IonTypeCode.struct_ << 4;
+        tapeHolder.allData[currentTapePosition++] = IonTypeCode.struct_ << 4;
         goto next;
     }
 
@@ -468,7 +465,7 @@ value_start: {
         currentTapePosition -= ionPutStartLength;
         index++;
         stackPos++;
-        tape[currentTapePosition++] = IonTypeCode.list << 4;
+        tapeHolder.allData[currentTapePosition++] = IonTypeCode.list << 4;
         goto next;
     }
 
@@ -481,7 +478,7 @@ value_start: {
     {
         if (*cast(ubyte[name.length]*)(strPtr + index) == cast(ubyte[name.length]) name)
         {
-            currentTapePosition += ionPut(tape.ptr + currentTapePosition, mixin(name));
+            currentTapePosition += ionPut(tapeHolder.allData.ptr + currentTapePosition, mixin(name));
             index += name.length;
             goto next;
         }
