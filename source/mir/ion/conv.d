@@ -131,7 +131,7 @@ immutable(ubyte)[] json2ion(scope const(char)[] text)
 
     IonSymbolTableSequental table = void;
     table.initialize;
-    auto error = singleThreadJsonText!nMax(table, tapeHolder, text);
+    auto error = singleThreadJson!nMax(table, tapeHolder, text);
     if (error.code)
         throw new MirException(error.code.ionErrorMsg, ". location = ", error.location, ", last input key = ", error.key);
 
@@ -178,7 +178,7 @@ void json2ion(Appender)(scope const(char)[] text, scope ref Appender appender)
     IonSymbolTable!false table = void;
     table.initialize;
 
-    auto error = singleThreadJsonText!nMax(table, tapeHolder, text);
+    auto error = singleThreadJson!nMax(table, tapeHolder, text);
     if (error.code)
         throw new MirException(error.code.ionErrorMsg, ". location = ", error.location, ", last input key = ", error.key);
     version(TableSequental)

@@ -28,19 +28,20 @@ version(measure)
 
 
 ///
-IonErrorInfo singleThreadJsonImpl(size_t nMax, alias fillBuffer, SymbolTable, TapeHolder)(
+IonErrorInfo singleThreadJson(size_t nMax, SymbolTable, TapeHolder)(
     ref SymbolTable table,
     ref TapeHolder tapeHolder,
-    )
+    scope const(char)[] text,
+)
     if (nMax % 64 == 0 && nMax)
 {
     version (LDC) pragma(inline, true);
 
-    import core.stdc.string: memset;
+    import core.stdc.string: memset, memcpy;
     import mir.ion.internal.stage1;
     import mir.ion.internal.stage2;
     import mir.ion.internal.stage3;
-    import mir.utility: _expect;
+    import mir.utility: _expect, min;
 
     enum k = nMax / 64;
     enum extendLength = nMax * 4;
@@ -84,8 +85,13 @@ IonErrorInfo singleThreadJsonImpl(size_t nMax, alias fillBuffer, SymbolTable, Ta
             stage.location += stage.n;
 
             stage.tape = tapeHolder.allData;
-            if (_expect(!fillBuffer(cast(char*)(vector.ptr.ptr + 64), stage.n, stage.eof), false))
-                return false;
+
+            stage.n = min(text.length, nMax);
+            size_t spaceStart = stage.n / 64 * 64;
+            memcpy(cast(char*)(vector.ptr.ptr + 64), text.ptr, stage.n);
+            text = text[stage.n .. text.length];
+            stage.eof = text.length == 0;
+
             if (stage.n)
             {
                 memset(vector.ptr.ptr + 64 + stage.n, ' ', 64 - stage.n % 64);
@@ -122,32 +128,6 @@ R:
 }
 
 ///
-IonErrorInfo singleThreadJsonText(size_t nMax, SymbolTable, TapeHolder)(
-    ref SymbolTable table,
-    ref TapeHolder tapeHolder,
-    scope const(char)[] text,
-)
-    if (nMax % 64 == 0 && nMax)
-{
-    version(LDC) pragma(inline, true);
-
-    return singleThreadJsonImpl!(nMax, (scope char* data, ref sizediff_t n, ref bool eof) @trusted
-    {
-        version (LDC) pragma(inline, true);
-
-        import core.stdc.string: memcpy;
-        import mir.utility: min;
-
-        n = min(text.length, nMax);
-        size_t spaceStart = n / 64 * 64;
-        memcpy(data, text.ptr, n);
-        text = text[n .. text.length];
-        eof = text.length == 0;
-        return true;
-    })(table, tapeHolder);
-}
-
-///
 version(mir_ion_test) unittest
 {
     static ubyte[] jsonToIonTest(scope const(char)[] text)
@@ -165,7 +145,7 @@ version(mir_ion_test) unittest
         IonTapeHolder!(nMax * 4) tapeHolder = void;
         tapeHolder.initialize;
 
-        auto errorInfo = singleThreadJsonText!nMax(table, tapeHolder, text);
+        auto errorInfo = singleThreadJson!nMax(table, tapeHolder, text);
         if (errorInfo.code)
             throw new SerdeMirException(errorInfo.code.ionErrorMsg, ". location = ", errorInfo.location, ", last input key = ", errorInfo.key);
 

@@ -84,7 +84,7 @@ private template deserializeJsonImpl(bool file)
                 // nMax * 4 is enough. We use larger multiplier to reduce memory allocation count
                 auto tapeHolder = ionTapeHolder!(nMax * 8);
                 tapeHolder.initialize;
-                auto errorInfo = () @trusted { return singleThreadJsonText!nMax(table, tapeHolder, text); } ();
+                auto errorInfo = () @trusted { return singleThreadJson!nMax(table, tapeHolder, text); } ();
                 if (errorInfo.code)
                 {
                     static if (__traits(compiles, () @nogc { throw new Exception(""); }))
