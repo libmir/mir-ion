@@ -31,13 +31,14 @@ Test data from [nativejson-benchmark](https://github.com/miloyip/nativejson-benc
 
 ```
 -------------------------------------------------
-Binary Ion writing      0.564 GB/s
-     is equivalent of   1.5 GB/s for JSON
+Binary Ion writing      0.601 GB/s
+     is equivalent of   1.598 GB/s for JSON
 
-JSON    -> binary Ion   0.75 GB/s
+JSON    -> binary Ion   1.16 GB/s
 
-MsgPack -> binary Ion   0.749 GB/s
-     is equivalent of   1.176 GB/s for JSON
+MsgPack -> binary Ion   0.841 GB/s
+     is equivalent of   1.321 GB/s for JSON
+
 
 Ion is 96% smaller then minimized JSON
    and 69% smaller then MsgPack
@@ -54,13 +55,13 @@ Test data from [kostya/benchmarks](https://github.com/kostya/benchmarks).
 
 ```
 -------------------------------------------------
-Binary Ion writing      0.228 GB/s
-     is equivalent of   0.966 GB/s for JSON
+Binary Ion writing      0.251 GB/s
+     is equivalent of   1.063 GB/s for JSON
 
-JSON    -> binary Ion   0.41 GB/s
+JSON    -> binary Ion   0.589 GB/s
 
-MsgPack -> binary Ion   0.285 GB/s
-     is equivalent of   1.013 GB/s for JSON
+MsgPack -> binary Ion   0.309 GB/s
+     is equivalent of   1.098 GB/s for JSON
 
 
 Ion is 134% smaller then minimized JSON

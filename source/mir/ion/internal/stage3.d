@@ -1,6 +1,5 @@
 module mir.ion.internal.stage3;
 
-import ldc.attributes: optStrategy, polly;
 import core.stdc.string: memcpy, memmove;
 import mir.internal.memory: malloc, realloc, free;
 import mir.bitop;
@@ -96,7 +95,6 @@ void stage3(
     }
 }
 
-// @polly
 @trusted pure nothrow @nogc
 Stage3Result stage3(
     scope const(char)[] text,
