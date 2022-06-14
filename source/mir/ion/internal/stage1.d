@@ -33,13 +33,13 @@ size_t stage1 (
     {
         version (X86_Any)
         {
-            // static if (!__traits(targetHasFeature, "avx512bw"))
-            // {
-                // if (avx512bw)
-                //     return stage1_impl!"skylake-avx512"(params);
-                // static if (!__traits(targetHasFeature, "avx2"))
-                // {
-                    import cpuid.x86_any;
+            import cpuid.x86_any;
+            static if (!__traits(targetHasFeature, "avx512bw"))
+            {
+                if (avx512bw)
+                    return stage1_impl!"skylake-avx512"(params);
+                static if (!__traits(targetHasFeature, "avx2"))
+                {
                     if (avx2)
                         return stage1_impl!"broadwell"(params);
                     static if (!__traits(targetHasFeature, "avx"))
@@ -58,9 +58,12 @@ size_t stage1 (
                     }
                     else
                         return stage1_impl!"sandybridge"(params);
-                // }
-                // else
-                //     return stage1_impl!"broadwell"(params);
+                }
+                else
+                    return stage1_impl!"broadwell"(params);
+            }
+            else
+                return stage1_impl!"skylake-avx512"(params);
         }
         else
             return stage1_impl!""(params);
