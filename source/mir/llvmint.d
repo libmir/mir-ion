@@ -35,7 +35,7 @@
 
 module mir.llvmint;
 
-version(LDC):
+version (LDC) {
 
 private alias f32 = float;
 private alias f64 = double;
@@ -58,6 +58,2341 @@ version (X86_64)
 
 // That isn't always true
 @safe pure nothrow @nogc:
+
+/// LLVM intrinsics for the x86 architecture.
+version (x86_Any) {
+    /// The `llvm.x86.int` intrinsic.
+    pragma(LDC_intrinsic, "llvm.x86.int")
+    void _int(i8);
+    /// The `llvm.x86.rdtsc` intrinsic; known as `__builtin_ia32_rdtsc` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.rdtsc")
+    i64 rdtsc();
+    /// The `llvm.x86.rdtscp` intrinsic; known as `__builtin_ia32_rdtscp` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.rdtscp")
+    i64 rdtscp(i8*);
+    /// The `llvm.x86.rdpmc` intrinsic; known as `__builtin_ia32_rdpmc` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.rdpmc")
+    i64 rdpmc(i32);
+    /// The `llvm.x86.sse.add.ss` intrinsic; known as `__builtin_ia32_addss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.add.ss")
+    __vector(f32[4]) sse_add_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.sub.ss` intrinsic; known as `__builtin_ia32_subss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.sub.ss")
+    __vector(f32[4]) sse_sub_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.mul.ss` intrinsic; known as `__builtin_ia32_mulss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.mul.ss")
+    __vector(f32[4]) sse_mul_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.div.ss` intrinsic; known as `__builtin_ia32_divss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.div.ss")
+    __vector(f32[4]) sse_div_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.sqrt.ss` intrinsic; known as `__builtin_ia32_sqrtss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.sqrt.ss")
+    __vector(f32[4]) sse_sqrt_ss(__vector(f32[4]));
+    /// The `llvm.x86.sse.sqrt.ps` intrinsic; known as `__builtin_ia32_sqrtps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.sqrt.ps")
+    __vector(f32[4]) sse_sqrt_ps(__vector(f32[4]));
+    /// The `llvm.x86.sse.rcp.ss` intrinsic; known as `__builtin_ia32_rcpss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.rcp.ss")
+    __vector(f32[4]) sse_rcp_ss(__vector(f32[4]));
+    /// The `llvm.x86.sse.rcp.ps` intrinsic; known as `__builtin_ia32_rcpps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.rcp.ps")
+    __vector(f32[4]) sse_rcp_ps(__vector(f32[4]));
+    /// The `llvm.x86.sse.rsqrt.ss` intrinsic; known as `__builtin_ia32_rsqrtss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.rsqrt.ss")
+    __vector(f32[4]) sse_rsqrt_ss(__vector(f32[4]));
+    /// The `llvm.x86.sse.rsqrt.ps` intrinsic; known as `__builtin_ia32_rsqrtps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.rsqrt.ps")
+    __vector(f32[4]) sse_rsqrt_ps(__vector(f32[4]));
+    /// The `llvm.x86.sse.min.ss` intrinsic; known as `__builtin_ia32_minss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.min.ss")
+    __vector(f32[4]) sse_min_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.min.ps` intrinsic; known as `__builtin_ia32_minps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.min.ps")
+    __vector(f32[4]) sse_min_ps(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.max.ss` intrinsic; known as `__builtin_ia32_maxss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.max.ss")
+    __vector(f32[4]) sse_max_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.max.ps` intrinsic; known as `__builtin_ia32_maxps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.max.ps")
+    __vector(f32[4]) sse_max_ps(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.cmp.ss` intrinsic; known as `__builtin_ia32_cmpss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.cmp.ss")
+    __vector(f32[4]) sse_cmp_ss(__vector(f32[4]), __vector(f32[4]), i8);
+    /// The `llvm.x86.sse.cmp.ps` intrinsic; known as `__builtin_ia32_cmpps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.cmp.ps")
+    __vector(f32[4]) sse_cmp_ps(__vector(f32[4]), __vector(f32[4]), i8);
+    /// The `llvm.x86.sse.comieq.ss` intrinsic; known as `__builtin_ia32_comieq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.comieq.ss")
+    i32 sse_comieq_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.comilt.ss` intrinsic; known as `__builtin_ia32_comilt` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.comilt.ss")
+    i32 sse_comilt_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.comile.ss` intrinsic; known as `__builtin_ia32_comile` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.comile.ss")
+    i32 sse_comile_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.comigt.ss` intrinsic; known as `__builtin_ia32_comigt` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.comigt.ss")
+    i32 sse_comigt_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.comige.ss` intrinsic; known as `__builtin_ia32_comige` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.comige.ss")
+    i32 sse_comige_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.comineq.ss` intrinsic; known as `__builtin_ia32_comineq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.comineq.ss")
+    i32 sse_comineq_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.ucomieq.ss` intrinsic; known as `__builtin_ia32_ucomieq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.ucomieq.ss")
+    i32 sse_ucomieq_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.ucomilt.ss` intrinsic; known as `__builtin_ia32_ucomilt` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.ucomilt.ss")
+    i32 sse_ucomilt_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.ucomile.ss` intrinsic; known as `__builtin_ia32_ucomile` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.ucomile.ss")
+    i32 sse_ucomile_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.ucomigt.ss` intrinsic; known as `__builtin_ia32_ucomigt` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.ucomigt.ss")
+    i32 sse_ucomigt_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.ucomige.ss` intrinsic; known as `__builtin_ia32_ucomige` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.ucomige.ss")
+    i32 sse_ucomige_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.ucomineq.ss` intrinsic; known as `__builtin_ia32_ucomineq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.ucomineq.ss")
+    i32 sse_ucomineq_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse.cvtss2si` intrinsic; known as `__builtin_ia32_cvtss2si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.cvtss2si")
+    i32 sse_cvtss2si(__vector(f32[4]));
+    /// The `llvm.x86.sse.cvtss2si64` intrinsic; known as `__builtin_ia32_cvtss2si64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.cvtss2si64")
+    i64 sse_cvtss2si64(__vector(f32[4]));
+    /// The `llvm.x86.sse.cvttss2si` intrinsic; known as `__builtin_ia32_cvttss2si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.cvttss2si")
+    i32 sse_cvttss2si(__vector(f32[4]));
+    /// The `llvm.x86.sse.cvttss2si64` intrinsic; known as `__builtin_ia32_cvttss2si64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.cvttss2si64")
+    i64 sse_cvttss2si64(__vector(f32[4]));
+    /// The `llvm.x86.sse.cvtsi2ss` intrinsic; known as `__builtin_ia32_cvtsi2ss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.cvtsi2ss")
+    __vector(f32[4]) sse_cvtsi2ss(__vector(f32[4]), i32);
+    /// The `llvm.x86.sse.cvtsi642ss` intrinsic; known as `__builtin_ia32_cvtsi642ss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.cvtsi642ss")
+    __vector(f32[4]) sse_cvtsi642ss(__vector(f32[4]), i64);
+    /// The `llvm.x86.sse.storeu.ps` intrinsic; known as `__builtin_ia32_storeups` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.storeu.ps")
+    void sse_storeu_ps(i8*, __vector(f32[4]));
+    /// The `llvm.x86.sse.sfence` intrinsic; known as `__builtin_ia32_sfence` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.sfence")
+    void sse_sfence();
+    /// The `llvm.x86.sse.stmxcsr` intrinsic.
+    pragma(LDC_intrinsic, "llvm.x86.sse.stmxcsr")
+    void sse_stmxcsr(i8*);
+    /// The `llvm.x86.sse.ldmxcsr` intrinsic.
+    pragma(LDC_intrinsic, "llvm.x86.sse.ldmxcsr")
+    void sse_ldmxcsr(i8*);
+    /// The `llvm.x86.sse.movmsk.ps` intrinsic; known as `__builtin_ia32_movmskps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse.movmsk.ps")
+    i32 sse_movmsk_ps(__vector(f32[4]));
+    /// The `llvm.x86.sse2.add.sd` intrinsic; known as `__builtin_ia32_addsd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.add.sd")
+    __vector(f64[2]) sse2_add_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.sub.sd` intrinsic; known as `__builtin_ia32_subsd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.sub.sd")
+    __vector(f64[2]) sse2_sub_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.mul.sd` intrinsic; known as `__builtin_ia32_mulsd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.mul.sd")
+    __vector(f64[2]) sse2_mul_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.div.sd` intrinsic; known as `__builtin_ia32_divsd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.div.sd")
+    __vector(f64[2]) sse2_div_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.sqrt.sd` intrinsic; known as `__builtin_ia32_sqrtsd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.sqrt.sd")
+    __vector(f64[2]) sse2_sqrt_sd(__vector(f64[2]));
+    /// The `llvm.x86.sse2.sqrt.pd` intrinsic; known as `__builtin_ia32_sqrtpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.sqrt.pd")
+    __vector(f64[2]) sse2_sqrt_pd(__vector(f64[2]));
+    /// The `llvm.x86.sse2.min.sd` intrinsic; known as `__builtin_ia32_minsd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.min.sd")
+    __vector(f64[2]) sse2_min_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.min.pd` intrinsic; known as `__builtin_ia32_minpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.min.pd")
+    __vector(f64[2]) sse2_min_pd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.max.sd` intrinsic; known as `__builtin_ia32_maxsd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.max.sd")
+    __vector(f64[2]) sse2_max_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.max.pd` intrinsic; known as `__builtin_ia32_maxpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.max.pd")
+    __vector(f64[2]) sse2_max_pd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.cmp.sd` intrinsic; known as `__builtin_ia32_cmpsd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cmp.sd")
+    __vector(f64[2]) sse2_cmp_sd(__vector(f64[2]), __vector(f64[2]), i8);
+    /// The `llvm.x86.sse2.cmp.pd` intrinsic; known as `__builtin_ia32_cmppd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cmp.pd")
+    __vector(f64[2]) sse2_cmp_pd(__vector(f64[2]), __vector(f64[2]), i8);
+    /// The `llvm.x86.sse2.comieq.sd` intrinsic; known as `__builtin_ia32_comisdeq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.comieq.sd")
+    i32 sse2_comieq_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.comilt.sd` intrinsic; known as `__builtin_ia32_comisdlt` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.comilt.sd")
+    i32 sse2_comilt_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.comile.sd` intrinsic; known as `__builtin_ia32_comisdle` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.comile.sd")
+    i32 sse2_comile_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.comigt.sd` intrinsic; known as `__builtin_ia32_comisdgt` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.comigt.sd")
+    i32 sse2_comigt_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.comige.sd` intrinsic; known as `__builtin_ia32_comisdge` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.comige.sd")
+    i32 sse2_comige_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.comineq.sd` intrinsic; known as `__builtin_ia32_comisdneq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.comineq.sd")
+    i32 sse2_comineq_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.ucomieq.sd` intrinsic; known as `__builtin_ia32_ucomisdeq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.ucomieq.sd")
+    i32 sse2_ucomieq_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.ucomilt.sd` intrinsic; known as `__builtin_ia32_ucomisdlt` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.ucomilt.sd")
+    i32 sse2_ucomilt_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.ucomile.sd` intrinsic; known as `__builtin_ia32_ucomisdle` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.ucomile.sd")
+    i32 sse2_ucomile_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.ucomigt.sd` intrinsic; known as `__builtin_ia32_ucomisdgt` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.ucomigt.sd")
+    i32 sse2_ucomigt_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.ucomige.sd` intrinsic; known as `__builtin_ia32_ucomisdge` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.ucomige.sd")
+    i32 sse2_ucomige_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.ucomineq.sd` intrinsic; known as `__builtin_ia32_ucomisdneq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.ucomineq.sd")
+    i32 sse2_ucomineq_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.padds.b` intrinsic; known as `__builtin_ia32_paddsb128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.padds.b")
+    __vector(i8[16]) sse2_padds_b(__vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.sse2.padds.w` intrinsic; known as `__builtin_ia32_paddsw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.padds.w")
+    __vector(i16[8]) sse2_padds_w(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.sse2.paddus.b` intrinsic; known as `__builtin_ia32_paddusb128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.paddus.b")
+    __vector(i8[16]) sse2_paddus_b(__vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.sse2.paddus.w` intrinsic; known as `__builtin_ia32_paddusw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.paddus.w")
+    __vector(i16[8]) sse2_paddus_w(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.sse2.psubs.b` intrinsic; known as `__builtin_ia32_psubsb128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psubs.b")
+    __vector(i8[16]) sse2_psubs_b(__vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.sse2.psubs.w` intrinsic; known as `__builtin_ia32_psubsw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psubs.w")
+    __vector(i16[8]) sse2_psubs_w(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.sse2.psubus.b` intrinsic; known as `__builtin_ia32_psubusb128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psubus.b")
+    __vector(i8[16]) sse2_psubus_b(__vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.sse2.psubus.w` intrinsic; known as `__builtin_ia32_psubusw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psubus.w")
+    __vector(i16[8]) sse2_psubus_w(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.sse2.pmulhu.w` intrinsic; known as `__builtin_ia32_pmulhuw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pmulhu.w")
+    __vector(i16[8]) sse2_pmulhu_w(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.sse2.pmulh.w` intrinsic; known as `__builtin_ia32_pmulhw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pmulh.w")
+    __vector(i16[8]) sse2_pmulh_w(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.sse2.pmulu.dq` intrinsic; known as `__builtin_ia32_pmuludq128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pmulu.dq")
+    __vector(i64[2]) sse2_pmulu_dq(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.sse2.pmadd.wd` intrinsic; known as `__builtin_ia32_pmaddwd128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pmadd.wd")
+    __vector(i32[4]) sse2_pmadd_wd(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.sse2.pavg.b` intrinsic; known as `__builtin_ia32_pavgb128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pavg.b")
+    __vector(i8[16]) sse2_pavg_b(__vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.sse2.pavg.w` intrinsic; known as `__builtin_ia32_pavgw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pavg.w")
+    __vector(i16[8]) sse2_pavg_w(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.sse2.pmaxu.b` intrinsic; known as `__builtin_ia32_pmaxub128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pmaxu.b")
+    __vector(i8[16]) sse2_pmaxu_b(__vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.sse2.pmaxs.w` intrinsic; known as `__builtin_ia32_pmaxsw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pmaxs.w")
+    __vector(i16[8]) sse2_pmaxs_w(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.sse2.pminu.b` intrinsic; known as `__builtin_ia32_pminub128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pminu.b")
+    __vector(i8[16]) sse2_pminu_b(__vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.sse2.pmins.w` intrinsic; known as `__builtin_ia32_pminsw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pmins.w")
+    __vector(i16[8]) sse2_pmins_w(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.sse2.psad.bw` intrinsic; known as `__builtin_ia32_psadbw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psad.bw")
+    __vector(i64[2]) sse2_psad_bw(__vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.sse2.psll.w` intrinsic; known as `__builtin_ia32_psllw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psll.w")
+    __vector(i16[8]) sse2_psll_w(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.sse2.psll.d` intrinsic; known as `__builtin_ia32_pslld128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psll.d")
+    __vector(i32[4]) sse2_psll_d(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.sse2.psll.q` intrinsic; known as `__builtin_ia32_psllq128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psll.q")
+    __vector(i64[2]) sse2_psll_q(__vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.sse2.psrl.w` intrinsic; known as `__builtin_ia32_psrlw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psrl.w")
+    __vector(i16[8]) sse2_psrl_w(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.sse2.psrl.d` intrinsic; known as `__builtin_ia32_psrld128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psrl.d")
+    __vector(i32[4]) sse2_psrl_d(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.sse2.psrl.q` intrinsic; known as `__builtin_ia32_psrlq128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psrl.q")
+    __vector(i64[2]) sse2_psrl_q(__vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.sse2.psra.w` intrinsic; known as `__builtin_ia32_psraw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psra.w")
+    __vector(i16[8]) sse2_psra_w(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.sse2.psra.d` intrinsic; known as `__builtin_ia32_psrad128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psra.d")
+    __vector(i32[4]) sse2_psra_d(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.sse2.pslli.w` intrinsic; known as `__builtin_ia32_psllwi128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pslli.w")
+    __vector(i16[8]) sse2_pslli_w(__vector(i16[8]), i32);
+    /// The `llvm.x86.sse2.pslli.d` intrinsic; known as `__builtin_ia32_pslldi128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pslli.d")
+    __vector(i32[4]) sse2_pslli_d(__vector(i32[4]), i32);
+    /// The `llvm.x86.sse2.pslli.q` intrinsic; known as `__builtin_ia32_psllqi128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pslli.q")
+    __vector(i64[2]) sse2_pslli_q(__vector(i64[2]), i32);
+    /// The `llvm.x86.sse2.psrli.w` intrinsic; known as `__builtin_ia32_psrlwi128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psrli.w")
+    __vector(i16[8]) sse2_psrli_w(__vector(i16[8]), i32);
+    /// The `llvm.x86.sse2.psrli.d` intrinsic; known as `__builtin_ia32_psrldi128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psrli.d")
+    __vector(i32[4]) sse2_psrli_d(__vector(i32[4]), i32);
+    /// The `llvm.x86.sse2.psrli.q` intrinsic; known as `__builtin_ia32_psrlqi128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psrli.q")
+    __vector(i64[2]) sse2_psrli_q(__vector(i64[2]), i32);
+    /// The `llvm.x86.sse2.psrai.w` intrinsic; known as `__builtin_ia32_psrawi128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psrai.w")
+    __vector(i16[8]) sse2_psrai_w(__vector(i16[8]), i32);
+    /// The `llvm.x86.sse2.psrai.d` intrinsic; known as `__builtin_ia32_psradi128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psrai.d")
+    __vector(i32[4]) sse2_psrai_d(__vector(i32[4]), i32);
+    /// The `llvm.x86.sse2.psll.dq` intrinsic; known as `__builtin_ia32_pslldqi128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psll.dq")
+    __vector(i64[2]) sse2_psll_dq(__vector(i64[2]), i32);
+    /// The `llvm.x86.sse2.psrl.dq` intrinsic; known as `__builtin_ia32_psrldqi128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psrl.dq")
+    __vector(i64[2]) sse2_psrl_dq(__vector(i64[2]), i32);
+    /// The `llvm.x86.sse2.psll.dq.bs` intrinsic; known as `__builtin_ia32_pslldqi128_byteshift` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psll.dq.bs")
+    __vector(i64[2]) sse2_psll_dq_bs(__vector(i64[2]), i32);
+    /// The `llvm.x86.sse2.psrl.dq.bs` intrinsic; known as `__builtin_ia32_psrldqi128_byteshift` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.psrl.dq.bs")
+    __vector(i64[2]) sse2_psrl_dq_bs(__vector(i64[2]), i32);
+    /// The `llvm.x86.sse2.cvtdq2pd` intrinsic; known as `__builtin_ia32_cvtdq2pd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtdq2pd")
+    __vector(f64[2]) sse2_cvtdq2pd(__vector(i32[4]));
+    /// The `llvm.x86.sse2.cvtdq2ps` intrinsic; known as `__builtin_ia32_cvtdq2ps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtdq2ps")
+    __vector(f32[4]) sse2_cvtdq2ps(__vector(i32[4]));
+    /// The `llvm.x86.sse2.cvtpd2dq` intrinsic; known as `__builtin_ia32_cvtpd2dq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtpd2dq")
+    __vector(i32[4]) sse2_cvtpd2dq(__vector(f64[2]));
+    /// The `llvm.x86.sse2.cvttpd2dq` intrinsic; known as `__builtin_ia32_cvttpd2dq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cvttpd2dq")
+    __vector(i32[4]) sse2_cvttpd2dq(__vector(f64[2]));
+    /// The `llvm.x86.sse2.cvtpd2ps` intrinsic; known as `__builtin_ia32_cvtpd2ps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtpd2ps")
+    __vector(f32[4]) sse2_cvtpd2ps(__vector(f64[2]));
+    /// The `llvm.x86.sse2.cvtps2dq` intrinsic; known as `__builtin_ia32_cvtps2dq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtps2dq")
+    __vector(i32[4]) sse2_cvtps2dq(__vector(f32[4]));
+    /// The `llvm.x86.sse2.cvttps2dq` intrinsic; known as `__builtin_ia32_cvttps2dq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cvttps2dq")
+    __vector(i32[4]) sse2_cvttps2dq(__vector(f32[4]));
+    /// The `llvm.x86.sse2.cvtps2pd` intrinsic; known as `__builtin_ia32_cvtps2pd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtps2pd")
+    __vector(f64[2]) sse2_cvtps2pd(__vector(f32[4]));
+    /// The `llvm.x86.sse2.cvtsd2si` intrinsic; known as `__builtin_ia32_cvtsd2si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtsd2si")
+    i32 sse2_cvtsd2si(__vector(f64[2]));
+    /// The `llvm.x86.sse2.cvtsd2si64` intrinsic; known as `__builtin_ia32_cvtsd2si64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtsd2si64")
+    i64 sse2_cvtsd2si64(__vector(f64[2]));
+    /// The `llvm.x86.sse2.cvttsd2si` intrinsic; known as `__builtin_ia32_cvttsd2si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cvttsd2si")
+    i32 sse2_cvttsd2si(__vector(f64[2]));
+    /// The `llvm.x86.sse2.cvttsd2si64` intrinsic; known as `__builtin_ia32_cvttsd2si64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cvttsd2si64")
+    i64 sse2_cvttsd2si64(__vector(f64[2]));
+    /// The `llvm.x86.sse2.cvtsi2sd` intrinsic; known as `__builtin_ia32_cvtsi2sd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtsi2sd")
+    __vector(f64[2]) sse2_cvtsi2sd(__vector(f64[2]), i32);
+    /// The `llvm.x86.sse2.cvtsi642sd` intrinsic; known as `__builtin_ia32_cvtsi642sd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtsi642sd")
+    __vector(f64[2]) sse2_cvtsi642sd(__vector(f64[2]), i64);
+    /// The `llvm.x86.sse2.cvtsd2ss` intrinsic; known as `__builtin_ia32_cvtsd2ss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtsd2ss")
+    __vector(f32[4]) sse2_cvtsd2ss(__vector(f32[4]), __vector(f64[2]));
+    /// The `llvm.x86.sse2.cvtss2sd` intrinsic; known as `__builtin_ia32_cvtss2sd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtss2sd")
+    __vector(f64[2]) sse2_cvtss2sd(__vector(f64[2]), __vector(f32[4]));
+    /// The `llvm.x86.sse2.storeu.pd` intrinsic; known as `__builtin_ia32_storeupd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.storeu.pd")
+    void sse2_storeu_pd(i8*, __vector(f64[2]));
+    /// The `llvm.x86.sse2.storeu.dq` intrinsic; known as `__builtin_ia32_storedqu` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.storeu.dq")
+    void sse2_storeu_dq(i8*, __vector(i8[16]));
+    /// The `llvm.x86.sse2.storel.dq` intrinsic; known as `__builtin_ia32_storelv4si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.storel.dq")
+    void sse2_storel_dq(i8*, __vector(i32[4]));
+    /// The `llvm.x86.sse2.packsswb.128` intrinsic; known as `__builtin_ia32_packsswb128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.packsswb.128")
+    __vector(i8[16]) sse2_packsswb_128(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.sse2.packssdw.128` intrinsic; known as `__builtin_ia32_packssdw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.packssdw.128")
+    __vector(i16[8]) sse2_packssdw_128(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.sse2.packuswb.128` intrinsic; known as `__builtin_ia32_packuswb128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.packuswb.128")
+    __vector(i8[16]) sse2_packuswb_128(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.sse2.movmsk.pd` intrinsic; known as `__builtin_ia32_movmskpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.movmsk.pd")
+    i32 sse2_movmsk_pd(__vector(f64[2]));
+    /// The `llvm.x86.sse2.pmovmskb.128` intrinsic; known as `__builtin_ia32_pmovmskb128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pmovmskb.128")
+    i32 sse2_pmovmskb_128(__vector(i8[16]));
+    /// The `llvm.x86.sse2.maskmov.dqu` intrinsic; known as `__builtin_ia32_maskmovdqu` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.maskmov.dqu")
+    void sse2_maskmov_dqu(__vector(i8[16]), __vector(i8[16]), i8*);
+    /// The `llvm.x86.sse2.clflush` intrinsic; known as `__builtin_ia32_clflush` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.clflush")
+    void sse2_clflush(i8*);
+    /// The `llvm.x86.sse2.lfence` intrinsic; known as `__builtin_ia32_lfence` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.lfence")
+    void sse2_lfence();
+    /// The `llvm.x86.sse2.mfence` intrinsic; known as `__builtin_ia32_mfence` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.mfence")
+    void sse2_mfence();
+    /// The `llvm.x86.sse2.pause` intrinsic; known as `__builtin_ia32_pause` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pause")
+    void sse2_pause();
+    /// The `llvm.x86.sse3.addsub.ps` intrinsic; known as `__builtin_ia32_addsubps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse3.addsub.ps")
+    __vector(f32[4]) sse3_addsub_ps(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse3.addsub.pd` intrinsic; known as `__builtin_ia32_addsubpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse3.addsub.pd")
+    __vector(f64[2]) sse3_addsub_pd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse3.hadd.ps` intrinsic; known as `__builtin_ia32_haddps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse3.hadd.ps")
+    __vector(f32[4]) sse3_hadd_ps(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse3.hadd.pd` intrinsic; known as `__builtin_ia32_haddpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse3.hadd.pd")
+    __vector(f64[2]) sse3_hadd_pd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse3.hsub.ps` intrinsic; known as `__builtin_ia32_hsubps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse3.hsub.ps")
+    __vector(f32[4]) sse3_hsub_ps(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse3.hsub.pd` intrinsic; known as `__builtin_ia32_hsubpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse3.hsub.pd")
+    __vector(f64[2]) sse3_hsub_pd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse3.ldu.dq` intrinsic; known as `__builtin_ia32_lddqu` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse3.ldu.dq")
+    __vector(i8[16]) sse3_ldu_dq(i8*);
+    /// The `llvm.x86.sse3.monitor` intrinsic; known as `__builtin_ia32_monitor` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse3.monitor")
+    void sse3_monitor(i8*, i32, i32);
+    /// The `llvm.x86.sse3.mwait` intrinsic; known as `__builtin_ia32_mwait` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse3.mwait")
+    void sse3_mwait(i32, i32);
+    /// The `llvm.x86.ssse3.phadd.w.128` intrinsic; known as `__builtin_ia32_phaddw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.ssse3.phadd.w.128")
+    __vector(i16[8]) ssse3_phadd_w_128(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.ssse3.phadd.d.128` intrinsic; known as `__builtin_ia32_phaddd128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.ssse3.phadd.d.128")
+    __vector(i32[4]) ssse3_phadd_d_128(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.ssse3.phadd.sw.128` intrinsic; known as `__builtin_ia32_phaddsw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.ssse3.phadd.sw.128")
+    __vector(i16[8]) ssse3_phadd_sw_128(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.ssse3.phsub.w.128` intrinsic; known as `__builtin_ia32_phsubw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.ssse3.phsub.w.128")
+    __vector(i16[8]) ssse3_phsub_w_128(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.ssse3.phsub.d.128` intrinsic; known as `__builtin_ia32_phsubd128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.ssse3.phsub.d.128")
+    __vector(i32[4]) ssse3_phsub_d_128(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.ssse3.phsub.sw.128` intrinsic; known as `__builtin_ia32_phsubsw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.ssse3.phsub.sw.128")
+    __vector(i16[8]) ssse3_phsub_sw_128(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.ssse3.pmadd.ub.sw.128` intrinsic; known as `__builtin_ia32_pmaddubsw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.ssse3.pmadd.ub.sw.128")
+    __vector(i16[8]) ssse3_pmadd_ub_sw_128(__vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.ssse3.pmul.hr.sw.128` intrinsic; known as `__builtin_ia32_pmulhrsw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.ssse3.pmul.hr.sw.128")
+    __vector(i16[8]) ssse3_pmul_hr_sw_128(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.ssse3.pshuf.b.128` intrinsic; known as `__builtin_ia32_pshufb128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.ssse3.pshuf.b.128")
+    __vector(i8[16]) ssse3_pshuf_b_128(__vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.sse2.pshuf.d` intrinsic; known as `__builtin_ia32_pshufd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pshuf.d")
+    __vector(i32[4]) sse2_pshuf_d(__vector(i32[4]), i8);
+    /// The `llvm.x86.sse2.pshufl.w` intrinsic; known as `__builtin_ia32_pshuflw` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pshufl.w")
+    __vector(i16[8]) sse2_pshufl_w(__vector(i16[8]), i8);
+    /// The `llvm.x86.sse2.pshufh.w` intrinsic; known as `__builtin_ia32_pshufhw` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse2.pshufh.w")
+    __vector(i16[8]) sse2_pshufh_w(__vector(i16[8]), i8);
+    /// The `llvm.x86.ssse3.psign.b.128` intrinsic; known as `__builtin_ia32_psignb128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.ssse3.psign.b.128")
+    __vector(i8[16]) ssse3_psign_b_128(__vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.ssse3.psign.w.128` intrinsic; known as `__builtin_ia32_psignw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.ssse3.psign.w.128")
+    __vector(i16[8]) ssse3_psign_w_128(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.ssse3.psign.d.128` intrinsic; known as `__builtin_ia32_psignd128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.ssse3.psign.d.128")
+    __vector(i32[4]) ssse3_psign_d_128(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.ssse3.pabs.b.128` intrinsic; known as `__builtin_ia32_pabsb128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.ssse3.pabs.b.128")
+    __vector(i8[16]) ssse3_pabs_b_128(__vector(i8[16]));
+    /// The `llvm.x86.ssse3.pabs.w.128` intrinsic; known as `__builtin_ia32_pabsw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.ssse3.pabs.w.128")
+    __vector(i16[8]) ssse3_pabs_w_128(__vector(i16[8]));
+    /// The `llvm.x86.ssse3.pabs.d.128` intrinsic; known as `__builtin_ia32_pabsd128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.ssse3.pabs.d.128")
+    __vector(i32[4]) ssse3_pabs_d_128(__vector(i32[4]));
+    /// The `llvm.x86.sse41.round.ss` intrinsic; known as `__builtin_ia32_roundss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.round.ss")
+    __vector(f32[4]) sse41_round_ss(__vector(f32[4]), __vector(f32[4]), i32);
+    /// The `llvm.x86.sse41.round.ps` intrinsic; known as `__builtin_ia32_roundps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.round.ps")
+    __vector(f32[4]) sse41_round_ps(__vector(f32[4]), i32);
+    /// The `llvm.x86.sse41.round.sd` intrinsic; known as `__builtin_ia32_roundsd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.round.sd")
+    __vector(f64[2]) sse41_round_sd(__vector(f64[2]), __vector(f64[2]), i32);
+    /// The `llvm.x86.sse41.round.pd` intrinsic; known as `__builtin_ia32_roundpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.round.pd")
+    __vector(f64[2]) sse41_round_pd(__vector(f64[2]), i32);
+    /// The `llvm.x86.sse41.pmovsxbd` intrinsic; known as `__builtin_ia32_pmovsxbd128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovsxbd")
+    __vector(i32[4]) sse41_pmovsxbd(__vector(i8[16]));
+    /// The `llvm.x86.sse41.pmovsxbq` intrinsic; known as `__builtin_ia32_pmovsxbq128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovsxbq")
+    __vector(i64[2]) sse41_pmovsxbq(__vector(i8[16]));
+    /// The `llvm.x86.sse41.pmovsxbw` intrinsic; known as `__builtin_ia32_pmovsxbw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovsxbw")
+    __vector(i16[8]) sse41_pmovsxbw(__vector(i8[16]));
+    /// The `llvm.x86.sse41.pmovsxdq` intrinsic; known as `__builtin_ia32_pmovsxdq128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovsxdq")
+    __vector(i64[2]) sse41_pmovsxdq(__vector(i32[4]));
+    /// The `llvm.x86.sse41.pmovsxwd` intrinsic; known as `__builtin_ia32_pmovsxwd128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovsxwd")
+    __vector(i32[4]) sse41_pmovsxwd(__vector(i16[8]));
+    /// The `llvm.x86.sse41.pmovsxwq` intrinsic; known as `__builtin_ia32_pmovsxwq128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovsxwq")
+    __vector(i64[2]) sse41_pmovsxwq(__vector(i16[8]));
+    /// The `llvm.x86.sse41.pmovzxbd` intrinsic; known as `__builtin_ia32_pmovzxbd128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovzxbd")
+    __vector(i32[4]) sse41_pmovzxbd(__vector(i8[16]));
+    /// The `llvm.x86.sse41.pmovzxbq` intrinsic; known as `__builtin_ia32_pmovzxbq128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovzxbq")
+    __vector(i64[2]) sse41_pmovzxbq(__vector(i8[16]));
+    /// The `llvm.x86.sse41.pmovzxbw` intrinsic; known as `__builtin_ia32_pmovzxbw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovzxbw")
+    __vector(i16[8]) sse41_pmovzxbw(__vector(i8[16]));
+    /// The `llvm.x86.sse41.pmovzxdq` intrinsic; known as `__builtin_ia32_pmovzxdq128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovzxdq")
+    __vector(i64[2]) sse41_pmovzxdq(__vector(i32[4]));
+    /// The `llvm.x86.sse41.pmovzxwd` intrinsic; known as `__builtin_ia32_pmovzxwd128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovzxwd")
+    __vector(i32[4]) sse41_pmovzxwd(__vector(i16[8]));
+    /// The `llvm.x86.sse41.pmovzxwq` intrinsic; known as `__builtin_ia32_pmovzxwq128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovzxwq")
+    __vector(i64[2]) sse41_pmovzxwq(__vector(i16[8]));
+    /// The `llvm.x86.sse41.phminposuw` intrinsic; known as `__builtin_ia32_phminposuw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.phminposuw")
+    __vector(i16[8]) sse41_phminposuw(__vector(i16[8]));
+    /// The `llvm.x86.sse41.pmaxsb` intrinsic; known as `__builtin_ia32_pmaxsb128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmaxsb")
+    __vector(i8[16]) sse41_pmaxsb(__vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.sse41.pmaxsd` intrinsic; known as `__builtin_ia32_pmaxsd128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmaxsd")
+    __vector(i32[4]) sse41_pmaxsd(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.sse41.pmaxud` intrinsic; known as `__builtin_ia32_pmaxud128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmaxud")
+    __vector(i32[4]) sse41_pmaxud(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.sse41.pmaxuw` intrinsic; known as `__builtin_ia32_pmaxuw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmaxuw")
+    __vector(i16[8]) sse41_pmaxuw(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.sse41.pminsb` intrinsic; known as `__builtin_ia32_pminsb128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pminsb")
+    __vector(i8[16]) sse41_pminsb(__vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.sse41.pminsd` intrinsic; known as `__builtin_ia32_pminsd128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pminsd")
+    __vector(i32[4]) sse41_pminsd(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.sse41.pminud` intrinsic; known as `__builtin_ia32_pminud128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pminud")
+    __vector(i32[4]) sse41_pminud(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.sse41.pminuw` intrinsic; known as `__builtin_ia32_pminuw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pminuw")
+    __vector(i16[8]) sse41_pminuw(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.aesni.aesimc` intrinsic; known as `__builtin_ia32_aesimc128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.aesni.aesimc")
+    __vector(i64[2]) aesni_aesimc(__vector(i64[2]));
+    /// The `llvm.x86.aesni.aesenc` intrinsic; known as `__builtin_ia32_aesenc128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.aesni.aesenc")
+    __vector(i64[2]) aesni_aesenc(__vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.aesni.aesenclast` intrinsic; known as `__builtin_ia32_aesenclast128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.aesni.aesenclast")
+    __vector(i64[2]) aesni_aesenclast(__vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.aesni.aesdec` intrinsic; known as `__builtin_ia32_aesdec128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.aesni.aesdec")
+    __vector(i64[2]) aesni_aesdec(__vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.aesni.aesdeclast` intrinsic; known as `__builtin_ia32_aesdeclast128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.aesni.aesdeclast")
+    __vector(i64[2]) aesni_aesdeclast(__vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.aesni.aeskeygenassist` intrinsic; known as `__builtin_ia32_aeskeygenassist128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.aesni.aeskeygenassist")
+    __vector(i64[2]) aesni_aeskeygenassist(__vector(i64[2]), i8);
+    /// The `llvm.x86.pclmulqdq` intrinsic; known as `__builtin_ia32_pclmulqdq128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.pclmulqdq")
+    __vector(i64[2]) pclmulqdq(__vector(i64[2]), __vector(i64[2]), i8);
+    /// The `llvm.x86.sse41.packusdw` intrinsic; known as `__builtin_ia32_packusdw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.packusdw")
+    __vector(i16[8]) sse41_packusdw(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.sse41.pmuldq` intrinsic; known as `__builtin_ia32_pmuldq128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pmuldq")
+    __vector(i64[2]) sse41_pmuldq(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.sse41.pextrb` intrinsic.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pextrb")
+    i32 sse41_pextrb(__vector(i8[16]), i32);
+    /// The `llvm.x86.sse41.pextrd` intrinsic.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pextrd")
+    i32 sse41_pextrd(__vector(i32[4]), i32);
+    /// The `llvm.x86.sse41.pextrq` intrinsic.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pextrq")
+    i64 sse41_pextrq(__vector(i64[2]), i32);
+    /// The `llvm.x86.sse41.extractps` intrinsic; known as `__builtin_ia32_extractps128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.extractps")
+    i32 sse41_extractps(__vector(f32[4]), i32);
+    /// The `llvm.x86.sse41.insertps` intrinsic; known as `__builtin_ia32_insertps128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.insertps")
+    __vector(f32[4]) sse41_insertps(__vector(f32[4]), __vector(f32[4]), i8);
+    /// The `llvm.x86.sse41.pblendvb` intrinsic; known as `__builtin_ia32_pblendvb128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pblendvb")
+    __vector(i8[16]) sse41_pblendvb(__vector(i8[16]), __vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.sse41.pblendw` intrinsic; known as `__builtin_ia32_pblendw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.pblendw")
+    __vector(i16[8]) sse41_pblendw(__vector(i16[8]), __vector(i16[8]), i8);
+    /// The `llvm.x86.sse41.blendpd` intrinsic; known as `__builtin_ia32_blendpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.blendpd")
+    __vector(f64[2]) sse41_blendpd(__vector(f64[2]), __vector(f64[2]), i8);
+    /// The `llvm.x86.sse41.blendps` intrinsic; known as `__builtin_ia32_blendps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.blendps")
+    __vector(f32[4]) sse41_blendps(__vector(f32[4]), __vector(f32[4]), i8);
+    /// The `llvm.x86.sse41.blendvpd` intrinsic; known as `__builtin_ia32_blendvpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.blendvpd")
+    __vector(f64[2]) sse41_blendvpd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.sse41.blendvps` intrinsic; known as `__builtin_ia32_blendvps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.blendvps")
+    __vector(f32[4]) sse41_blendvps(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.sse41.dppd` intrinsic; known as `__builtin_ia32_dppd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.dppd")
+    __vector(f64[2]) sse41_dppd(__vector(f64[2]), __vector(f64[2]), i8);
+    /// The `llvm.x86.sse41.dpps` intrinsic; known as `__builtin_ia32_dpps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.dpps")
+    __vector(f32[4]) sse41_dpps(__vector(f32[4]), __vector(f32[4]), i8);
+    /// The `llvm.x86.sse41.mpsadbw` intrinsic; known as `__builtin_ia32_mpsadbw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.mpsadbw")
+    __vector(i16[8]) sse41_mpsadbw(__vector(i8[16]), __vector(i8[16]), i8);
+    /// The `llvm.x86.sse41.movntdqa` intrinsic; known as `__builtin_ia32_movntdqa` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.movntdqa")
+    __vector(i64[2]) sse41_movntdqa(i8*);
+    /// The `llvm.x86.sse41.ptestz` intrinsic; known as `__builtin_ia32_ptestz128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.ptestz")
+    i32 sse41_ptestz(__vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.sse41.ptestc` intrinsic; known as `__builtin_ia32_ptestc128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.ptestc")
+    i32 sse41_ptestc(__vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.sse41.ptestnzc` intrinsic; known as `__builtin_ia32_ptestnzc128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse41.ptestnzc")
+    i32 sse41_ptestnzc(__vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.sse42.crc32.32.8` intrinsic; known as `__builtin_ia32_crc32qi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.crc32.32.8")
+    i32 sse42_crc32_32_8(i32, i8);
+    /// The `llvm.x86.sse42.crc32.32.16` intrinsic; known as `__builtin_ia32_crc32hi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.crc32.32.16")
+    i32 sse42_crc32_32_16(i32, i16);
+    /// The `llvm.x86.sse42.crc32.32.32` intrinsic; known as `__builtin_ia32_crc32si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.crc32.32.32")
+    i32 sse42_crc32_32_32(i32, i32);
+    /// The `llvm.x86.sse42.crc32.64.64` intrinsic; known as `__builtin_ia32_crc32di` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.crc32.64.64")
+    i64 sse42_crc32_64_64(i64, i64);
+    /// The `llvm.x86.sse42.pcmpistrm128` intrinsic; known as `__builtin_ia32_pcmpistrm128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpistrm128")
+    __vector(i8[16]) sse42_pcmpistrm128(__vector(i8[16]), __vector(i8[16]), i8);
+    /// The `llvm.x86.sse42.pcmpistri128` intrinsic; known as `__builtin_ia32_pcmpistri128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpistri128")
+    i32 sse42_pcmpistri128(__vector(i8[16]), __vector(i8[16]), i8);
+    /// The `llvm.x86.sse42.pcmpistria128` intrinsic; known as `__builtin_ia32_pcmpistria128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpistria128")
+    i32 sse42_pcmpistria128(__vector(i8[16]), __vector(i8[16]), i8);
+    /// The `llvm.x86.sse42.pcmpistric128` intrinsic; known as `__builtin_ia32_pcmpistric128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpistric128")
+    i32 sse42_pcmpistric128(__vector(i8[16]), __vector(i8[16]), i8);
+    /// The `llvm.x86.sse42.pcmpistrio128` intrinsic; known as `__builtin_ia32_pcmpistrio128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpistrio128")
+    i32 sse42_pcmpistrio128(__vector(i8[16]), __vector(i8[16]), i8);
+    /// The `llvm.x86.sse42.pcmpistris128` intrinsic; known as `__builtin_ia32_pcmpistris128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpistris128")
+    i32 sse42_pcmpistris128(__vector(i8[16]), __vector(i8[16]), i8);
+    /// The `llvm.x86.sse42.pcmpistriz128` intrinsic; known as `__builtin_ia32_pcmpistriz128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpistriz128")
+    i32 sse42_pcmpistriz128(__vector(i8[16]), __vector(i8[16]), i8);
+    /// The `llvm.x86.sse42.pcmpestrm128` intrinsic; known as `__builtin_ia32_pcmpestrm128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpestrm128")
+    __vector(i8[16]) sse42_pcmpestrm128(__vector(i8[16]), i32, __vector(i8[16]), i32, i8);
+    /// The `llvm.x86.sse42.pcmpestri128` intrinsic; known as `__builtin_ia32_pcmpestri128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpestri128")
+    i32 sse42_pcmpestri128(__vector(i8[16]), i32, __vector(i8[16]), i32, i8);
+    /// The `llvm.x86.sse42.pcmpestria128` intrinsic; known as `__builtin_ia32_pcmpestria128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpestria128")
+    i32 sse42_pcmpestria128(__vector(i8[16]), i32, __vector(i8[16]), i32, i8);
+    /// The `llvm.x86.sse42.pcmpestric128` intrinsic; known as `__builtin_ia32_pcmpestric128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpestric128")
+    i32 sse42_pcmpestric128(__vector(i8[16]), i32, __vector(i8[16]), i32, i8);
+    /// The `llvm.x86.sse42.pcmpestrio128` intrinsic; known as `__builtin_ia32_pcmpestrio128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpestrio128")
+    i32 sse42_pcmpestrio128(__vector(i8[16]), i32, __vector(i8[16]), i32, i8);
+    /// The `llvm.x86.sse42.pcmpestris128` intrinsic; known as `__builtin_ia32_pcmpestris128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpestris128")
+    i32 sse42_pcmpestris128(__vector(i8[16]), i32, __vector(i8[16]), i32, i8);
+    /// The `llvm.x86.sse42.pcmpestriz128` intrinsic; known as `__builtin_ia32_pcmpestriz128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpestriz128")
+    i32 sse42_pcmpestriz128(__vector(i8[16]), i32, __vector(i8[16]), i32, i8);
+    /// The `llvm.x86.sse4a.extrqi` intrinsic; known as `__builtin_ia32_extrqi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse4a.extrqi")
+    __vector(i64[2]) sse4a_extrqi(__vector(i64[2]), i8, i8);
+    /// The `llvm.x86.sse4a.extrq` intrinsic; known as `__builtin_ia32_extrq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse4a.extrq")
+    __vector(i64[2]) sse4a_extrq(__vector(i64[2]), __vector(i8[16]));
+    /// The `llvm.x86.sse4a.insertqi` intrinsic; known as `__builtin_ia32_insertqi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse4a.insertqi")
+    __vector(i64[2]) sse4a_insertqi(__vector(i64[2]), __vector(i64[2]), i8, i8);
+    /// The `llvm.x86.sse4a.insertq` intrinsic; known as `__builtin_ia32_insertq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse4a.insertq")
+    __vector(i64[2]) sse4a_insertq(__vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.sse4a.movnt.ss` intrinsic; known as `__builtin_ia32_movntss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse4a.movnt.ss")
+    void sse4a_movnt_ss(i8*, __vector(f32[4]));
+    /// The `llvm.x86.sse4a.movnt.sd` intrinsic; known as `__builtin_ia32_movntsd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sse4a.movnt.sd")
+    void sse4a_movnt_sd(i8*, __vector(f64[2]));
+    /// The `llvm.x86.avx.addsub.pd.256` intrinsic; known as `__builtin_ia32_addsubpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.addsub.pd.256")
+    __vector(f64[4]) avx_addsub_pd_256(__vector(f64[4]), __vector(f64[4]));
+    /// The `llvm.x86.avx.addsub.ps.256` intrinsic; known as `__builtin_ia32_addsubps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.addsub.ps.256")
+    __vector(f32[8]) avx_addsub_ps_256(__vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.avx.max.pd.256` intrinsic; known as `__builtin_ia32_maxpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.max.pd.256")
+    __vector(f64[4]) avx_max_pd_256(__vector(f64[4]), __vector(f64[4]));
+    /// The `llvm.x86.avx.max.ps.256` intrinsic; known as `__builtin_ia32_maxps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.max.ps.256")
+    __vector(f32[8]) avx_max_ps_256(__vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.avx.min.pd.256` intrinsic; known as `__builtin_ia32_minpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.min.pd.256")
+    __vector(f64[4]) avx_min_pd_256(__vector(f64[4]), __vector(f64[4]));
+    /// The `llvm.x86.avx.min.ps.256` intrinsic; known as `__builtin_ia32_minps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.min.ps.256")
+    __vector(f32[8]) avx_min_ps_256(__vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.avx.sqrt.pd.256` intrinsic; known as `__builtin_ia32_sqrtpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.sqrt.pd.256")
+    __vector(f64[4]) avx_sqrt_pd_256(__vector(f64[4]));
+    /// The `llvm.x86.avx.sqrt.ps.256` intrinsic; known as `__builtin_ia32_sqrtps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.sqrt.ps.256")
+    __vector(f32[8]) avx_sqrt_ps_256(__vector(f32[8]));
+    /// The `llvm.x86.avx.rsqrt.ps.256` intrinsic; known as `__builtin_ia32_rsqrtps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.rsqrt.ps.256")
+    __vector(f32[8]) avx_rsqrt_ps_256(__vector(f32[8]));
+    /// The `llvm.x86.avx.rcp.ps.256` intrinsic; known as `__builtin_ia32_rcpps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.rcp.ps.256")
+    __vector(f32[8]) avx_rcp_ps_256(__vector(f32[8]));
+    /// The `llvm.x86.avx.round.pd.256` intrinsic; known as `__builtin_ia32_roundpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.round.pd.256")
+    __vector(f64[4]) avx_round_pd_256(__vector(f64[4]), i32);
+    /// The `llvm.x86.avx.round.ps.256` intrinsic; known as `__builtin_ia32_roundps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.round.ps.256")
+    __vector(f32[8]) avx_round_ps_256(__vector(f32[8]), i32);
+    /// The `llvm.x86.avx.hadd.pd.256` intrinsic; known as `__builtin_ia32_haddpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.hadd.pd.256")
+    __vector(f64[4]) avx_hadd_pd_256(__vector(f64[4]), __vector(f64[4]));
+    /// The `llvm.x86.avx.hsub.ps.256` intrinsic; known as `__builtin_ia32_hsubps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.hsub.ps.256")
+    __vector(f32[8]) avx_hsub_ps_256(__vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.avx.hsub.pd.256` intrinsic; known as `__builtin_ia32_hsubpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.hsub.pd.256")
+    __vector(f64[4]) avx_hsub_pd_256(__vector(f64[4]), __vector(f64[4]));
+    /// The `llvm.x86.avx.hadd.ps.256` intrinsic; known as `__builtin_ia32_haddps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.hadd.ps.256")
+    __vector(f32[8]) avx_hadd_ps_256(__vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.avx.vpermilvar.pd` intrinsic; known as `__builtin_ia32_vpermilvarpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vpermilvar.pd")
+    __vector(f64[2]) avx_vpermilvar_pd(__vector(f64[2]), __vector(i64[2]));
+    /// The `llvm.x86.avx.vpermilvar.ps` intrinsic; known as `__builtin_ia32_vpermilvarps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vpermilvar.ps")
+    __vector(f32[4]) avx_vpermilvar_ps(__vector(f32[4]), __vector(i32[4]));
+    /// The `llvm.x86.avx.vpermilvar.pd.256` intrinsic; known as `__builtin_ia32_vpermilvarpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vpermilvar.pd.256")
+    __vector(f64[4]) avx_vpermilvar_pd_256(__vector(f64[4]), __vector(i64[4]));
+    /// The `llvm.x86.avx.vpermilvar.ps.256` intrinsic; known as `__builtin_ia32_vpermilvarps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vpermilvar.ps.256")
+    __vector(f32[8]) avx_vpermilvar_ps_256(__vector(f32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx.vperm2f128.pd.256` intrinsic; known as `__builtin_ia32_vperm2f128_pd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vperm2f128.pd.256")
+    __vector(f64[4]) avx_vperm2f128_pd_256(__vector(f64[4]), __vector(f64[4]), i8);
+    /// The `llvm.x86.avx.vperm2f128.ps.256` intrinsic; known as `__builtin_ia32_vperm2f128_ps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vperm2f128.ps.256")
+    __vector(f32[8]) avx_vperm2f128_ps_256(__vector(f32[8]), __vector(f32[8]), i8);
+    /// The `llvm.x86.avx.vperm2f128.si.256` intrinsic; known as `__builtin_ia32_vperm2f128_si256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vperm2f128.si.256")
+    __vector(i32[8]) avx_vperm2f128_si_256(__vector(i32[8]), __vector(i32[8]), i8);
+    /// The `llvm.x86.avx512.mask.vpermt.d.512` intrinsic; known as `__builtin_ia32_vpermt2vard512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.vpermt.d.512")
+    __vector(i32[16]) avx512_mask_vpermt_d_512(__vector(i32[16]), __vector(i32[16]), __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.vpermt.q.512` intrinsic; known as `__builtin_ia32_vpermt2varq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.vpermt.q.512")
+    __vector(i64[8]) avx512_mask_vpermt_q_512(__vector(i64[8]), __vector(i64[8]), __vector(i64[8]), i8);
+    /// The `llvm.x86.avx512.mask.vpermt.ps.512` intrinsic; known as `__builtin_ia32_vpermt2varps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.vpermt.ps.512")
+    __vector(f32[16]) avx512_mask_vpermt_ps_512(__vector(i32[16]), __vector(f32[16]), __vector(f32[16]), i16);
+    /// The `llvm.x86.avx512.mask.vpermt.pd.512` intrinsic; known as `__builtin_ia32_vpermt2varpd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.vpermt.pd.512")
+    __vector(f64[8]) avx512_mask_vpermt_pd_512(__vector(i64[8]), __vector(f64[8]), __vector(f64[8]), i8);
+    /// The `llvm.x86.avx.blend.pd.256` intrinsic; known as `__builtin_ia32_blendpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.blend.pd.256")
+    __vector(f64[4]) avx_blend_pd_256(__vector(f64[4]), __vector(f64[4]), i8);
+    /// The `llvm.x86.avx.blend.ps.256` intrinsic; known as `__builtin_ia32_blendps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.blend.ps.256")
+    __vector(f32[8]) avx_blend_ps_256(__vector(f32[8]), __vector(f32[8]), i8);
+    /// The `llvm.x86.avx.blendv.pd.256` intrinsic; known as `__builtin_ia32_blendvpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.blendv.pd.256")
+    __vector(f64[4]) avx_blendv_pd_256(__vector(f64[4]), __vector(f64[4]), __vector(f64[4]));
+    /// The `llvm.x86.avx.blendv.ps.256` intrinsic; known as `__builtin_ia32_blendvps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.blendv.ps.256")
+    __vector(f32[8]) avx_blendv_ps_256(__vector(f32[8]), __vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.avx.dp.ps.256` intrinsic; known as `__builtin_ia32_dpps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.dp.ps.256")
+    __vector(f32[8]) avx_dp_ps_256(__vector(f32[8]), __vector(f32[8]), i8);
+    /// The `llvm.x86.avx.cmp.pd.256` intrinsic; known as `__builtin_ia32_cmppd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.cmp.pd.256")
+    __vector(f64[4]) avx_cmp_pd_256(__vector(f64[4]), __vector(f64[4]), i8);
+    /// The `llvm.x86.avx.cmp.ps.256` intrinsic; known as `__builtin_ia32_cmpps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.cmp.ps.256")
+    __vector(f32[8]) avx_cmp_ps_256(__vector(f32[8]), __vector(f32[8]), i8);
+    /// The `llvm.x86.avx.vextractf128.pd.256` intrinsic; known as `__builtin_ia32_vextractf128_pd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vextractf128.pd.256")
+    __vector(f64[2]) avx_vextractf128_pd_256(__vector(f64[4]), i8);
+    /// The `llvm.x86.avx.vextractf128.ps.256` intrinsic; known as `__builtin_ia32_vextractf128_ps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vextractf128.ps.256")
+    __vector(f32[4]) avx_vextractf128_ps_256(__vector(f32[8]), i8);
+    /// The `llvm.x86.avx.vextractf128.si.256` intrinsic; known as `__builtin_ia32_vextractf128_si256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vextractf128.si.256")
+    __vector(i32[4]) avx_vextractf128_si_256(__vector(i32[8]), i8);
+    /// The `llvm.x86.avx.vinsertf128.pd.256` intrinsic; known as `__builtin_ia32_vinsertf128_pd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vinsertf128.pd.256")
+    __vector(f64[4]) avx_vinsertf128_pd_256(__vector(f64[4]), __vector(f64[2]), i8);
+    /// The `llvm.x86.avx.vinsertf128.ps.256` intrinsic; known as `__builtin_ia32_vinsertf128_ps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vinsertf128.ps.256")
+    __vector(f32[8]) avx_vinsertf128_ps_256(__vector(f32[8]), __vector(f32[4]), i8);
+    /// The `llvm.x86.avx.vinsertf128.si.256` intrinsic; known as `__builtin_ia32_vinsertf128_si256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vinsertf128.si.256")
+    __vector(i32[8]) avx_vinsertf128_si_256(__vector(i32[8]), __vector(i32[4]), i8);
+    /// The `llvm.x86.avx.cvtdq2.pd.256` intrinsic; known as `__builtin_ia32_cvtdq2pd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.cvtdq2.pd.256")
+    __vector(f64[4]) avx_cvtdq2_pd_256(__vector(i32[4]));
+    /// The `llvm.x86.avx.cvtdq2.ps.256` intrinsic; known as `__builtin_ia32_cvtdq2ps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.cvtdq2.ps.256")
+    __vector(f32[8]) avx_cvtdq2_ps_256(__vector(i32[8]));
+    /// The `llvm.x86.avx.cvt.pd2.ps.256` intrinsic; known as `__builtin_ia32_cvtpd2ps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.cvt.pd2.ps.256")
+    __vector(f32[4]) avx_cvt_pd2_ps_256(__vector(f64[4]));
+    /// The `llvm.x86.avx.cvt.ps2dq.256` intrinsic; known as `__builtin_ia32_cvtps2dq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.cvt.ps2dq.256")
+    __vector(i32[8]) avx_cvt_ps2dq_256(__vector(f32[8]));
+    /// The `llvm.x86.avx.cvt.ps2.pd.256` intrinsic; known as `__builtin_ia32_cvtps2pd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.cvt.ps2.pd.256")
+    __vector(f64[4]) avx_cvt_ps2_pd_256(__vector(f32[4]));
+    /// The `llvm.x86.avx.cvtt.pd2dq.256` intrinsic; known as `__builtin_ia32_cvttpd2dq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.cvtt.pd2dq.256")
+    __vector(i32[4]) avx_cvtt_pd2dq_256(__vector(f64[4]));
+    /// The `llvm.x86.avx.cvt.pd2dq.256` intrinsic; known as `__builtin_ia32_cvtpd2dq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.cvt.pd2dq.256")
+    __vector(i32[4]) avx_cvt_pd2dq_256(__vector(f64[4]));
+    /// The `llvm.x86.avx.cvtt.ps2dq.256` intrinsic; known as `__builtin_ia32_cvttps2dq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.cvtt.ps2dq.256")
+    __vector(i32[8]) avx_cvtt_ps2dq_256(__vector(f32[8]));
+    /// The `llvm.x86.avx.vtestz.pd` intrinsic; known as `__builtin_ia32_vtestzpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vtestz.pd")
+    i32 avx_vtestz_pd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.avx.vtestc.pd` intrinsic; known as `__builtin_ia32_vtestcpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vtestc.pd")
+    i32 avx_vtestc_pd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.avx.vtestnzc.pd` intrinsic; known as `__builtin_ia32_vtestnzcpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vtestnzc.pd")
+    i32 avx_vtestnzc_pd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.avx.vtestz.ps` intrinsic; known as `__builtin_ia32_vtestzps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vtestz.ps")
+    i32 avx_vtestz_ps(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.avx.vtestc.ps` intrinsic; known as `__builtin_ia32_vtestcps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vtestc.ps")
+    i32 avx_vtestc_ps(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.avx.vtestnzc.ps` intrinsic; known as `__builtin_ia32_vtestnzcps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vtestnzc.ps")
+    i32 avx_vtestnzc_ps(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.avx.vtestz.pd.256` intrinsic; known as `__builtin_ia32_vtestzpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vtestz.pd.256")
+    i32 avx_vtestz_pd_256(__vector(f64[4]), __vector(f64[4]));
+    /// The `llvm.x86.avx.vtestc.pd.256` intrinsic; known as `__builtin_ia32_vtestcpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vtestc.pd.256")
+    i32 avx_vtestc_pd_256(__vector(f64[4]), __vector(f64[4]));
+    /// The `llvm.x86.avx.vtestnzc.pd.256` intrinsic; known as `__builtin_ia32_vtestnzcpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vtestnzc.pd.256")
+    i32 avx_vtestnzc_pd_256(__vector(f64[4]), __vector(f64[4]));
+    /// The `llvm.x86.avx.vtestz.ps.256` intrinsic; known as `__builtin_ia32_vtestzps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vtestz.ps.256")
+    i32 avx_vtestz_ps_256(__vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.avx.vtestc.ps.256` intrinsic; known as `__builtin_ia32_vtestcps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vtestc.ps.256")
+    i32 avx_vtestc_ps_256(__vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.avx.vtestnzc.ps.256` intrinsic; known as `__builtin_ia32_vtestnzcps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vtestnzc.ps.256")
+    i32 avx_vtestnzc_ps_256(__vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.avx.ptestz.256` intrinsic; known as `__builtin_ia32_ptestz256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.ptestz.256")
+    i32 avx_ptestz_256(__vector(i64[4]), __vector(i64[4]));
+    /// The `llvm.x86.avx.ptestc.256` intrinsic; known as `__builtin_ia32_ptestc256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.ptestc.256")
+    i32 avx_ptestc_256(__vector(i64[4]), __vector(i64[4]));
+    /// The `llvm.x86.avx.ptestnzc.256` intrinsic; known as `__builtin_ia32_ptestnzc256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.ptestnzc.256")
+    i32 avx_ptestnzc_256(__vector(i64[4]), __vector(i64[4]));
+    /// The `llvm.x86.avx512.mask.ptestm.d.512` intrinsic; known as `__builtin_ia32_ptestmd512` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.ptestm.d.512")
+    i16 avx512_mask_ptestm_d_512(__vector(i32[16]), __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.ptestm.q.512` intrinsic; known as `__builtin_ia32_ptestmq512` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.ptestm.q.512")
+    i8 avx512_mask_ptestm_q_512(__vector(i64[8]), __vector(i64[8]), i8);
+    /// The `llvm.x86.avx.movmsk.pd.256` intrinsic; known as `__builtin_ia32_movmskpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.movmsk.pd.256")
+    i32 avx_movmsk_pd_256(__vector(f64[4]));
+    /// The `llvm.x86.avx.movmsk.ps.256` intrinsic; known as `__builtin_ia32_movmskps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.movmsk.ps.256")
+    i32 avx_movmsk_ps_256(__vector(f32[8]));
+    /// The `llvm.x86.avx.vzeroall` intrinsic; known as `__builtin_ia32_vzeroall` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vzeroall")
+    void avx_vzeroall();
+    /// The `llvm.x86.avx.vzeroupper` intrinsic; known as `__builtin_ia32_vzeroupper` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vzeroupper")
+    void avx_vzeroupper();
+    /// The `llvm.x86.avx.vbroadcastf128.pd.256` intrinsic; known as `__builtin_ia32_vbroadcastf128_pd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vbroadcastf128.pd.256")
+    __vector(f64[4]) avx_vbroadcastf128_pd_256(i8*);
+    /// The `llvm.x86.avx.vbroadcastf128.ps.256` intrinsic; known as `__builtin_ia32_vbroadcastf128_ps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.vbroadcastf128.ps.256")
+    __vector(f32[8]) avx_vbroadcastf128_ps_256(i8*);
+    /// The `llvm.x86.avx.ldu.dq.256` intrinsic; known as `__builtin_ia32_lddqu256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.ldu.dq.256")
+    __vector(i8[32]) avx_ldu_dq_256(i8*);
+    /// The `llvm.x86.avx.storeu.pd.256` intrinsic; known as `__builtin_ia32_storeupd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.storeu.pd.256")
+    void avx_storeu_pd_256(i8*, __vector(f64[4]));
+    /// The `llvm.x86.avx.storeu.ps.256` intrinsic; known as `__builtin_ia32_storeups256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.storeu.ps.256")
+    void avx_storeu_ps_256(i8*, __vector(f32[8]));
+    /// The `llvm.x86.avx.storeu.dq.256` intrinsic; known as `__builtin_ia32_storedqu256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.storeu.dq.256")
+    void avx_storeu_dq_256(i8*, __vector(i8[32]));
+    /// The `llvm.x86.avx.maskload.pd` intrinsic; known as `__builtin_ia32_maskloadpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.maskload.pd")
+    __vector(f64[2]) avx_maskload_pd(i8*, __vector(f64[2]));
+    /// The `llvm.x86.avx.maskload.ps` intrinsic; known as `__builtin_ia32_maskloadps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.maskload.ps")
+    __vector(f32[4]) avx_maskload_ps(i8*, __vector(f32[4]));
+    /// The `llvm.x86.avx.maskload.pd.256` intrinsic; known as `__builtin_ia32_maskloadpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.maskload.pd.256")
+    __vector(f64[4]) avx_maskload_pd_256(i8*, __vector(f64[4]));
+    /// The `llvm.x86.avx.maskload.ps.256` intrinsic; known as `__builtin_ia32_maskloadps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.maskload.ps.256")
+    __vector(f32[8]) avx_maskload_ps_256(i8*, __vector(f32[8]));
+    /// The `llvm.x86.avx512.mask.loadu.ps.512` intrinsic; known as `__builtin_ia32_loadups512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.loadu.ps.512")
+    __vector(f32[16]) avx512_mask_loadu_ps_512(i8*, __vector(f32[16]), i16);
+    /// The `llvm.x86.avx512.mask.loadu.pd.512` intrinsic; known as `__builtin_ia32_loadupd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.loadu.pd.512")
+    __vector(f64[8]) avx512_mask_loadu_pd_512(i8*, __vector(f64[8]), i8);
+    /// The `llvm.x86.avx.maskstore.pd` intrinsic; known as `__builtin_ia32_maskstorepd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.maskstore.pd")
+    void avx_maskstore_pd(i8*, __vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.avx.maskstore.ps` intrinsic; known as `__builtin_ia32_maskstoreps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.maskstore.ps")
+    void avx_maskstore_ps(i8*, __vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.avx.maskstore.pd.256` intrinsic; known as `__builtin_ia32_maskstorepd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.maskstore.pd.256")
+    void avx_maskstore_pd_256(i8*, __vector(f64[4]), __vector(f64[4]));
+    /// The `llvm.x86.avx.maskstore.ps.256` intrinsic; known as `__builtin_ia32_maskstoreps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx.maskstore.ps.256")
+    void avx_maskstore_ps_256(i8*, __vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.avx512.mask.storeu.ps.512` intrinsic; known as `__builtin_ia32_storeups512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.storeu.ps.512")
+    void avx512_mask_storeu_ps_512(i8*, __vector(f32[16]), i16);
+    /// The `llvm.x86.avx512.mask.storeu.pd.512` intrinsic; known as `__builtin_ia32_storeupd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.storeu.pd.512")
+    void avx512_mask_storeu_pd_512(i8*, __vector(f64[8]), i8);
+    /// The `llvm.x86.avx512.mask.store.ss` intrinsic; known as `__builtin_ia32_storess_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.store.ss")
+    void avx512_mask_store_ss(i8*, __vector(f32[4]), i8);
+    /// The `llvm.x86.avx2.padds.b` intrinsic; known as `__builtin_ia32_paddsb256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.padds.b")
+    __vector(i8[32]) avx2_padds_b(__vector(i8[32]), __vector(i8[32]));
+    /// The `llvm.x86.avx2.padds.w` intrinsic; known as `__builtin_ia32_paddsw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.padds.w")
+    __vector(i16[16]) avx2_padds_w(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.paddus.b` intrinsic; known as `__builtin_ia32_paddusb256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.paddus.b")
+    __vector(i8[32]) avx2_paddus_b(__vector(i8[32]), __vector(i8[32]));
+    /// The `llvm.x86.avx2.paddus.w` intrinsic; known as `__builtin_ia32_paddusw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.paddus.w")
+    __vector(i16[16]) avx2_paddus_w(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.psubs.b` intrinsic; known as `__builtin_ia32_psubsb256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psubs.b")
+    __vector(i8[32]) avx2_psubs_b(__vector(i8[32]), __vector(i8[32]));
+    /// The `llvm.x86.avx2.psubs.w` intrinsic; known as `__builtin_ia32_psubsw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psubs.w")
+    __vector(i16[16]) avx2_psubs_w(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.psubus.b` intrinsic; known as `__builtin_ia32_psubusb256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psubus.b")
+    __vector(i8[32]) avx2_psubus_b(__vector(i8[32]), __vector(i8[32]));
+    /// The `llvm.x86.avx2.psubus.w` intrinsic; known as `__builtin_ia32_psubusw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psubus.w")
+    __vector(i16[16]) avx2_psubus_w(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.pmulhu.w` intrinsic; known as `__builtin_ia32_pmulhuw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmulhu.w")
+    __vector(i16[16]) avx2_pmulhu_w(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.pmulh.w` intrinsic; known as `__builtin_ia32_pmulhw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmulh.w")
+    __vector(i16[16]) avx2_pmulh_w(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.pmulu.dq` intrinsic; known as `__builtin_ia32_pmuludq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmulu.dq")
+    __vector(i64[4]) avx2_pmulu_dq(__vector(i32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx2.pmul.dq` intrinsic; known as `__builtin_ia32_pmuldq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmul.dq")
+    __vector(i64[4]) avx2_pmul_dq(__vector(i32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx2.pmadd.wd` intrinsic; known as `__builtin_ia32_pmaddwd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmadd.wd")
+    __vector(i32[8]) avx2_pmadd_wd(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.pavg.b` intrinsic; known as `__builtin_ia32_pavgb256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pavg.b")
+    __vector(i8[32]) avx2_pavg_b(__vector(i8[32]), __vector(i8[32]));
+    /// The `llvm.x86.avx2.pavg.w` intrinsic; known as `__builtin_ia32_pavgw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pavg.w")
+    __vector(i16[16]) avx2_pavg_w(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.psad.bw` intrinsic; known as `__builtin_ia32_psadbw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psad.bw")
+    __vector(i64[4]) avx2_psad_bw(__vector(i8[32]), __vector(i8[32]));
+    /// The `llvm.x86.avx512.mask.pmulu.dq.512` intrinsic; known as `__builtin_ia32_pmuludq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pmulu.dq.512")
+    __vector(i64[8]) avx512_mask_pmulu_dq_512(__vector(i32[16]), __vector(i32[16]), __vector(i64[8]), i8);
+    /// The `llvm.x86.avx512.mask.pmul.dq.512` intrinsic; known as `__builtin_ia32_pmuldq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pmul.dq.512")
+    __vector(i64[8]) avx512_mask_pmul_dq_512(__vector(i32[16]), __vector(i32[16]), __vector(i64[8]), i8);
+    /// The `llvm.x86.avx2.pmaxu.b` intrinsic; known as `__builtin_ia32_pmaxub256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmaxu.b")
+    __vector(i8[32]) avx2_pmaxu_b(__vector(i8[32]), __vector(i8[32]));
+    /// The `llvm.x86.avx2.pmaxu.w` intrinsic; known as `__builtin_ia32_pmaxuw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmaxu.w")
+    __vector(i16[16]) avx2_pmaxu_w(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.pmaxu.d` intrinsic; known as `__builtin_ia32_pmaxud256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmaxu.d")
+    __vector(i32[8]) avx2_pmaxu_d(__vector(i32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx2.pmaxs.b` intrinsic; known as `__builtin_ia32_pmaxsb256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmaxs.b")
+    __vector(i8[32]) avx2_pmaxs_b(__vector(i8[32]), __vector(i8[32]));
+    /// The `llvm.x86.avx2.pmaxs.w` intrinsic; known as `__builtin_ia32_pmaxsw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmaxs.w")
+    __vector(i16[16]) avx2_pmaxs_w(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.pmaxs.d` intrinsic; known as `__builtin_ia32_pmaxsd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmaxs.d")
+    __vector(i32[8]) avx2_pmaxs_d(__vector(i32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx2.pminu.b` intrinsic; known as `__builtin_ia32_pminub256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pminu.b")
+    __vector(i8[32]) avx2_pminu_b(__vector(i8[32]), __vector(i8[32]));
+    /// The `llvm.x86.avx2.pminu.w` intrinsic; known as `__builtin_ia32_pminuw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pminu.w")
+    __vector(i16[16]) avx2_pminu_w(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.pminu.d` intrinsic; known as `__builtin_ia32_pminud256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pminu.d")
+    __vector(i32[8]) avx2_pminu_d(__vector(i32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx2.pmins.b` intrinsic; known as `__builtin_ia32_pminsb256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmins.b")
+    __vector(i8[32]) avx2_pmins_b(__vector(i8[32]), __vector(i8[32]));
+    /// The `llvm.x86.avx2.pmins.w` intrinsic; known as `__builtin_ia32_pminsw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmins.w")
+    __vector(i16[16]) avx2_pmins_w(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.pmins.d` intrinsic; known as `__builtin_ia32_pminsd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmins.d")
+    __vector(i32[8]) avx2_pmins_d(__vector(i32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx512.mask.pmaxu.d.512` intrinsic; known as `__builtin_ia32_pmaxud512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pmaxu.d.512")
+    __vector(i32[16]) avx512_mask_pmaxu_d_512(__vector(i32[16]), __vector(i32[16]), __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.pmaxs.d.512` intrinsic; known as `__builtin_ia32_pmaxsd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pmaxs.d.512")
+    __vector(i32[16]) avx512_mask_pmaxs_d_512(__vector(i32[16]), __vector(i32[16]), __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.pmaxu.q.512` intrinsic; known as `__builtin_ia32_pmaxuq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pmaxu.q.512")
+    __vector(i64[8]) avx512_mask_pmaxu_q_512(__vector(i64[8]), __vector(i64[8]), __vector(i64[8]), i8);
+    /// The `llvm.x86.avx512.mask.pmaxs.q.512` intrinsic; known as `__builtin_ia32_pmaxsq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pmaxs.q.512")
+    __vector(i64[8]) avx512_mask_pmaxs_q_512(__vector(i64[8]), __vector(i64[8]), __vector(i64[8]), i8);
+    /// The `llvm.x86.avx512.mask.pminu.d.512` intrinsic; known as `__builtin_ia32_pminud512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pminu.d.512")
+    __vector(i32[16]) avx512_mask_pminu_d_512(__vector(i32[16]), __vector(i32[16]), __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.pmins.d.512` intrinsic; known as `__builtin_ia32_pminsd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pmins.d.512")
+    __vector(i32[16]) avx512_mask_pmins_d_512(__vector(i32[16]), __vector(i32[16]), __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.pminu.q.512` intrinsic; known as `__builtin_ia32_pminuq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pminu.q.512")
+    __vector(i64[8]) avx512_mask_pminu_q_512(__vector(i64[8]), __vector(i64[8]), __vector(i64[8]), i8);
+    /// The `llvm.x86.avx512.mask.pmins.q.512` intrinsic; known as `__builtin_ia32_pminsq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pmins.q.512")
+    __vector(i64[8]) avx512_mask_pmins_q_512(__vector(i64[8]), __vector(i64[8]), __vector(i64[8]), i8);
+    /// The `llvm.x86.avx2.psll.w` intrinsic; known as `__builtin_ia32_psllw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psll.w")
+    __vector(i16[16]) avx2_psll_w(__vector(i16[16]), __vector(i16[8]));
+    /// The `llvm.x86.avx2.psll.d` intrinsic; known as `__builtin_ia32_pslld256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psll.d")
+    __vector(i32[8]) avx2_psll_d(__vector(i32[8]), __vector(i32[4]));
+    /// The `llvm.x86.avx2.psll.q` intrinsic; known as `__builtin_ia32_psllq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psll.q")
+    __vector(i64[4]) avx2_psll_q(__vector(i64[4]), __vector(i64[2]));
+    /// The `llvm.x86.avx2.psrl.w` intrinsic; known as `__builtin_ia32_psrlw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psrl.w")
+    __vector(i16[16]) avx2_psrl_w(__vector(i16[16]), __vector(i16[8]));
+    /// The `llvm.x86.avx2.psrl.d` intrinsic; known as `__builtin_ia32_psrld256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psrl.d")
+    __vector(i32[8]) avx2_psrl_d(__vector(i32[8]), __vector(i32[4]));
+    /// The `llvm.x86.avx2.psrl.q` intrinsic; known as `__builtin_ia32_psrlq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psrl.q")
+    __vector(i64[4]) avx2_psrl_q(__vector(i64[4]), __vector(i64[2]));
+    /// The `llvm.x86.avx2.psra.w` intrinsic; known as `__builtin_ia32_psraw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psra.w")
+    __vector(i16[16]) avx2_psra_w(__vector(i16[16]), __vector(i16[8]));
+    /// The `llvm.x86.avx2.psra.d` intrinsic; known as `__builtin_ia32_psrad256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psra.d")
+    __vector(i32[8]) avx2_psra_d(__vector(i32[8]), __vector(i32[4]));
+    /// The `llvm.x86.avx2.pslli.w` intrinsic; known as `__builtin_ia32_psllwi256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pslli.w")
+    __vector(i16[16]) avx2_pslli_w(__vector(i16[16]), i32);
+    /// The `llvm.x86.avx2.pslli.d` intrinsic; known as `__builtin_ia32_pslldi256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pslli.d")
+    __vector(i32[8]) avx2_pslli_d(__vector(i32[8]), i32);
+    /// The `llvm.x86.avx2.pslli.q` intrinsic; known as `__builtin_ia32_psllqi256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pslli.q")
+    __vector(i64[4]) avx2_pslli_q(__vector(i64[4]), i32);
+    /// The `llvm.x86.avx2.psrli.w` intrinsic; known as `__builtin_ia32_psrlwi256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psrli.w")
+    __vector(i16[16]) avx2_psrli_w(__vector(i16[16]), i32);
+    /// The `llvm.x86.avx2.psrli.d` intrinsic; known as `__builtin_ia32_psrldi256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psrli.d")
+    __vector(i32[8]) avx2_psrli_d(__vector(i32[8]), i32);
+    /// The `llvm.x86.avx2.psrli.q` intrinsic; known as `__builtin_ia32_psrlqi256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psrli.q")
+    __vector(i64[4]) avx2_psrli_q(__vector(i64[4]), i32);
+    /// The `llvm.x86.avx2.psrai.w` intrinsic; known as `__builtin_ia32_psrawi256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psrai.w")
+    __vector(i16[16]) avx2_psrai_w(__vector(i16[16]), i32);
+    /// The `llvm.x86.avx2.psrai.d` intrinsic; known as `__builtin_ia32_psradi256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psrai.d")
+    __vector(i32[8]) avx2_psrai_d(__vector(i32[8]), i32);
+    /// The `llvm.x86.avx2.psll.dq` intrinsic; known as `__builtin_ia32_pslldqi256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psll.dq")
+    __vector(i64[4]) avx2_psll_dq(__vector(i64[4]), i32);
+    /// The `llvm.x86.avx2.psrl.dq` intrinsic; known as `__builtin_ia32_psrldqi256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psrl.dq")
+    __vector(i64[4]) avx2_psrl_dq(__vector(i64[4]), i32);
+    /// The `llvm.x86.avx2.psll.dq.bs` intrinsic; known as `__builtin_ia32_pslldqi256_byteshift` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psll.dq.bs")
+    __vector(i64[4]) avx2_psll_dq_bs(__vector(i64[4]), i32);
+    /// The `llvm.x86.avx2.psrl.dq.bs` intrinsic; known as `__builtin_ia32_psrldqi256_byteshift` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psrl.dq.bs")
+    __vector(i64[4]) avx2_psrl_dq_bs(__vector(i64[4]), i32);
+    /// The `llvm.x86.avx2.packsswb` intrinsic; known as `__builtin_ia32_packsswb256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.packsswb")
+    __vector(i8[32]) avx2_packsswb(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.packssdw` intrinsic; known as `__builtin_ia32_packssdw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.packssdw")
+    __vector(i16[16]) avx2_packssdw(__vector(i32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx2.packuswb` intrinsic; known as `__builtin_ia32_packuswb256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.packuswb")
+    __vector(i8[32]) avx2_packuswb(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.packusdw` intrinsic; known as `__builtin_ia32_packusdw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.packusdw")
+    __vector(i16[16]) avx2_packusdw(__vector(i32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx2.pabs.b` intrinsic; known as `__builtin_ia32_pabsb256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pabs.b")
+    __vector(i8[32]) avx2_pabs_b(__vector(i8[32]));
+    /// The `llvm.x86.avx2.pabs.w` intrinsic; known as `__builtin_ia32_pabsw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pabs.w")
+    __vector(i16[16]) avx2_pabs_w(__vector(i16[16]));
+    /// The `llvm.x86.avx2.pabs.d` intrinsic; known as `__builtin_ia32_pabsd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pabs.d")
+    __vector(i32[8]) avx2_pabs_d(__vector(i32[8]));
+    /// The `llvm.x86.avx512.mask.pabs.d.512` intrinsic; known as `__builtin_ia32_pabsd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pabs.d.512")
+    __vector(i32[16]) avx512_mask_pabs_d_512(__vector(i32[16]), __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.pabs.q.512` intrinsic; known as `__builtin_ia32_pabsq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pabs.q.512")
+    __vector(i64[8]) avx512_mask_pabs_q_512(__vector(i64[8]), __vector(i64[8]), i8);
+    /// The `llvm.x86.avx2.phadd.w` intrinsic; known as `__builtin_ia32_phaddw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.phadd.w")
+    __vector(i16[16]) avx2_phadd_w(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.phadd.d` intrinsic; known as `__builtin_ia32_phaddd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.phadd.d")
+    __vector(i32[8]) avx2_phadd_d(__vector(i32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx2.phadd.sw` intrinsic; known as `__builtin_ia32_phaddsw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.phadd.sw")
+    __vector(i16[16]) avx2_phadd_sw(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.phsub.w` intrinsic; known as `__builtin_ia32_phsubw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.phsub.w")
+    __vector(i16[16]) avx2_phsub_w(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.phsub.d` intrinsic; known as `__builtin_ia32_phsubd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.phsub.d")
+    __vector(i32[8]) avx2_phsub_d(__vector(i32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx2.phsub.sw` intrinsic; known as `__builtin_ia32_phsubsw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.phsub.sw")
+    __vector(i16[16]) avx2_phsub_sw(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.pmadd.ub.sw` intrinsic; known as `__builtin_ia32_pmaddubsw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmadd.ub.sw")
+    __vector(i16[16]) avx2_pmadd_ub_sw(__vector(i8[32]), __vector(i8[32]));
+    /// The `llvm.x86.avx2.psign.b` intrinsic; known as `__builtin_ia32_psignb256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psign.b")
+    __vector(i8[32]) avx2_psign_b(__vector(i8[32]), __vector(i8[32]));
+    /// The `llvm.x86.avx2.psign.w` intrinsic; known as `__builtin_ia32_psignw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psign.w")
+    __vector(i16[16]) avx2_psign_w(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.psign.d` intrinsic; known as `__builtin_ia32_psignd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psign.d")
+    __vector(i32[8]) avx2_psign_d(__vector(i32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx2.pmul.hr.sw` intrinsic; known as `__builtin_ia32_pmulhrsw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmul.hr.sw")
+    __vector(i16[16]) avx2_pmul_hr_sw(__vector(i16[16]), __vector(i16[16]));
+    /// The `llvm.x86.avx2.pmovsxbd` intrinsic; known as `__builtin_ia32_pmovsxbd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovsxbd")
+    __vector(i32[8]) avx2_pmovsxbd(__vector(i8[16]));
+    /// The `llvm.x86.avx2.pmovsxbq` intrinsic; known as `__builtin_ia32_pmovsxbq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovsxbq")
+    __vector(i64[4]) avx2_pmovsxbq(__vector(i8[16]));
+    /// The `llvm.x86.avx2.pmovsxbw` intrinsic; known as `__builtin_ia32_pmovsxbw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovsxbw")
+    __vector(i16[16]) avx2_pmovsxbw(__vector(i8[16]));
+    /// The `llvm.x86.avx2.pmovsxdq` intrinsic; known as `__builtin_ia32_pmovsxdq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovsxdq")
+    __vector(i64[4]) avx2_pmovsxdq(__vector(i32[4]));
+    /// The `llvm.x86.avx2.pmovsxwd` intrinsic; known as `__builtin_ia32_pmovsxwd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovsxwd")
+    __vector(i32[8]) avx2_pmovsxwd(__vector(i16[8]));
+    /// The `llvm.x86.avx2.pmovsxwq` intrinsic; known as `__builtin_ia32_pmovsxwq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovsxwq")
+    __vector(i64[4]) avx2_pmovsxwq(__vector(i16[8]));
+    /// The `llvm.x86.avx2.pmovzxbd` intrinsic; known as `__builtin_ia32_pmovzxbd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovzxbd")
+    __vector(i32[8]) avx2_pmovzxbd(__vector(i8[16]));
+    /// The `llvm.x86.avx2.pmovzxbq` intrinsic; known as `__builtin_ia32_pmovzxbq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovzxbq")
+    __vector(i64[4]) avx2_pmovzxbq(__vector(i8[16]));
+    /// The `llvm.x86.avx2.pmovzxbw` intrinsic; known as `__builtin_ia32_pmovzxbw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovzxbw")
+    __vector(i16[16]) avx2_pmovzxbw(__vector(i8[16]));
+    /// The `llvm.x86.avx2.pmovzxdq` intrinsic; known as `__builtin_ia32_pmovzxdq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovzxdq")
+    __vector(i64[4]) avx2_pmovzxdq(__vector(i32[4]));
+    /// The `llvm.x86.avx2.pmovzxwd` intrinsic; known as `__builtin_ia32_pmovzxwd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovzxwd")
+    __vector(i32[8]) avx2_pmovzxwd(__vector(i16[8]));
+    /// The `llvm.x86.avx2.pmovzxwq` intrinsic; known as `__builtin_ia32_pmovzxwq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovzxwq")
+    __vector(i64[4]) avx2_pmovzxwq(__vector(i16[8]));
+    /// The `llvm.x86.avx2.pblendvb` intrinsic; known as `__builtin_ia32_pblendvb256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pblendvb")
+    __vector(i8[32]) avx2_pblendvb(__vector(i8[32]), __vector(i8[32]), __vector(i8[32]));
+    /// The `llvm.x86.avx2.pblendw` intrinsic; known as `__builtin_ia32_pblendw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pblendw")
+    __vector(i16[16]) avx2_pblendw(__vector(i16[16]), __vector(i16[16]), i8);
+    /// The `llvm.x86.avx2.pblendd.128` intrinsic; known as `__builtin_ia32_pblendd128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pblendd.128")
+    __vector(i32[4]) avx2_pblendd_128(__vector(i32[4]), __vector(i32[4]), i8);
+    /// The `llvm.x86.avx2.pblendd.256` intrinsic; known as `__builtin_ia32_pblendd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pblendd.256")
+    __vector(i32[8]) avx2_pblendd_256(__vector(i32[8]), __vector(i32[8]), i8);
+    /// The `llvm.x86.avx2.vbroadcast.ss.ps` intrinsic; known as `__builtin_ia32_vbroadcastss_ps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.vbroadcast.ss.ps")
+    __vector(f32[4]) avx2_vbroadcast_ss_ps(__vector(f32[4]));
+    /// The `llvm.x86.avx2.vbroadcast.sd.pd.256` intrinsic; known as `__builtin_ia32_vbroadcastsd_pd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.vbroadcast.sd.pd.256")
+    __vector(f64[4]) avx2_vbroadcast_sd_pd_256(__vector(f64[2]));
+    /// The `llvm.x86.avx2.vbroadcast.ss.ps.256` intrinsic; known as `__builtin_ia32_vbroadcastss_ps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.vbroadcast.ss.ps.256")
+    __vector(f32[8]) avx2_vbroadcast_ss_ps_256(__vector(f32[4]));
+    /// The `llvm.x86.avx2.vbroadcasti128` intrinsic.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.vbroadcasti128")
+    __vector(i64[4]) avx2_vbroadcasti128(i8*);
+    /// The `llvm.x86.avx2.pbroadcastb.128` intrinsic; known as `__builtin_ia32_pbroadcastb128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pbroadcastb.128")
+    __vector(i8[16]) avx2_pbroadcastb_128(__vector(i8[16]));
+    /// The `llvm.x86.avx2.pbroadcastb.256` intrinsic; known as `__builtin_ia32_pbroadcastb256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pbroadcastb.256")
+    __vector(i8[32]) avx2_pbroadcastb_256(__vector(i8[16]));
+    /// The `llvm.x86.avx2.pbroadcastw.128` intrinsic; known as `__builtin_ia32_pbroadcastw128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pbroadcastw.128")
+    __vector(i16[8]) avx2_pbroadcastw_128(__vector(i16[8]));
+    /// The `llvm.x86.avx2.pbroadcastw.256` intrinsic; known as `__builtin_ia32_pbroadcastw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pbroadcastw.256")
+    __vector(i16[16]) avx2_pbroadcastw_256(__vector(i16[8]));
+    /// The `llvm.x86.avx2.pbroadcastd.128` intrinsic; known as `__builtin_ia32_pbroadcastd128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pbroadcastd.128")
+    __vector(i32[4]) avx2_pbroadcastd_128(__vector(i32[4]));
+    /// The `llvm.x86.avx2.pbroadcastd.256` intrinsic; known as `__builtin_ia32_pbroadcastd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pbroadcastd.256")
+    __vector(i32[8]) avx2_pbroadcastd_256(__vector(i32[4]));
+    /// The `llvm.x86.avx2.pbroadcastq.128` intrinsic; known as `__builtin_ia32_pbroadcastq128` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pbroadcastq.128")
+    __vector(i64[2]) avx2_pbroadcastq_128(__vector(i64[2]));
+    /// The `llvm.x86.avx2.pbroadcastq.256` intrinsic; known as `__builtin_ia32_pbroadcastq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pbroadcastq.256")
+    __vector(i64[4]) avx2_pbroadcastq_256(__vector(i64[2]));
+    /// The `llvm.x86.avx512.mask.pbroadcast.d.gpr.512` intrinsic; known as `__builtin_ia32_pbroadcastd512_gpr_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pbroadcast.d.gpr.512")
+    __vector(i32[16]) avx512_mask_pbroadcast_d_gpr_512(i32, __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.pbroadcast.q.gpr.512` intrinsic; known as `__builtin_ia32_pbroadcastq512_gpr_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pbroadcast.q.gpr.512")
+    __vector(i64[8]) avx512_mask_pbroadcast_q_gpr_512(i64, __vector(i64[8]), i8);
+    /// The `llvm.x86.avx512.mask.pbroadcast.q.mem.512` intrinsic; known as `__builtin_ia32_pbroadcastq512_mem_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pbroadcast.q.mem.512")
+    __vector(i64[8]) avx512_mask_pbroadcast_q_mem_512(i64, __vector(i64[8]), i8);
+    /// The `llvm.x86.avx2.permd` intrinsic; known as `__builtin_ia32_permvarsi256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.permd")
+    __vector(i32[8]) avx2_permd(__vector(i32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx2.permps` intrinsic; known as `__builtin_ia32_permvarsf256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.permps")
+    __vector(f32[8]) avx2_permps(__vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.avx2.vperm2i128` intrinsic; known as `__builtin_ia32_permti256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.vperm2i128")
+    __vector(i64[4]) avx2_vperm2i128(__vector(i64[4]), __vector(i64[4]), i8);
+    /// The `llvm.x86.avx2.vextracti128` intrinsic; known as `__builtin_ia32_extract128i256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.vextracti128")
+    __vector(i64[2]) avx2_vextracti128(__vector(i64[4]), i8);
+    /// The `llvm.x86.avx2.vinserti128` intrinsic; known as `__builtin_ia32_insert128i256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.vinserti128")
+    __vector(i64[4]) avx2_vinserti128(__vector(i64[4]), __vector(i64[2]), i8);
+    /// The `llvm.x86.avx2.maskload.d` intrinsic; known as `__builtin_ia32_maskloadd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.maskload.d")
+    __vector(i32[4]) avx2_maskload_d(i8*, __vector(i32[4]));
+    /// The `llvm.x86.avx2.maskload.q` intrinsic; known as `__builtin_ia32_maskloadq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.maskload.q")
+    __vector(i64[2]) avx2_maskload_q(i8*, __vector(i64[2]));
+    /// The `llvm.x86.avx2.maskload.d.256` intrinsic; known as `__builtin_ia32_maskloadd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.maskload.d.256")
+    __vector(i32[8]) avx2_maskload_d_256(i8*, __vector(i32[8]));
+    /// The `llvm.x86.avx2.maskload.q.256` intrinsic; known as `__builtin_ia32_maskloadq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.maskload.q.256")
+    __vector(i64[4]) avx2_maskload_q_256(i8*, __vector(i64[4]));
+    /// The `llvm.x86.avx512.mask.loadu.d.512` intrinsic; known as `__builtin_ia32_loaddqusi512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.loadu.d.512")
+    __vector(i32[16]) avx512_mask_loadu_d_512(i8*, __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.loadu.q.512` intrinsic; known as `__builtin_ia32_loaddqudi512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.loadu.q.512")
+    __vector(i64[8]) avx512_mask_loadu_q_512(i8*, __vector(i64[8]), i8);
+    /// The `llvm.x86.avx2.maskstore.d` intrinsic; known as `__builtin_ia32_maskstored` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.maskstore.d")
+    void avx2_maskstore_d(i8*, __vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.avx2.maskstore.q` intrinsic; known as `__builtin_ia32_maskstoreq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.maskstore.q")
+    void avx2_maskstore_q(i8*, __vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.avx2.maskstore.d.256` intrinsic; known as `__builtin_ia32_maskstored256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.maskstore.d.256")
+    void avx2_maskstore_d_256(i8*, __vector(i32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx2.maskstore.q.256` intrinsic; known as `__builtin_ia32_maskstoreq256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.maskstore.q.256")
+    void avx2_maskstore_q_256(i8*, __vector(i64[4]), __vector(i64[4]));
+    /// The `llvm.x86.avx512.mask.storeu.d.512` intrinsic; known as `__builtin_ia32_storedqusi512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.storeu.d.512")
+    void avx512_mask_storeu_d_512(i8*, __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.storeu.q.512` intrinsic; known as `__builtin_ia32_storedqudi512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.storeu.q.512")
+    void avx512_mask_storeu_q_512(i8*, __vector(i64[8]), i8);
+    /// The `llvm.x86.avx2.psllv.d` intrinsic; known as `__builtin_ia32_psllv4si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psllv.d")
+    __vector(i32[4]) avx2_psllv_d(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.avx2.psllv.d.256` intrinsic; known as `__builtin_ia32_psllv8si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psllv.d.256")
+    __vector(i32[8]) avx2_psllv_d_256(__vector(i32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx2.psllv.q` intrinsic; known as `__builtin_ia32_psllv2di` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psllv.q")
+    __vector(i64[2]) avx2_psllv_q(__vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.avx2.psllv.q.256` intrinsic; known as `__builtin_ia32_psllv4di` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psllv.q.256")
+    __vector(i64[4]) avx2_psllv_q_256(__vector(i64[4]), __vector(i64[4]));
+    /// The `llvm.x86.avx2.psrlv.d` intrinsic; known as `__builtin_ia32_psrlv4si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psrlv.d")
+    __vector(i32[4]) avx2_psrlv_d(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.avx2.psrlv.d.256` intrinsic; known as `__builtin_ia32_psrlv8si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psrlv.d.256")
+    __vector(i32[8]) avx2_psrlv_d_256(__vector(i32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx2.psrlv.q` intrinsic; known as `__builtin_ia32_psrlv2di` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psrlv.q")
+    __vector(i64[2]) avx2_psrlv_q(__vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.avx2.psrlv.q.256` intrinsic; known as `__builtin_ia32_psrlv4di` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psrlv.q.256")
+    __vector(i64[4]) avx2_psrlv_q_256(__vector(i64[4]), __vector(i64[4]));
+    /// The `llvm.x86.avx2.psrav.d` intrinsic; known as `__builtin_ia32_psrav4si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psrav.d")
+    __vector(i32[4]) avx2_psrav_d(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.avx2.psrav.d.256` intrinsic; known as `__builtin_ia32_psrav8si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.psrav.d.256")
+    __vector(i32[8]) avx2_psrav_d_256(__vector(i32[8]), __vector(i32[8]));
+    /// The `llvm.x86.avx2.gather.d.pd` intrinsic; known as `__builtin_ia32_gatherd_pd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.d.pd")
+    __vector(f64[2]) avx2_gather_d_pd(__vector(f64[2]), i8*, __vector(i32[4]), __vector(f64[2]), i8);
+    /// The `llvm.x86.avx2.gather.d.pd.256` intrinsic; known as `__builtin_ia32_gatherd_pd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.d.pd.256")
+    __vector(f64[4]) avx2_gather_d_pd_256(__vector(f64[4]), i8*, __vector(i32[4]), __vector(f64[4]), i8);
+    /// The `llvm.x86.avx2.gather.q.pd` intrinsic; known as `__builtin_ia32_gatherq_pd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.q.pd")
+    __vector(f64[2]) avx2_gather_q_pd(__vector(f64[2]), i8*, __vector(i64[2]), __vector(f64[2]), i8);
+    /// The `llvm.x86.avx2.gather.q.pd.256` intrinsic; known as `__builtin_ia32_gatherq_pd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.q.pd.256")
+    __vector(f64[4]) avx2_gather_q_pd_256(__vector(f64[4]), i8*, __vector(i64[4]), __vector(f64[4]), i8);
+    /// The `llvm.x86.avx2.gather.d.ps` intrinsic; known as `__builtin_ia32_gatherd_ps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.d.ps")
+    __vector(f32[4]) avx2_gather_d_ps(__vector(f32[4]), i8*, __vector(i32[4]), __vector(f32[4]), i8);
+    /// The `llvm.x86.avx2.gather.d.ps.256` intrinsic; known as `__builtin_ia32_gatherd_ps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.d.ps.256")
+    __vector(f32[8]) avx2_gather_d_ps_256(__vector(f32[8]), i8*, __vector(i32[8]), __vector(f32[8]), i8);
+    /// The `llvm.x86.avx2.gather.q.ps` intrinsic; known as `__builtin_ia32_gatherq_ps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.q.ps")
+    __vector(f32[4]) avx2_gather_q_ps(__vector(f32[4]), i8*, __vector(i64[2]), __vector(f32[4]), i8);
+    /// The `llvm.x86.avx2.gather.q.ps.256` intrinsic; known as `__builtin_ia32_gatherq_ps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.q.ps.256")
+    __vector(f32[4]) avx2_gather_q_ps_256(__vector(f32[4]), i8*, __vector(i64[4]), __vector(f32[4]), i8);
+    /// The `llvm.x86.avx2.gather.d.q` intrinsic; known as `__builtin_ia32_gatherd_q` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.d.q")
+    __vector(i64[2]) avx2_gather_d_q(__vector(i64[2]), i8*, __vector(i32[4]), __vector(i64[2]), i8);
+    /// The `llvm.x86.avx2.gather.d.q.256` intrinsic; known as `__builtin_ia32_gatherd_q256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.d.q.256")
+    __vector(i64[4]) avx2_gather_d_q_256(__vector(i64[4]), i8*, __vector(i32[4]), __vector(i64[4]), i8);
+    /// The `llvm.x86.avx2.gather.q.q` intrinsic; known as `__builtin_ia32_gatherq_q` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.q.q")
+    __vector(i64[2]) avx2_gather_q_q(__vector(i64[2]), i8*, __vector(i64[2]), __vector(i64[2]), i8);
+    /// The `llvm.x86.avx2.gather.q.q.256` intrinsic; known as `__builtin_ia32_gatherq_q256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.q.q.256")
+    __vector(i64[4]) avx2_gather_q_q_256(__vector(i64[4]), i8*, __vector(i64[4]), __vector(i64[4]), i8);
+    /// The `llvm.x86.avx2.gather.d.d` intrinsic; known as `__builtin_ia32_gatherd_d` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.d.d")
+    __vector(i32[4]) avx2_gather_d_d(__vector(i32[4]), i8*, __vector(i32[4]), __vector(i32[4]), i8);
+    /// The `llvm.x86.avx2.gather.d.d.256` intrinsic; known as `__builtin_ia32_gatherd_d256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.d.d.256")
+    __vector(i32[8]) avx2_gather_d_d_256(__vector(i32[8]), i8*, __vector(i32[8]), __vector(i32[8]), i8);
+    /// The `llvm.x86.avx2.gather.q.d` intrinsic; known as `__builtin_ia32_gatherq_d` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.q.d")
+    __vector(i32[4]) avx2_gather_q_d(__vector(i32[4]), i8*, __vector(i64[2]), __vector(i32[4]), i8);
+    /// The `llvm.x86.avx2.gather.q.d.256` intrinsic; known as `__builtin_ia32_gatherq_d256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.q.d.256")
+    __vector(i32[4]) avx2_gather_q_d_256(__vector(i32[4]), i8*, __vector(i64[4]), __vector(i32[4]), i8);
+    /// The `llvm.x86.avx2.pmovmskb` intrinsic; known as `__builtin_ia32_pmovmskb256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovmskb")
+    i32 avx2_pmovmskb(__vector(i8[32]));
+    /// The `llvm.x86.avx2.pshuf.b` intrinsic; known as `avx2_pshuf_b` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.pshuf.b")
+    __vector(i8[32]) avx2_pshuf_b(__vector(i8[32]), __vector(i8[32]));
+    /// The `llvm.x86.avx2.mpsadbw` intrinsic; known as `__builtin_ia32_mpsadbw256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.mpsadbw")
+    __vector(i16[16]) avx2_mpsadbw(__vector(i8[32]), __vector(i8[32]), i8);
+    /// The `llvm.x86.avx2.movntdqa` intrinsic; known as `__builtin_ia32_movntdqa256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx2.movntdqa")
+    __vector(i64[4]) avx2_movntdqa(i8*);
+    /// The `llvm.x86.fma.vfmadd.ss` intrinsic; known as `__builtin_ia32_vfmaddss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmadd.ss")
+    __vector(f32[4]) fma_vfmadd_ss(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.fma.vfmadd.sd` intrinsic; known as `__builtin_ia32_vfmaddsd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmadd.sd")
+    __vector(f64[2]) fma_vfmadd_sd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.fma.vfmadd.ps` intrinsic; known as `__builtin_ia32_vfmaddps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmadd.ps")
+    __vector(f32[4]) fma_vfmadd_ps(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.fma.vfmadd.pd` intrinsic; known as `__builtin_ia32_vfmaddpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmadd.pd")
+    __vector(f64[2]) fma_vfmadd_pd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.fma.vfmadd.ps.256` intrinsic; known as `__builtin_ia32_vfmaddps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmadd.ps.256")
+    __vector(f32[8]) fma_vfmadd_ps_256(__vector(f32[8]), __vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.fma.vfmadd.pd.256` intrinsic; known as `__builtin_ia32_vfmaddpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmadd.pd.256")
+    __vector(f64[4]) fma_vfmadd_pd_256(__vector(f64[4]), __vector(f64[4]), __vector(f64[4]));
+    /// The `llvm.x86.fma.mask.vfmadd.ps.512` intrinsic; known as `__builtin_ia32_vfmaddps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfmadd.ps.512")
+    __vector(f32[16]) fma_mask_vfmadd_ps_512(__vector(f32[16]), __vector(f32[16]), __vector(f32[16]), i16, i32);
+    /// The `llvm.x86.fma.mask.vfmadd.pd.512` intrinsic; known as `__builtin_ia32_vfmaddpd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfmadd.pd.512")
+    __vector(f64[8]) fma_mask_vfmadd_pd_512(__vector(f64[8]), __vector(f64[8]), __vector(f64[8]), i8, i32);
+    /// The `llvm.x86.fma.vfmsub.ss` intrinsic; known as `__builtin_ia32_vfmsubss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsub.ss")
+    __vector(f32[4]) fma_vfmsub_ss(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.fma.vfmsub.sd` intrinsic; known as `__builtin_ia32_vfmsubsd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsub.sd")
+    __vector(f64[2]) fma_vfmsub_sd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.fma.vfmsub.ps` intrinsic; known as `__builtin_ia32_vfmsubps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsub.ps")
+    __vector(f32[4]) fma_vfmsub_ps(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.fma.vfmsub.pd` intrinsic; known as `__builtin_ia32_vfmsubpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsub.pd")
+    __vector(f64[2]) fma_vfmsub_pd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.fma.vfmsub.ps.256` intrinsic; known as `__builtin_ia32_vfmsubps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsub.ps.256")
+    __vector(f32[8]) fma_vfmsub_ps_256(__vector(f32[8]), __vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.fma.vfmsub.pd.256` intrinsic; known as `__builtin_ia32_vfmsubpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsub.pd.256")
+    __vector(f64[4]) fma_vfmsub_pd_256(__vector(f64[4]), __vector(f64[4]), __vector(f64[4]));
+    /// The `llvm.x86.fma.mask.vfmsub.ps.512` intrinsic; known as `__builtin_ia32_vfmsubps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfmsub.ps.512")
+    __vector(f32[16]) fma_mask_vfmsub_ps_512(__vector(f32[16]), __vector(f32[16]), __vector(f32[16]), i16, i32);
+    /// The `llvm.x86.fma.mask.vfmsub.pd.512` intrinsic; known as `__builtin_ia32_vfmsubpd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfmsub.pd.512")
+    __vector(f64[8]) fma_mask_vfmsub_pd_512(__vector(f64[8]), __vector(f64[8]), __vector(f64[8]), i8, i32);
+    /// The `llvm.x86.fma.vfnmadd.ss` intrinsic; known as `__builtin_ia32_vfnmaddss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmadd.ss")
+    __vector(f32[4]) fma_vfnmadd_ss(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.fma.vfnmadd.sd` intrinsic; known as `__builtin_ia32_vfnmaddsd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmadd.sd")
+    __vector(f64[2]) fma_vfnmadd_sd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.fma.vfnmadd.ps` intrinsic; known as `__builtin_ia32_vfnmaddps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmadd.ps")
+    __vector(f32[4]) fma_vfnmadd_ps(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.fma.vfnmadd.pd` intrinsic; known as `__builtin_ia32_vfnmaddpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmadd.pd")
+    __vector(f64[2]) fma_vfnmadd_pd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.fma.vfnmadd.ps.256` intrinsic; known as `__builtin_ia32_vfnmaddps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmadd.ps.256")
+    __vector(f32[8]) fma_vfnmadd_ps_256(__vector(f32[8]), __vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.fma.vfnmadd.pd.256` intrinsic; known as `__builtin_ia32_vfnmaddpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmadd.pd.256")
+    __vector(f64[4]) fma_vfnmadd_pd_256(__vector(f64[4]), __vector(f64[4]), __vector(f64[4]));
+    /// The `llvm.x86.fma.mask.vfnmadd.ps.512` intrinsic; known as `__builtin_ia32_vfnmaddps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfnmadd.ps.512")
+    __vector(f32[16]) fma_mask_vfnmadd_ps_512(__vector(f32[16]), __vector(f32[16]), __vector(f32[16]), i16, i32);
+    /// The `llvm.x86.fma.mask.vfnmadd.pd.512` intrinsic; known as `__builtin_ia32_vfnmaddpd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfnmadd.pd.512")
+    __vector(f64[8]) fma_mask_vfnmadd_pd_512(__vector(f64[8]), __vector(f64[8]), __vector(f64[8]), i8, i32);
+    /// The `llvm.x86.fma.vfnmsub.ss` intrinsic; known as `__builtin_ia32_vfnmsubss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmsub.ss")
+    __vector(f32[4]) fma_vfnmsub_ss(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.fma.vfnmsub.sd` intrinsic; known as `__builtin_ia32_vfnmsubsd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmsub.sd")
+    __vector(f64[2]) fma_vfnmsub_sd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.fma.vfnmsub.ps` intrinsic; known as `__builtin_ia32_vfnmsubps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmsub.ps")
+    __vector(f32[4]) fma_vfnmsub_ps(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.fma.vfnmsub.pd` intrinsic; known as `__builtin_ia32_vfnmsubpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmsub.pd")
+    __vector(f64[2]) fma_vfnmsub_pd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.fma.vfnmsub.ps.256` intrinsic; known as `__builtin_ia32_vfnmsubps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmsub.ps.256")
+    __vector(f32[8]) fma_vfnmsub_ps_256(__vector(f32[8]), __vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.fma.vfnmsub.pd.256` intrinsic; known as `__builtin_ia32_vfnmsubpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmsub.pd.256")
+    __vector(f64[4]) fma_vfnmsub_pd_256(__vector(f64[4]), __vector(f64[4]), __vector(f64[4]));
+    /// The `llvm.x86.fma.mask.vfnmsub.ps.512` intrinsic; known as `__builtin_ia32_vfnmsubps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfnmsub.ps.512")
+    __vector(f32[16]) fma_mask_vfnmsub_ps_512(__vector(f32[16]), __vector(f32[16]), __vector(f32[16]), i16, i32);
+    /// The `llvm.x86.fma.mask.vfnmsub.pd.512` intrinsic; known as `__builtin_ia32_vfnmsubpd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfnmsub.pd.512")
+    __vector(f64[8]) fma_mask_vfnmsub_pd_512(__vector(f64[8]), __vector(f64[8]), __vector(f64[8]), i8, i32);
+    /// The `llvm.x86.fma.vfmaddsub.ps` intrinsic; known as `__builtin_ia32_vfmaddsubps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmaddsub.ps")
+    __vector(f32[4]) fma_vfmaddsub_ps(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.fma.vfmaddsub.pd` intrinsic; known as `__builtin_ia32_vfmaddsubpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmaddsub.pd")
+    __vector(f64[2]) fma_vfmaddsub_pd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.fma.vfmaddsub.ps.256` intrinsic; known as `__builtin_ia32_vfmaddsubps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmaddsub.ps.256")
+    __vector(f32[8]) fma_vfmaddsub_ps_256(__vector(f32[8]), __vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.fma.vfmaddsub.pd.256` intrinsic; known as `__builtin_ia32_vfmaddsubpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmaddsub.pd.256")
+    __vector(f64[4]) fma_vfmaddsub_pd_256(__vector(f64[4]), __vector(f64[4]), __vector(f64[4]));
+    /// The `llvm.x86.fma.mask.vfmaddsub.ps.512` intrinsic; known as `__builtin_ia32_vfmaddsubps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfmaddsub.ps.512")
+    __vector(f32[16]) fma_mask_vfmaddsub_ps_512(__vector(f32[16]), __vector(f32[16]), __vector(f32[16]), i16, i32);
+    /// The `llvm.x86.fma.mask.vfmaddsub.pd.512` intrinsic; known as `__builtin_ia32_vfmaddsubpd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfmaddsub.pd.512")
+    __vector(f64[8]) fma_mask_vfmaddsub_pd_512(__vector(f64[8]), __vector(f64[8]), __vector(f64[8]), i8, i32);
+    /// The `llvm.x86.fma.vfmsubadd.ps` intrinsic; known as `__builtin_ia32_vfmsubaddps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsubadd.ps")
+    __vector(f32[4]) fma_vfmsubadd_ps(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.fma.vfmsubadd.pd` intrinsic; known as `__builtin_ia32_vfmsubaddpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsubadd.pd")
+    __vector(f64[2]) fma_vfmsubadd_pd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.fma.vfmsubadd.ps.256` intrinsic; known as `__builtin_ia32_vfmsubaddps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsubadd.ps.256")
+    __vector(f32[8]) fma_vfmsubadd_ps_256(__vector(f32[8]), __vector(f32[8]), __vector(f32[8]));
+    /// The `llvm.x86.fma.vfmsubadd.pd.256` intrinsic; known as `__builtin_ia32_vfmsubaddpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsubadd.pd.256")
+    __vector(f64[4]) fma_vfmsubadd_pd_256(__vector(f64[4]), __vector(f64[4]), __vector(f64[4]));
+    /// The `llvm.x86.fma.mask.vfmsubadd.ps.512` intrinsic; known as `__builtin_ia32_vfmsubaddps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfmsubadd.ps.512")
+    __vector(f32[16]) fma_mask_vfmsubadd_ps_512(__vector(f32[16]), __vector(f32[16]), __vector(f32[16]), i16, i32);
+    /// The `llvm.x86.fma.mask.vfmsubadd.pd.512` intrinsic; known as `__builtin_ia32_vfmsubaddpd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfmsubadd.pd.512")
+    __vector(f64[8]) fma_mask_vfmsubadd_pd_512(__vector(f64[8]), __vector(f64[8]), __vector(f64[8]), i8, i32);
+    /// The `llvm.x86.xop.vpermil2pd` intrinsic; known as `__builtin_ia32_vpermil2pd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpermil2pd")
+    __vector(f64[2]) xop_vpermil2pd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]), i8);
+    /// The `llvm.x86.xop.vpermil2pd.256` intrinsic; known as `__builtin_ia32_vpermil2pd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpermil2pd.256")
+    __vector(f64[4]) xop_vpermil2pd_256(__vector(f64[4]), __vector(f64[4]), __vector(f64[4]), i8);
+    /// The `llvm.x86.xop.vpermil2ps` intrinsic; known as `__builtin_ia32_vpermil2ps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpermil2ps")
+    __vector(f32[4]) xop_vpermil2ps(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]), i8);
+    /// The `llvm.x86.xop.vpermil2ps.256` intrinsic; known as `__builtin_ia32_vpermil2ps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpermil2ps.256")
+    __vector(f32[8]) xop_vpermil2ps_256(__vector(f32[8]), __vector(f32[8]), __vector(f32[8]), i8);
+    /// The `llvm.x86.xop.vfrcz.pd` intrinsic; known as `__builtin_ia32_vfrczpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vfrcz.pd")
+    __vector(f64[2]) xop_vfrcz_pd(__vector(f64[2]));
+    /// The `llvm.x86.xop.vfrcz.ps` intrinsic; known as `__builtin_ia32_vfrczps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vfrcz.ps")
+    __vector(f32[4]) xop_vfrcz_ps(__vector(f32[4]));
+    /// The `llvm.x86.xop.vfrcz.sd` intrinsic; known as `__builtin_ia32_vfrczsd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vfrcz.sd")
+    __vector(f64[2]) xop_vfrcz_sd(__vector(f64[2]));
+    /// The `llvm.x86.xop.vfrcz.ss` intrinsic; known as `__builtin_ia32_vfrczss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vfrcz.ss")
+    __vector(f32[4]) xop_vfrcz_ss(__vector(f32[4]));
+    /// The `llvm.x86.xop.vfrcz.pd.256` intrinsic; known as `__builtin_ia32_vfrczpd256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vfrcz.pd.256")
+    __vector(f64[4]) xop_vfrcz_pd_256(__vector(f64[4]));
+    /// The `llvm.x86.xop.vfrcz.ps.256` intrinsic; known as `__builtin_ia32_vfrczps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vfrcz.ps.256")
+    __vector(f32[8]) xop_vfrcz_ps_256(__vector(f32[8]));
+    /// The `llvm.x86.xop.vpcmov` intrinsic; known as `__builtin_ia32_vpcmov` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpcmov")
+    __vector(i64[2]) xop_vpcmov(__vector(i64[2]), __vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.xop.vpcmov.256` intrinsic; known as `__builtin_ia32_vpcmov_256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpcmov.256")
+    __vector(i64[4]) xop_vpcmov_256(__vector(i64[4]), __vector(i64[4]), __vector(i64[4]));
+    /// The `llvm.x86.xop.vpcomb` intrinsic; known as `__builtin_ia32_vpcomb` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpcomb")
+    __vector(i8[16]) xop_vpcomb(__vector(i8[16]), __vector(i8[16]), i8);
+    /// The `llvm.x86.xop.vpcomw` intrinsic; known as `__builtin_ia32_vpcomw` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpcomw")
+    __vector(i16[8]) xop_vpcomw(__vector(i16[8]), __vector(i16[8]), i8);
+    /// The `llvm.x86.xop.vpcomd` intrinsic; known as `__builtin_ia32_vpcomd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpcomd")
+    __vector(i32[4]) xop_vpcomd(__vector(i32[4]), __vector(i32[4]), i8);
+    /// The `llvm.x86.xop.vpcomq` intrinsic; known as `__builtin_ia32_vpcomq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpcomq")
+    __vector(i64[2]) xop_vpcomq(__vector(i64[2]), __vector(i64[2]), i8);
+    /// The `llvm.x86.xop.vpcomub` intrinsic; known as `__builtin_ia32_vpcomub` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpcomub")
+    __vector(i8[16]) xop_vpcomub(__vector(i8[16]), __vector(i8[16]), i8);
+    /// The `llvm.x86.xop.vpcomuw` intrinsic; known as `__builtin_ia32_vpcomuw` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpcomuw")
+    __vector(i16[8]) xop_vpcomuw(__vector(i16[8]), __vector(i16[8]), i8);
+    /// The `llvm.x86.xop.vpcomud` intrinsic; known as `__builtin_ia32_vpcomud` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpcomud")
+    __vector(i32[4]) xop_vpcomud(__vector(i32[4]), __vector(i32[4]), i8);
+    /// The `llvm.x86.xop.vpcomuq` intrinsic; known as `__builtin_ia32_vpcomuq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpcomuq")
+    __vector(i64[2]) xop_vpcomuq(__vector(i64[2]), __vector(i64[2]), i8);
+    /// The `llvm.x86.xop.vphaddbd` intrinsic; known as `__builtin_ia32_vphaddbd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddbd")
+    __vector(i32[4]) xop_vphaddbd(__vector(i8[16]));
+    /// The `llvm.x86.xop.vphaddbq` intrinsic; known as `__builtin_ia32_vphaddbq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddbq")
+    __vector(i64[2]) xop_vphaddbq(__vector(i8[16]));
+    /// The `llvm.x86.xop.vphaddbw` intrinsic; known as `__builtin_ia32_vphaddbw` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddbw")
+    __vector(i16[8]) xop_vphaddbw(__vector(i8[16]));
+    /// The `llvm.x86.xop.vphadddq` intrinsic; known as `__builtin_ia32_vphadddq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vphadddq")
+    __vector(i64[2]) xop_vphadddq(__vector(i32[4]));
+    /// The `llvm.x86.xop.vphaddubd` intrinsic; known as `__builtin_ia32_vphaddubd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddubd")
+    __vector(i32[4]) xop_vphaddubd(__vector(i8[16]));
+    /// The `llvm.x86.xop.vphaddubq` intrinsic; known as `__builtin_ia32_vphaddubq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddubq")
+    __vector(i64[2]) xop_vphaddubq(__vector(i8[16]));
+    /// The `llvm.x86.xop.vphaddubw` intrinsic; known as `__builtin_ia32_vphaddubw` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddubw")
+    __vector(i16[8]) xop_vphaddubw(__vector(i8[16]));
+    /// The `llvm.x86.xop.vphaddudq` intrinsic; known as `__builtin_ia32_vphaddudq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddudq")
+    __vector(i64[2]) xop_vphaddudq(__vector(i32[4]));
+    /// The `llvm.x86.xop.vphadduwd` intrinsic; known as `__builtin_ia32_vphadduwd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vphadduwd")
+    __vector(i32[4]) xop_vphadduwd(__vector(i16[8]));
+    /// The `llvm.x86.xop.vphadduwq` intrinsic; known as `__builtin_ia32_vphadduwq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vphadduwq")
+    __vector(i64[2]) xop_vphadduwq(__vector(i16[8]));
+    /// The `llvm.x86.xop.vphaddwd` intrinsic; known as `__builtin_ia32_vphaddwd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddwd")
+    __vector(i32[4]) xop_vphaddwd(__vector(i16[8]));
+    /// The `llvm.x86.xop.vphaddwq` intrinsic; known as `__builtin_ia32_vphaddwq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddwq")
+    __vector(i64[2]) xop_vphaddwq(__vector(i16[8]));
+    /// The `llvm.x86.xop.vphsubbw` intrinsic; known as `__builtin_ia32_vphsubbw` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vphsubbw")
+    __vector(i16[8]) xop_vphsubbw(__vector(i8[16]));
+    /// The `llvm.x86.xop.vphsubdq` intrinsic; known as `__builtin_ia32_vphsubdq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vphsubdq")
+    __vector(i64[2]) xop_vphsubdq(__vector(i32[4]));
+    /// The `llvm.x86.xop.vphsubwd` intrinsic; known as `__builtin_ia32_vphsubwd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vphsubwd")
+    __vector(i32[4]) xop_vphsubwd(__vector(i16[8]));
+    /// The `llvm.x86.xop.vpmacsdd` intrinsic; known as `__builtin_ia32_vpmacsdd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacsdd")
+    __vector(i32[4]) xop_vpmacsdd(__vector(i32[4]), __vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.xop.vpmacsdqh` intrinsic; known as `__builtin_ia32_vpmacsdqh` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacsdqh")
+    __vector(i64[2]) xop_vpmacsdqh(__vector(i32[4]), __vector(i32[4]), __vector(i64[2]));
+    /// The `llvm.x86.xop.vpmacsdql` intrinsic; known as `__builtin_ia32_vpmacsdql` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacsdql")
+    __vector(i64[2]) xop_vpmacsdql(__vector(i32[4]), __vector(i32[4]), __vector(i64[2]));
+    /// The `llvm.x86.xop.vpmacssdd` intrinsic; known as `__builtin_ia32_vpmacssdd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacssdd")
+    __vector(i32[4]) xop_vpmacssdd(__vector(i32[4]), __vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.xop.vpmacssdqh` intrinsic; known as `__builtin_ia32_vpmacssdqh` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacssdqh")
+    __vector(i64[2]) xop_vpmacssdqh(__vector(i32[4]), __vector(i32[4]), __vector(i64[2]));
+    /// The `llvm.x86.xop.vpmacssdql` intrinsic; known as `__builtin_ia32_vpmacssdql` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacssdql")
+    __vector(i64[2]) xop_vpmacssdql(__vector(i32[4]), __vector(i32[4]), __vector(i64[2]));
+    /// The `llvm.x86.xop.vpmacsswd` intrinsic; known as `__builtin_ia32_vpmacsswd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacsswd")
+    __vector(i32[4]) xop_vpmacsswd(__vector(i16[8]), __vector(i16[8]), __vector(i32[4]));
+    /// The `llvm.x86.xop.vpmacssww` intrinsic; known as `__builtin_ia32_vpmacssww` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacssww")
+    __vector(i16[8]) xop_vpmacssww(__vector(i16[8]), __vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.xop.vpmacswd` intrinsic; known as `__builtin_ia32_vpmacswd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacswd")
+    __vector(i32[4]) xop_vpmacswd(__vector(i16[8]), __vector(i16[8]), __vector(i32[4]));
+    /// The `llvm.x86.xop.vpmacsww` intrinsic; known as `__builtin_ia32_vpmacsww` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacsww")
+    __vector(i16[8]) xop_vpmacsww(__vector(i16[8]), __vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.xop.vpmadcsswd` intrinsic; known as `__builtin_ia32_vpmadcsswd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpmadcsswd")
+    __vector(i32[4]) xop_vpmadcsswd(__vector(i16[8]), __vector(i16[8]), __vector(i32[4]));
+    /// The `llvm.x86.xop.vpmadcswd` intrinsic; known as `__builtin_ia32_vpmadcswd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpmadcswd")
+    __vector(i32[4]) xop_vpmadcswd(__vector(i16[8]), __vector(i16[8]), __vector(i32[4]));
+    /// The `llvm.x86.xop.vpperm` intrinsic; known as `__builtin_ia32_vpperm` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpperm")
+    __vector(i8[16]) xop_vpperm(__vector(i8[16]), __vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.xop.vprotb` intrinsic; known as `__builtin_ia32_vprotb` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vprotb")
+    __vector(i8[16]) xop_vprotb(__vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.xop.vprotd` intrinsic; known as `__builtin_ia32_vprotd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vprotd")
+    __vector(i32[4]) xop_vprotd(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.xop.vprotq` intrinsic; known as `__builtin_ia32_vprotq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vprotq")
+    __vector(i64[2]) xop_vprotq(__vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.xop.vprotw` intrinsic; known as `__builtin_ia32_vprotw` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vprotw")
+    __vector(i16[8]) xop_vprotw(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.xop.vprotbi` intrinsic; known as `__builtin_ia32_vprotbi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vprotbi")
+    __vector(i8[16]) xop_vprotbi(__vector(i8[16]), i8);
+    /// The `llvm.x86.xop.vprotdi` intrinsic; known as `__builtin_ia32_vprotdi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vprotdi")
+    __vector(i32[4]) xop_vprotdi(__vector(i32[4]), i8);
+    /// The `llvm.x86.xop.vprotqi` intrinsic; known as `__builtin_ia32_vprotqi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vprotqi")
+    __vector(i64[2]) xop_vprotqi(__vector(i64[2]), i8);
+    /// The `llvm.x86.xop.vprotwi` intrinsic; known as `__builtin_ia32_vprotwi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vprotwi")
+    __vector(i16[8]) xop_vprotwi(__vector(i16[8]), i8);
+    /// The `llvm.x86.xop.vpshab` intrinsic; known as `__builtin_ia32_vpshab` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpshab")
+    __vector(i8[16]) xop_vpshab(__vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.xop.vpshad` intrinsic; known as `__builtin_ia32_vpshad` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpshad")
+    __vector(i32[4]) xop_vpshad(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.xop.vpshaq` intrinsic; known as `__builtin_ia32_vpshaq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpshaq")
+    __vector(i64[2]) xop_vpshaq(__vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.xop.vpshaw` intrinsic; known as `__builtin_ia32_vpshaw` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpshaw")
+    __vector(i16[8]) xop_vpshaw(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.xop.vpshlb` intrinsic; known as `__builtin_ia32_vpshlb` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpshlb")
+    __vector(i8[16]) xop_vpshlb(__vector(i8[16]), __vector(i8[16]));
+    /// The `llvm.x86.xop.vpshld` intrinsic; known as `__builtin_ia32_vpshld` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpshld")
+    __vector(i32[4]) xop_vpshld(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.xop.vpshlq` intrinsic; known as `__builtin_ia32_vpshlq` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpshlq")
+    __vector(i64[2]) xop_vpshlq(__vector(i64[2]), __vector(i64[2]));
+    /// The `llvm.x86.xop.vpshlw` intrinsic; known as `__builtin_ia32_vpshlw` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xop.vpshlw")
+    __vector(i16[8]) xop_vpshlw(__vector(i16[8]), __vector(i16[8]));
+    /// The `llvm.x86.mmx.emms` intrinsic; known as `__builtin_ia32_emms` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.mmx.emms")
+    void mmx_emms();
+    /// The `llvm.x86.mmx.femms` intrinsic; known as `__builtin_ia32_femms` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.mmx.femms")
+    void mmx_femms();
+    /// The `llvm.x86.bmi.bextr.32` intrinsic; known as `__builtin_ia32_bextr_u32` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.bmi.bextr.32")
+    i32 bmi_bextr_32(i32, i32);
+    /// The `llvm.x86.bmi.bextr.64` intrinsic; known as `__builtin_ia32_bextr_u64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.bmi.bextr.64")
+    i64 bmi_bextr_64(i64, i64);
+    /// The `llvm.x86.bmi.bzhi.32` intrinsic; known as `__builtin_ia32_bzhi_si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.bmi.bzhi.32")
+    i32 bmi_bzhi_32(i32, i32);
+    /// The `llvm.x86.bmi.bzhi.64` intrinsic; known as `__builtin_ia32_bzhi_di` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.bmi.bzhi.64")
+    i64 bmi_bzhi_64(i64, i64);
+    /// The `llvm.x86.bmi.pdep.32` intrinsic; known as `__builtin_ia32_pdep_si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.bmi.pdep.32")
+    i32 bmi_pdep_32(i32, i32);
+    /// The `llvm.x86.bmi.pdep.64` intrinsic; known as `__builtin_ia32_pdep_di` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.bmi.pdep.64")
+    i64 bmi_pdep_64(i64, i64);
+    /// The `llvm.x86.bmi.pext.32` intrinsic; known as `__builtin_ia32_pext_si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.bmi.pext.32")
+    i32 bmi_pext_32(i32, i32);
+    /// The `llvm.x86.bmi.pext.64` intrinsic; known as `__builtin_ia32_pext_di` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.bmi.pext.64")
+    i64 bmi_pext_64(i64, i64);
+    /// The `llvm.x86.rdfsbase.32` intrinsic; known as `__builtin_ia32_rdfsbase32` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.rdfsbase.32")
+    i32 rdfsbase_32();
+    /// The `llvm.x86.rdgsbase.32` intrinsic; known as `__builtin_ia32_rdgsbase32` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.rdgsbase.32")
+    i32 rdgsbase_32();
+    /// The `llvm.x86.rdfsbase.64` intrinsic; known as `__builtin_ia32_rdfsbase64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.rdfsbase.64")
+    i64 rdfsbase_64();
+    /// The `llvm.x86.rdgsbase.64` intrinsic; known as `__builtin_ia32_rdgsbase64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.rdgsbase.64")
+    i64 rdgsbase_64();
+    /// The `llvm.x86.wrfsbase.32` intrinsic; known as `__builtin_ia32_wrfsbase32` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.wrfsbase.32")
+    void wrfsbase_32(i32);
+    /// The `llvm.x86.wrgsbase.32` intrinsic; known as `__builtin_ia32_wrgsbase32` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.wrgsbase.32")
+    void wrgsbase_32(i32);
+    /// The `llvm.x86.wrfsbase.64` intrinsic; known as `__builtin_ia32_wrfsbase64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.wrfsbase.64")
+    void wrfsbase_64(i64);
+    /// The `llvm.x86.wrgsbase.64` intrinsic; known as `__builtin_ia32_wrgsbase64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.wrgsbase.64")
+    void wrgsbase_64(i64);
+    /// The `llvm.x86.vcvtph2ps.128` intrinsic; known as `__builtin_ia32_vcvtph2ps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.vcvtph2ps.128")
+    __vector(f32[4]) vcvtph2ps_128(__vector(i16[8]));
+    /// The `llvm.x86.vcvtph2ps.256` intrinsic; known as `__builtin_ia32_vcvtph2ps256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.vcvtph2ps.256")
+    __vector(f32[8]) vcvtph2ps_256(__vector(i16[8]));
+    /// The `llvm.x86.vcvtps2ph.128` intrinsic; known as `__builtin_ia32_vcvtps2ph` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.vcvtps2ph.128")
+    __vector(i16[8]) vcvtps2ph_128(__vector(f32[4]), i32);
+    /// The `llvm.x86.vcvtps2ph.256` intrinsic; known as `__builtin_ia32_vcvtps2ph256` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.vcvtps2ph.256")
+    __vector(i16[8]) vcvtps2ph_256(__vector(f32[8]), i32);
+    /// The `llvm.x86.avx512.mask.vcvtph2ps.512` intrinsic; known as `__builtin_ia32_vcvtph2ps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.vcvtph2ps.512")
+    __vector(f32[16]) avx512_mask_vcvtph2ps_512(__vector(i16[16]), __vector(f32[16]), i16, i32);
+    /// The `llvm.x86.avx512.mask.vcvtps2ph.512` intrinsic; known as `__builtin_ia32_vcvtps2ph512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.vcvtps2ph.512")
+    __vector(i16[16]) avx512_mask_vcvtps2ph_512(__vector(f32[16]), i32, __vector(i16[16]), i16);
+    /// The `llvm.x86.tbm.bextri.u32` intrinsic; known as `__builtin_ia32_bextri_u32` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.tbm.bextri.u32")
+    i32 tbm_bextri_u32(i32, i32);
+    /// The `llvm.x86.tbm.bextri.u64` intrinsic; known as `__builtin_ia32_bextri_u64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.tbm.bextri.u64")
+    i64 tbm_bextri_u64(i64, i64);
+    /// The `llvm.x86.addcarryx.u32` intrinsic; known as `__builtin_ia32_addcarryx_u32` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.addcarryx.u32")
+    i8 addcarryx_u32(i8, i32, i32, i8*);
+    /// The `llvm.x86.addcarryx.u64` intrinsic; known as `__builtin_ia32_addcarryx_u64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.addcarryx.u64")
+    i8 addcarryx_u64(i8, i64, i64, i8*);
+    /// The `llvm.x86.addcarry.u32` intrinsic; known as `__builtin_ia32_addcarry_u32` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.addcarry.u32")
+    i8 addcarry_u32(i8, i32, i32, i8*);
+    /// The `llvm.x86.addcarry.u64` intrinsic; known as `__builtin_ia32_addcarry_u64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.addcarry.u64")
+    i8 addcarry_u64(i8, i64, i64, i8*);
+    /// The `llvm.x86.subborrow.u32` intrinsic; known as `__builtin_ia32_subborrow_u32` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.subborrow.u32")
+    i8 subborrow_u32(i8, i32, i32, i8*);
+    /// The `llvm.x86.subborrow.u64` intrinsic; known as `__builtin_ia32_subborrow_u64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.subborrow.u64")
+    i8 subborrow_u64(i8, i64, i64, i8*);
+    /// The `llvm.x86.xbegin` intrinsic; known as `__builtin_ia32_xbegin` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xbegin")
+    i32 xbegin();
+    /// The `llvm.x86.xend` intrinsic; known as `__builtin_ia32_xend` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xend")
+    void xend();
+    /// The `llvm.x86.xabort` intrinsic; known as `__builtin_ia32_xabort` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xabort")
+    void xabort(i8);
+    /// The `llvm.x86.xtest` intrinsic; known as `__builtin_ia32_xtest` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.xtest")
+    i32 xtest();
+
+    // ======= Mir Addition:
+    pragma(LDC_intrinsic, "llvm.x86.avx512.pshuf.b.512")
+    __vector(ubyte[64]) avx512_pshuf_b_512(__vector(ubyte[64]), __vector(ubyte[64]));
+    // =======
+
+    /// The `llvm.x86.avx512.kand.w` intrinsic; known as `__builtin_ia32_kandhi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.kand.w")
+    i16 avx512_kand_w(i16, i16);
+    /// The `llvm.x86.avx512.kandn.w` intrinsic; known as `__builtin_ia32_kandnhi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.kandn.w")
+    i16 avx512_kandn_w(i16, i16);
+    /// The `llvm.x86.avx512.knot.w` intrinsic; known as `__builtin_ia32_knothi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.knot.w")
+    i16 avx512_knot_w(i16);
+    /// The `llvm.x86.avx512.kor.w` intrinsic; known as `__builtin_ia32_korhi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.kor.w")
+    i16 avx512_kor_w(i16, i16);
+    /// The `llvm.x86.avx512.kxor.w` intrinsic; known as `__builtin_ia32_kxorhi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.kxor.w")
+    i16 avx512_kxor_w(i16, i16);
+    /// The `llvm.x86.avx512.kxnor.w` intrinsic; known as `__builtin_ia32_kxnorhi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.kxnor.w")
+    i16 avx512_kxnor_w(i16, i16);
+    /// The `llvm.x86.avx512.kunpck.bw` intrinsic; known as `__builtin_ia32_kunpckhi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.kunpck.bw")
+    i16 avx512_kunpck_bw(i16, i16);
+    /// The `llvm.x86.avx512.kortestz.w` intrinsic; known as `__builtin_ia32_kortestzhi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.kortestz.w")
+    i32 avx512_kortestz_w(i16, i16);
+    /// The `llvm.x86.avx512.kortestc.w` intrinsic; known as `__builtin_ia32_kortestchi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.kortestc.w")
+    i32 avx512_kortestc_w(i16, i16);
+    /// The `llvm.x86.avx512.cvtss2usi` intrinsic; known as `__builtin_ia32_cvtss2usi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.cvtss2usi")
+    i32 avx512_cvtss2usi(__vector(f32[4]));
+    /// The `llvm.x86.avx512.cvtss2usi64` intrinsic; known as `__builtin_ia32_cvtss2usi64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.cvtss2usi64")
+    i64 avx512_cvtss2usi64(__vector(f32[4]));
+    /// The `llvm.x86.avx512.cvttss2usi` intrinsic; known as `__builtin_ia32_cvttss2usi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.cvttss2usi")
+    i32 avx512_cvttss2usi(__vector(f32[4]));
+    /// The `llvm.x86.avx512.cvttss2usi64` intrinsic; known as `__builtin_ia32_cvttss2usi64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.cvttss2usi64")
+    i64 avx512_cvttss2usi64(__vector(f32[4]));
+    /// The `llvm.x86.avx512.cvtusi2ss` intrinsic; known as `__builtin_ia32_cvtusi2ss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.cvtusi2ss")
+    __vector(f32[4]) avx512_cvtusi2ss(__vector(f32[4]), i32);
+    /// The `llvm.x86.avx512.cvtusi642ss` intrinsic; known as `__builtin_ia32_cvtusi642ss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.cvtusi642ss")
+    __vector(f32[4]) avx512_cvtusi642ss(__vector(f32[4]), i64);
+    /// The `llvm.x86.avx512.cvtsd2usi` intrinsic; known as `__builtin_ia32_cvtsd2usi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.cvtsd2usi")
+    i32 avx512_cvtsd2usi(__vector(f64[2]));
+    /// The `llvm.x86.avx512.cvtsd2usi64` intrinsic; known as `__builtin_ia32_cvtsd2usi64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.cvtsd2usi64")
+    i64 avx512_cvtsd2usi64(__vector(f64[2]));
+    /// The `llvm.x86.avx512.cvttsd2usi` intrinsic; known as `__builtin_ia32_cvttsd2usi` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.cvttsd2usi")
+    i32 avx512_cvttsd2usi(__vector(f64[2]));
+    /// The `llvm.x86.avx512.cvttsd2usi64` intrinsic; known as `__builtin_ia32_cvttsd2usi64` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.cvttsd2usi64")
+    i64 avx512_cvttsd2usi64(__vector(f64[2]));
+    /// The `llvm.x86.avx512.cvtusi2sd` intrinsic; known as `__builtin_ia32_cvtusi2sd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.cvtusi2sd")
+    __vector(f64[2]) avx512_cvtusi2sd(__vector(f64[2]), i32);
+    /// The `llvm.x86.avx512.cvtusi642sd` intrinsic; known as `__builtin_ia32_cvtusi642sd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.cvtusi642sd")
+    __vector(f64[2]) avx512_cvtusi642sd(__vector(f64[2]), i64);
+    /// The `llvm.x86.avx512.mask.cvttps2dq.512` intrinsic; known as `__builtin_ia32_cvttps2dq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvttps2dq.512")
+    __vector(i32[16]) avx512_mask_cvttps2dq_512(__vector(f32[16]), __vector(i32[16]), i16, i32);
+    /// The `llvm.x86.avx512.mask.cvttps2udq.512` intrinsic; known as `__builtin_ia32_cvttps2udq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvttps2udq.512")
+    __vector(i32[16]) avx512_mask_cvttps2udq_512(__vector(f32[16]), __vector(i32[16]), i16, i32);
+    /// The `llvm.x86.avx512.mask.cvttpd2dq.512` intrinsic; known as `__builtin_ia32_cvttpd2dq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvttpd2dq.512")
+    __vector(i32[8]) avx512_mask_cvttpd2dq_512(__vector(f64[8]), __vector(i32[8]), i8, i32);
+    /// The `llvm.x86.avx512.mask.cvttpd2udq.512` intrinsic; known as `__builtin_ia32_cvttpd2udq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvttpd2udq.512")
+    __vector(i32[8]) avx512_mask_cvttpd2udq_512(__vector(f64[8]), __vector(i32[8]), i8, i32);
+    /// The `llvm.x86.avx512.mask.rndscale.ps.512` intrinsic; known as `__builtin_ia32_rndscaleps_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.rndscale.ps.512")
+    __vector(f32[16]) avx512_mask_rndscale_ps_512(__vector(f32[16]), i32, __vector(f32[16]), i16, i32);
+    /// The `llvm.x86.avx512.mask.rndscale.pd.512` intrinsic; known as `__builtin_ia32_rndscalepd_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.rndscale.pd.512")
+    __vector(f64[8]) avx512_mask_rndscale_pd_512(__vector(f64[8]), i32, __vector(f64[8]), i8, i32);
+    /// The `llvm.x86.avx512.mask.cvtps2dq.512` intrinsic; known as `__builtin_ia32_cvtps2dq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtps2dq.512")
+    __vector(i32[16]) avx512_mask_cvtps2dq_512(__vector(f32[16]), __vector(i32[16]), i16, i32);
+    /// The `llvm.x86.avx512.mask.cvtpd2dq.512` intrinsic; known as `__builtin_ia32_cvtpd2dq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtpd2dq.512")
+    __vector(i32[8]) avx512_mask_cvtpd2dq_512(__vector(f64[8]), __vector(i32[8]), i8, i32);
+    /// The `llvm.x86.avx512.mask.cvtps2udq.512` intrinsic; known as `__builtin_ia32_cvtps2udq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtps2udq.512")
+    __vector(i32[16]) avx512_mask_cvtps2udq_512(__vector(f32[16]), __vector(i32[16]), i16, i32);
+    /// The `llvm.x86.avx512.mask.cvtpd2udq.512` intrinsic; known as `__builtin_ia32_cvtpd2udq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtpd2udq.512")
+    __vector(i32[8]) avx512_mask_cvtpd2udq_512(__vector(f64[8]), __vector(i32[8]), i8, i32);
+    /// The `llvm.x86.avx512.mask.cvtdq2ps.512` intrinsic; known as `__builtin_ia32_cvtdq2ps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtdq2ps.512")
+    __vector(f32[16]) avx512_mask_cvtdq2ps_512(__vector(i32[16]), __vector(f32[16]), i16, i32);
+    /// The `llvm.x86.avx512.mask.cvtdq2pd.512` intrinsic; known as `__builtin_ia32_cvtdq2pd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtdq2pd.512")
+    __vector(f64[8]) avx512_mask_cvtdq2pd_512(__vector(i32[8]), __vector(f64[8]), i8);
+    /// The `llvm.x86.avx512.mask.cvtudq2ps.512` intrinsic; known as `__builtin_ia32_cvtudq2ps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtudq2ps.512")
+    __vector(f32[16]) avx512_mask_cvtudq2ps_512(__vector(i32[16]), __vector(f32[16]), i16, i32);
+    /// The `llvm.x86.avx512.mask.cvtudq2pd.512` intrinsic; known as `__builtin_ia32_cvtudq2pd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtudq2pd.512")
+    __vector(f64[8]) avx512_mask_cvtudq2pd_512(__vector(i32[8]), __vector(f64[8]), i8);
+    /// The `llvm.x86.avx512.mask.cvtpd2ps.512` intrinsic; known as `__builtin_ia32_cvtpd2ps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtpd2ps.512")
+    __vector(f32[8]) avx512_mask_cvtpd2ps_512(__vector(f64[8]), __vector(f32[8]), i8, i32);
+    /// The `llvm.x86.avx512.vbroadcast.ss.512` intrinsic; known as `__builtin_ia32_vbroadcastss512` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.vbroadcast.ss.512")
+    __vector(f32[16]) avx512_vbroadcast_ss_512(i8*);
+    /// The `llvm.x86.avx512.vbroadcast.ss.ps.512` intrinsic; known as `__builtin_ia32_vbroadcastss_ps512` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.vbroadcast.ss.ps.512")
+    __vector(f32[16]) avx512_vbroadcast_ss_ps_512(__vector(f32[4]));
+    /// The `llvm.x86.avx512.vbroadcast.sd.512` intrinsic; known as `__builtin_ia32_vbroadcastsd512` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.vbroadcast.sd.512")
+    __vector(f64[8]) avx512_vbroadcast_sd_512(i8*);
+    /// The `llvm.x86.avx512.vbroadcast.sd.pd.512` intrinsic; known as `__builtin_ia32_vbroadcastsd_pd512` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.vbroadcast.sd.pd.512")
+    __vector(f64[8]) avx512_vbroadcast_sd_pd_512(__vector(f64[2]));
+    /// The `llvm.x86.avx512.pbroadcastd.512` intrinsic; known as `__builtin_ia32_pbroadcastd512` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.pbroadcastd.512")
+    __vector(i32[16]) avx512_pbroadcastd_512(__vector(i32[4]));
+    /// The `llvm.x86.avx512.pbroadcastd.i32.512` intrinsic.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.pbroadcastd.i32.512")
+    __vector(i32[16]) avx512_pbroadcastd_i32_512(i32);
+    /// The `llvm.x86.avx512.pbroadcastq.512` intrinsic; known as `__builtin_ia32_pbroadcastq512` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.pbroadcastq.512")
+    __vector(i64[8]) avx512_pbroadcastq_512(__vector(i64[2]));
+    /// The `llvm.x86.avx512.pbroadcastq.i64.512` intrinsic.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.pbroadcastq.i64.512")
+    __vector(i64[8]) avx512_pbroadcastq_i64_512(i64);
+    /// The `llvm.x86.avx512.pmovzxbq` intrinsic; known as `__builtin_ia32_pmovzxbq512` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.pmovzxbq")
+    __vector(i64[8]) avx512_pmovzxbq(__vector(i8[16]));
+    /// The `llvm.x86.avx512.pmovzxwd` intrinsic; known as `__builtin_ia32_pmovzxwd512` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.pmovzxwd")
+    __vector(i32[16]) avx512_pmovzxwd(__vector(i16[16]));
+    /// The `llvm.x86.avx512.pmovzxbd` intrinsic; known as `__builtin_ia32_pmovzxbd512` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.pmovzxbd")
+    __vector(i32[16]) avx512_pmovzxbd(__vector(i8[16]));
+    /// The `llvm.x86.avx512.pmovzxwq` intrinsic; known as `__builtin_ia32_pmovzxwq512` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.pmovzxwq")
+    __vector(i64[8]) avx512_pmovzxwq(__vector(i16[8]));
+    /// The `llvm.x86.avx512.pmovzxdq` intrinsic; known as `__builtin_ia32_pmovzxdq512` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.pmovzxdq")
+    __vector(i64[8]) avx512_pmovzxdq(__vector(i32[8]));
+    /// The `llvm.x86.avx512.mask.max.ps.512` intrinsic; known as `__builtin_ia32_maxps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.max.ps.512")
+    __vector(f32[16]) avx512_mask_max_ps_512(__vector(f32[16]), __vector(f32[16]), __vector(f32[16]), i16, i32);
+    /// The `llvm.x86.avx512.mask.max.pd.512` intrinsic; known as `__builtin_ia32_maxpd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.max.pd.512")
+    __vector(f64[8]) avx512_mask_max_pd_512(__vector(f64[8]), __vector(f64[8]), __vector(f64[8]), i8, i32);
+    /// The `llvm.x86.avx512.mask.min.ps.512` intrinsic; known as `__builtin_ia32_minps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.min.ps.512")
+    __vector(f32[16]) avx512_mask_min_ps_512(__vector(f32[16]), __vector(f32[16]), __vector(f32[16]), i16, i32);
+    /// The `llvm.x86.avx512.mask.min.pd.512` intrinsic; known as `__builtin_ia32_minpd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.min.pd.512")
+    __vector(f64[8]) avx512_mask_min_pd_512(__vector(f64[8]), __vector(f64[8]), __vector(f64[8]), i8, i32);
+    /// The `llvm.x86.avx512.rndscale.ss` intrinsic; known as `__builtin_ia32_rndscaless` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rndscale.ss")
+    __vector(f32[4]) avx512_rndscale_ss(__vector(f32[4]), __vector(f32[4]), i32);
+    /// The `llvm.x86.avx512.rndscale.sd` intrinsic; known as `__builtin_ia32_rndscalesd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rndscale.sd")
+    __vector(f64[2]) avx512_rndscale_sd(__vector(f64[2]), __vector(f64[2]), i32);
+    /// The `llvm.x86.avx512.sqrt.ss` intrinsic; known as `__builtin_ia32_sqrtrndss` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.sqrt.ss")
+    __vector(f32[4]) avx512_sqrt_ss(__vector(f32[4]), __vector(f32[4]));
+    /// The `llvm.x86.avx512.sqrt.sd` intrinsic; known as `__builtin_ia32_sqrtrndsd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.sqrt.sd")
+    __vector(f64[2]) avx512_sqrt_sd(__vector(f64[2]), __vector(f64[2]));
+    /// The `llvm.x86.avx512.sqrt.pd.512` intrinsic; known as `__builtin_ia32_sqrtpd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.sqrt.pd.512")
+    __vector(f64[8]) avx512_sqrt_pd_512(__vector(f64[8]), __vector(f64[8]), i8, i32);
+    /// The `llvm.x86.avx512.sqrt.ps.512` intrinsic; known as `__builtin_ia32_sqrtps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.sqrt.ps.512")
+    __vector(f32[16]) avx512_sqrt_ps_512(__vector(f32[16]), __vector(f32[16]), i16, i32);
+    /// The `llvm.x86.avx512.rsqrt14.ss` intrinsic; known as `__builtin_ia32_rsqrt14ss_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rsqrt14.ss")
+    __vector(f32[4]) avx512_rsqrt14_ss(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]), i8);
+    /// The `llvm.x86.avx512.rsqrt14.sd` intrinsic; known as `__builtin_ia32_rsqrt14sd_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rsqrt14.sd")
+    __vector(f64[2]) avx512_rsqrt14_sd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]), i8);
+    /// The `llvm.x86.avx512.rsqrt14.pd.512` intrinsic; known as `__builtin_ia32_rsqrt14pd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rsqrt14.pd.512")
+    __vector(f64[8]) avx512_rsqrt14_pd_512(__vector(f64[8]), __vector(f64[8]), i8);
+    /// The `llvm.x86.avx512.rsqrt14.ps.512` intrinsic; known as `__builtin_ia32_rsqrt14ps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rsqrt14.ps.512")
+    __vector(f32[16]) avx512_rsqrt14_ps_512(__vector(f32[16]), __vector(f32[16]), i16);
+    /// The `llvm.x86.avx512.rcp14.ss` intrinsic; known as `__builtin_ia32_rcp14ss_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rcp14.ss")
+    __vector(f32[4]) avx512_rcp14_ss(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]), i8);
+    /// The `llvm.x86.avx512.rcp14.sd` intrinsic; known as `__builtin_ia32_rcp14sd_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rcp14.sd")
+    __vector(f64[2]) avx512_rcp14_sd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]), i8);
+    /// The `llvm.x86.avx512.rcp14.pd.512` intrinsic; known as `__builtin_ia32_rcp14pd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rcp14.pd.512")
+    __vector(f64[8]) avx512_rcp14_pd_512(__vector(f64[8]), __vector(f64[8]), i8);
+    /// The `llvm.x86.avx512.rcp14.ps.512` intrinsic; known as `__builtin_ia32_rcp14ps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rcp14.ps.512")
+    __vector(f32[16]) avx512_rcp14_ps_512(__vector(f32[16]), __vector(f32[16]), i16);
+    /// The `llvm.x86.avx512.rcp28.ps` intrinsic; known as `__builtin_ia32_rcp28ps_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rcp28.ps")
+    __vector(f32[16]) avx512_rcp28_ps(__vector(f32[16]), __vector(f32[16]), i16, i32);
+    /// The `llvm.x86.avx512.rcp28.pd` intrinsic; known as `__builtin_ia32_rcp28pd_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rcp28.pd")
+    __vector(f64[8]) avx512_rcp28_pd(__vector(f64[8]), __vector(f64[8]), i8, i32);
+    /// The `llvm.x86.avx512.rcp28.ss` intrinsic; known as `__builtin_ia32_rcp28ss_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rcp28.ss")
+    __vector(f32[4]) avx512_rcp28_ss(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]), i8, i32);
+    /// The `llvm.x86.avx512.rcp28.sd` intrinsic; known as `__builtin_ia32_rcp28sd_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rcp28.sd")
+    __vector(f64[2]) avx512_rcp28_sd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]), i8, i32);
+    /// The `llvm.x86.avx512.rsqrt28.ps` intrinsic; known as `__builtin_ia32_rsqrt28ps_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rsqrt28.ps")
+    __vector(f32[16]) avx512_rsqrt28_ps(__vector(f32[16]), __vector(f32[16]), i16, i32);
+    /// The `llvm.x86.avx512.rsqrt28.pd` intrinsic; known as `__builtin_ia32_rsqrt28pd_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rsqrt28.pd")
+    __vector(f64[8]) avx512_rsqrt28_pd(__vector(f64[8]), __vector(f64[8]), i8, i32);
+    /// The `llvm.x86.avx512.rsqrt28.ss` intrinsic; known as `__builtin_ia32_rsqrt28ss_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rsqrt28.ss")
+    __vector(f32[4]) avx512_rsqrt28_ss(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]), i8, i32);
+    /// The `llvm.x86.avx512.rsqrt28.sd` intrinsic; known as `__builtin_ia32_rsqrt28sd_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.rsqrt28.sd")
+    __vector(f64[2]) avx512_rsqrt28_sd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]), i8, i32);
+    /// The `llvm.x86.avx512.psll.dq` intrinsic; known as `__builtin_ia32_pslldqi512` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.psll.dq")
+    __vector(i64[8]) avx512_psll_dq(__vector(i64[8]), i32);
+    /// The `llvm.x86.avx512.psrl.dq` intrinsic; known as `__builtin_ia32_psrldqi512` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.psrl.dq")
+    __vector(i64[8]) avx512_psrl_dq(__vector(i64[8]), i32);
+    /// The `llvm.x86.avx512.psll.dq.bs` intrinsic; known as `__builtin_ia32_pslldqi512_byteshift` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.psll.dq.bs")
+    __vector(i64[8]) avx512_psll_dq_bs(__vector(i64[8]), i32);
+    /// The `llvm.x86.avx512.psrl.dq.bs` intrinsic; known as `__builtin_ia32_psrldqi512_byteshift` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.psrl.dq.bs")
+    __vector(i64[8]) avx512_psrl_dq_bs(__vector(i64[8]), i32);
+    /// The `llvm.x86.avx512.gather.dpd.512` intrinsic; known as `__builtin_ia32_gathersiv8df` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.gather.dpd.512")
+    __vector(f64[8]) avx512_gather_dpd_512(__vector(f64[8]), i8*, __vector(i32[8]), i8, i32);
+    /// The `llvm.x86.avx512.gather.dps.512` intrinsic; known as `__builtin_ia32_gathersiv16sf` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.gather.dps.512")
+    __vector(f32[16]) avx512_gather_dps_512(__vector(f32[16]), i8*, __vector(i32[16]), i16, i32);
+    /// The `llvm.x86.avx512.gather.qpd.512` intrinsic; known as `__builtin_ia32_gatherdiv8df` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.gather.qpd.512")
+    __vector(f64[8]) avx512_gather_qpd_512(__vector(f64[8]), i8*, __vector(i64[8]), i8, i32);
+    /// The `llvm.x86.avx512.gather.qps.512` intrinsic; known as `__builtin_ia32_gatherdiv16sf` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.gather.qps.512")
+    __vector(f32[8]) avx512_gather_qps_512(__vector(f32[8]), i8*, __vector(i64[8]), i8, i32);
+    /// The `llvm.x86.avx512.gather.dpq.512` intrinsic; known as `__builtin_ia32_gathersiv8di` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.gather.dpq.512")
+    __vector(i64[8]) avx512_gather_dpq_512(__vector(i64[8]), i8*, __vector(i32[8]), i8, i32);
+    /// The `llvm.x86.avx512.gather.dpi.512` intrinsic; known as `__builtin_ia32_gathersiv16si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.gather.dpi.512")
+    __vector(i32[16]) avx512_gather_dpi_512(__vector(i32[16]), i8*, __vector(i32[16]), i16, i32);
+    /// The `llvm.x86.avx512.gather.qpq.512` intrinsic; known as `__builtin_ia32_gatherdiv8di` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.gather.qpq.512")
+    __vector(i64[8]) avx512_gather_qpq_512(__vector(i64[8]), i8*, __vector(i64[8]), i8, i32);
+    /// The `llvm.x86.avx512.gather.qpi.512` intrinsic; known as `__builtin_ia32_gatherdiv16si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.gather.qpi.512")
+    __vector(i32[8]) avx512_gather_qpi_512(__vector(i32[8]), i8*, __vector(i64[8]), i8, i32);
+    /// The `llvm.x86.avx512.scatter.dpd.512` intrinsic; known as `__builtin_ia32_scattersiv8df` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.scatter.dpd.512")
+    void avx512_scatter_dpd_512(i8*, i8, __vector(i32[8]), __vector(f64[8]), i32);
+    /// The `llvm.x86.avx512.scatter.dps.512` intrinsic; known as `__builtin_ia32_scattersiv16sf` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.scatter.dps.512")
+    void avx512_scatter_dps_512(i8*, i16, __vector(i32[16]), __vector(f32[16]), i32);
+    /// The `llvm.x86.avx512.scatter.qpd.512` intrinsic; known as `__builtin_ia32_scatterdiv8df` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.scatter.qpd.512")
+    void avx512_scatter_qpd_512(i8*, i8, __vector(i64[8]), __vector(f64[8]), i32);
+    /// The `llvm.x86.avx512.scatter.qps.512` intrinsic; known as `__builtin_ia32_scatterdiv16sf` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.scatter.qps.512")
+    void avx512_scatter_qps_512(i8*, i8, __vector(i64[8]), __vector(f32[8]), i32);
+    /// The `llvm.x86.avx512.scatter.dpq.512` intrinsic; known as `__builtin_ia32_scattersiv8di` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.scatter.dpq.512")
+    void avx512_scatter_dpq_512(i8*, i8, __vector(i32[8]), __vector(i64[8]), i32);
+    /// The `llvm.x86.avx512.scatter.dpi.512` intrinsic; known as `__builtin_ia32_scattersiv16si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.scatter.dpi.512")
+    void avx512_scatter_dpi_512(i8*, i16, __vector(i32[16]), __vector(i32[16]), i32);
+    /// The `llvm.x86.avx512.scatter.qpq.512` intrinsic; known as `__builtin_ia32_scatterdiv8di` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.scatter.qpq.512")
+    void avx512_scatter_qpq_512(i8*, i8, __vector(i64[8]), __vector(i64[8]), i32);
+    /// The `llvm.x86.avx512.scatter.qpi.512` intrinsic; known as `__builtin_ia32_scatterdiv16si` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.scatter.qpi.512")
+    void avx512_scatter_qpi_512(i8*, i8, __vector(i64[8]), __vector(i32[8]), i32);
+    /// The `llvm.x86.avx512.gatherpf.dpd.512` intrinsic; known as `__builtin_ia32_gatherpfdpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.gatherpf.dpd.512")
+    void avx512_gatherpf_dpd_512(i8, __vector(i32[8]), i8*, i32, i32);
+    /// The `llvm.x86.avx512.gatherpf.dps.512` intrinsic; known as `__builtin_ia32_gatherpfdps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.gatherpf.dps.512")
+    void avx512_gatherpf_dps_512(i16, __vector(i32[16]), i8*, i32, i32);
+    /// The `llvm.x86.avx512.gatherpf.qpd.512` intrinsic; known as `__builtin_ia32_gatherpfqpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.gatherpf.qpd.512")
+    void avx512_gatherpf_qpd_512(i8, __vector(i64[8]), i8*, i32, i32);
+    /// The `llvm.x86.avx512.gatherpf.qps.512` intrinsic; known as `__builtin_ia32_gatherpfqps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.gatherpf.qps.512")
+    void avx512_gatherpf_qps_512(i8, __vector(i64[8]), i8*, i32, i32);
+    /// The `llvm.x86.avx512.scatterpf.dpd.512` intrinsic; known as `__builtin_ia32_scatterpfdpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.scatterpf.dpd.512")
+    void avx512_scatterpf_dpd_512(i8, __vector(i32[8]), i8*, i32, i32);
+    /// The `llvm.x86.avx512.scatterpf.dps.512` intrinsic; known as `__builtin_ia32_scatterpfdps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.scatterpf.dps.512")
+    void avx512_scatterpf_dps_512(i16, __vector(i32[16]), i8*, i32, i32);
+    /// The `llvm.x86.avx512.scatterpf.qpd.512` intrinsic; known as `__builtin_ia32_scatterpfqpd` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.scatterpf.qpd.512")
+    void avx512_scatterpf_qpd_512(i8, __vector(i64[8]), i8*, i32, i32);
+    /// The `llvm.x86.avx512.scatterpf.qps.512` intrinsic; known as `__builtin_ia32_scatterpfqps` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.scatterpf.qps.512")
+    void avx512_scatterpf_qps_512(i8, __vector(i64[8]), i8*, i32, i32);
+    /// The `llvm.x86.avx512.mask.conflict.d.512` intrinsic; known as `__builtin_ia32_vpconflictsi_512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.conflict.d.512")
+    __vector(i32[16]) avx512_mask_conflict_d_512(__vector(i32[16]), __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.conflict.q.512` intrinsic; known as `__builtin_ia32_vpconflictdi_512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.conflict.q.512")
+    __vector(i64[8]) avx512_mask_conflict_q_512(__vector(i64[8]), __vector(i64[8]), i8);
+    /// The `llvm.x86.avx512.mask.lzcnt.d.512` intrinsic; known as `__builtin_ia32_vplzcntd_512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.lzcnt.d.512")
+    __vector(i32[16]) avx512_mask_lzcnt_d_512(__vector(i32[16]), __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.lzcnt.q.512` intrinsic; known as `__builtin_ia32_vplzcntq_512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.lzcnt.q.512")
+    __vector(i64[8]) avx512_mask_lzcnt_q_512(__vector(i64[8]), __vector(i64[8]), i8);
+    /// The `llvm.x86.avx512.mask.blend.ps.512` intrinsic; known as `__builtin_ia32_blendmps_512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.blend.ps.512")
+    __vector(f32[16]) avx512_mask_blend_ps_512(__vector(f32[16]), __vector(f32[16]), i16);
+    /// The `llvm.x86.avx512.mask.blend.pd.512` intrinsic; known as `__builtin_ia32_blendmpd_512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.blend.pd.512")
+    __vector(f64[8]) avx512_mask_blend_pd_512(__vector(f64[8]), __vector(f64[8]), i8);
+    /// The `llvm.x86.avx512.mask.blend.d.512` intrinsic; known as `__builtin_ia32_blendmd_512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.blend.d.512")
+    __vector(i32[16]) avx512_mask_blend_d_512(__vector(i32[16]), __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.blend.q.512` intrinsic; known as `__builtin_ia32_blendmq_512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.blend.q.512")
+    __vector(i64[8]) avx512_mask_blend_q_512(__vector(i64[8]), __vector(i64[8]), i8);
+    /// The `llvm.x86.avx512.mask.valign.q.512` intrinsic; known as `__builtin_ia32_alignq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.valign.q.512")
+    __vector(i64[8]) avx512_mask_valign_q_512(__vector(i64[8]), __vector(i64[8]), i8, __vector(i64[8]), i8);
+    /// The `llvm.x86.avx512.mask.valign.d.512` intrinsic; known as `__builtin_ia32_alignd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.valign.d.512")
+    __vector(i32[16]) avx512_mask_valign_d_512(__vector(i32[16]), __vector(i32[16]), i8, __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.pcmpeq.b.512` intrinsic; known as `__builtin_ia32_pcmpeqb512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.b.512")
+    i64 avx512_mask_pcmpeq_b_512(i8x64, i8x64, i64);
+    /// The `llvm.x86.avx512.mask.pcmpeq.w.512` intrinsic; known as `__builtin_ia32_pcmpeqw512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.w.512")
+    i32 avx512_mask_pcmpeq_w_512(__vector(i16[32]), __vector(i16[32]), i32);
+    /// The `llvm.x86.avx512.mask.pcmpeq.d.512` intrinsic; known as `__builtin_ia32_pcmpeqd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.d.512")
+    i16 avx512_mask_pcmpeq_d_512(__vector(i32[16]), __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.pcmpeq.q.512` intrinsic; known as `__builtin_ia32_pcmpeqq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.q.512")
+    i8 avx512_mask_pcmpeq_q_512(__vector(i64[8]), __vector(i64[8]), i8);
+    /// The `llvm.x86.avx512.mask.pcmpgt.b.512` intrinsic; known as `__builtin_ia32_pcmpgtb512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.b.512")
+    i64 avx512_mask_pcmpgt_b_512(i8x64, i8x64, i64);
+    /// The `llvm.x86.avx512.mask.pcmpgt.w.512` intrinsic; known as `__builtin_ia32_pcmpgtw512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.w.512")
+    i32 avx512_mask_pcmpgt_w_512(__vector(i16[32]), __vector(i16[32]), i32);
+    /// The `llvm.x86.avx512.mask.pcmpgt.d.512` intrinsic; known as `__builtin_ia32_pcmpgtd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.d.512")
+    i16 avx512_mask_pcmpgt_d_512(__vector(i32[16]), __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.pcmpgt.q.512` intrinsic; known as `__builtin_ia32_pcmpgtq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.q.512")
+    i8 avx512_mask_pcmpgt_q_512(__vector(i64[8]), __vector(i64[8]), i8);
+    /// The `llvm.x86.avx512.mask.pcmpeq.b.256` intrinsic; known as `__builtin_ia32_pcmpeqb256_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.b.256")
+    i32 avx512_mask_pcmpeq_b_256(__vector(i8[32]), __vector(i8[32]), i32);
+    /// The `llvm.x86.avx512.mask.pcmpeq.w.256` intrinsic; known as `__builtin_ia32_pcmpeqw256_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.w.256")
+    i16 avx512_mask_pcmpeq_w_256(__vector(i16[16]), __vector(i16[16]), i16);
+    /// The `llvm.x86.avx512.mask.pcmpeq.d.256` intrinsic; known as `__builtin_ia32_pcmpeqd256_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.d.256")
+    i8 avx512_mask_pcmpeq_d_256(__vector(i32[8]), __vector(i32[8]), i8);
+    /// The `llvm.x86.avx512.mask.pcmpeq.q.256` intrinsic; known as `__builtin_ia32_pcmpeqq256_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.q.256")
+    i8 avx512_mask_pcmpeq_q_256(__vector(i64[4]), __vector(i64[4]), i8);
+    /// The `llvm.x86.avx512.mask.pcmpgt.b.256` intrinsic; known as `__builtin_ia32_pcmpgtb256_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.b.256")
+    i32 avx512_mask_pcmpgt_b_256(__vector(i8[32]), __vector(i8[32]), i32);
+    /// The `llvm.x86.avx512.mask.pcmpgt.w.256` intrinsic; known as `__builtin_ia32_pcmpgtw256_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.w.256")
+    i16 avx512_mask_pcmpgt_w_256(__vector(i16[16]), __vector(i16[16]), i16);
+    /// The `llvm.x86.avx512.mask.pcmpgt.d.256` intrinsic; known as `__builtin_ia32_pcmpgtd256_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.d.256")
+    i8 avx512_mask_pcmpgt_d_256(__vector(i32[8]), __vector(i32[8]), i8);
+    /// The `llvm.x86.avx512.mask.pcmpgt.q.256` intrinsic; known as `__builtin_ia32_pcmpgtq256_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.q.256")
+    i8 avx512_mask_pcmpgt_q_256(__vector(i64[4]), __vector(i64[4]), i8);
+    /// The `llvm.x86.avx512.mask.pcmpeq.b.128` intrinsic; known as `__builtin_ia32_pcmpeqb128_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.b.128")
+    i16 avx512_mask_pcmpeq_b_128(__vector(i8[16]), __vector(i8[16]), i16);
+    /// The `llvm.x86.avx512.mask.pcmpeq.w.128` intrinsic; known as `__builtin_ia32_pcmpeqw128_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.w.128")
+    i8 avx512_mask_pcmpeq_w_128(__vector(i16[8]), __vector(i16[8]), i8);
+    /// The `llvm.x86.avx512.mask.pcmpeq.d.128` intrinsic; known as `__builtin_ia32_pcmpeqd128_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.d.128")
+    i8 avx512_mask_pcmpeq_d_128(__vector(i32[4]), __vector(i32[4]), i8);
+    /// The `llvm.x86.avx512.mask.pcmpeq.q.128` intrinsic; known as `__builtin_ia32_pcmpeqq128_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.q.128")
+    i8 avx512_mask_pcmpeq_q_128(__vector(i64[2]), __vector(i64[2]), i8);
+    /// The `llvm.x86.avx512.mask.pcmpgt.b.128` intrinsic; known as `__builtin_ia32_pcmpgtb128_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.b.128")
+    i16 avx512_mask_pcmpgt_b_128(__vector(i8[16]), __vector(i8[16]), i16);
+    /// The `llvm.x86.avx512.mask.pcmpgt.w.128` intrinsic; known as `__builtin_ia32_pcmpgtw128_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.w.128")
+    i8 avx512_mask_pcmpgt_w_128(__vector(i16[8]), __vector(i16[8]), i8);
+    /// The `llvm.x86.avx512.mask.pcmpgt.d.128` intrinsic; known as `__builtin_ia32_pcmpgtd128_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.d.128")
+    i8 avx512_mask_pcmpgt_d_128(__vector(i32[4]), __vector(i32[4]), i8);
+    /// The `llvm.x86.avx512.mask.pcmpgt.q.128` intrinsic; known as `__builtin_ia32_pcmpgtq128_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.q.128")
+    i8 avx512_mask_pcmpgt_q_128(__vector(i64[2]), __vector(i64[2]), i8);
+    /// The `llvm.x86.avx512.mask.cmp.ps.512` intrinsic; known as `__builtin_ia32_cmpps512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cmp.ps.512")
+    i16 avx512_mask_cmp_ps_512(__vector(f32[16]), __vector(f32[16]), i32, i16, i32);
+    /// The `llvm.x86.avx512.mask.cmp.pd.512` intrinsic; known as `__builtin_ia32_cmppd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cmp.pd.512")
+    i8 avx512_mask_cmp_pd_512(__vector(f64[8]), __vector(f64[8]), i32, i8, i32);
+    /// The `llvm.x86.avx512.mask.pand.d.512` intrinsic; known as `__builtin_ia32_pandd512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pand.d.512")
+    __vector(i32[16]) avx512_mask_pand_d_512(__vector(i32[16]), __vector(i32[16]), __vector(i32[16]), i16);
+    /// The `llvm.x86.avx512.mask.pand.q.512` intrinsic; known as `__builtin_ia32_pandq512_mask` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pand.q.512")
+    __vector(i64[8]) avx512_mask_pand_q_512(__vector(i64[8]), __vector(i64[8]), __vector(i64[8]), i8);
+    /// The `llvm.x86.avx512.movntdqa` intrinsic; known as `__builtin_ia32_movntdqa512` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.avx512.movntdqa")
+    __vector(i64[8]) avx512_movntdqa(i8*);
+    /// The `llvm.x86.sha1rnds4` intrinsic; known as `__builtin_ia32_sha1rnds4` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sha1rnds4")
+    __vector(i32[4]) sha1rnds4(__vector(i32[4]), __vector(i32[4]), i8);
+    /// The `llvm.x86.sha1nexte` intrinsic; known as `__builtin_ia32_sha1nexte` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sha1nexte")
+    __vector(i32[4]) sha1nexte(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.sha1msg1` intrinsic; known as `__builtin_ia32_sha1msg1` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sha1msg1")
+    __vector(i32[4]) sha1msg1(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.sha1msg2` intrinsic; known as `__builtin_ia32_sha1msg2` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sha1msg2")
+    __vector(i32[4]) sha1msg2(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.sha256rnds2` intrinsic; known as `__builtin_ia32_sha256rnds2` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sha256rnds2")
+    __vector(i32[4]) sha256rnds2(__vector(i32[4]), __vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.sha256msg1` intrinsic; known as `__builtin_ia32_sha256msg1` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sha256msg1")
+    __vector(i32[4]) sha256msg1(__vector(i32[4]), __vector(i32[4]));
+    /// The `llvm.x86.sha256msg2` intrinsic; known as `__builtin_ia32_sha256msg2` in GCC.
+    pragma(LDC_intrinsic, "llvm.x86.sha256msg2")
+    __vector(i32[4]) sha256msg2(__vector(i32[4]), __vector(i32[4]));
+}
 
 /// LLVM intrinsics for the AMDGPU architecture.
 version (AMDGPU) {
@@ -15897,2341 +18232,6 @@ version (ptx) {
     void bar_sync(i32);
 }
 
-/// LLVM intrinsics for the x86 architecture.
-version (x86_Any) {
-    /// The `llvm.x86.int` intrinsic.
-    pragma(LDC_intrinsic, "llvm.x86.int")
-    void _int(i8);
-    /// The `llvm.x86.rdtsc` intrinsic; known as `__builtin_ia32_rdtsc` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.rdtsc")
-    i64 rdtsc();
-    /// The `llvm.x86.rdtscp` intrinsic; known as `__builtin_ia32_rdtscp` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.rdtscp")
-    i64 rdtscp(i8*);
-    /// The `llvm.x86.rdpmc` intrinsic; known as `__builtin_ia32_rdpmc` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.rdpmc")
-    i64 rdpmc(i32);
-    /// The `llvm.x86.sse.add.ss` intrinsic; known as `__builtin_ia32_addss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.add.ss")
-    __vector(f32[4]) sse_add_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.sub.ss` intrinsic; known as `__builtin_ia32_subss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.sub.ss")
-    __vector(f32[4]) sse_sub_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.mul.ss` intrinsic; known as `__builtin_ia32_mulss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.mul.ss")
-    __vector(f32[4]) sse_mul_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.div.ss` intrinsic; known as `__builtin_ia32_divss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.div.ss")
-    __vector(f32[4]) sse_div_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.sqrt.ss` intrinsic; known as `__builtin_ia32_sqrtss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.sqrt.ss")
-    __vector(f32[4]) sse_sqrt_ss(__vector(f32[4]));
-    /// The `llvm.x86.sse.sqrt.ps` intrinsic; known as `__builtin_ia32_sqrtps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.sqrt.ps")
-    __vector(f32[4]) sse_sqrt_ps(__vector(f32[4]));
-    /// The `llvm.x86.sse.rcp.ss` intrinsic; known as `__builtin_ia32_rcpss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.rcp.ss")
-    __vector(f32[4]) sse_rcp_ss(__vector(f32[4]));
-    /// The `llvm.x86.sse.rcp.ps` intrinsic; known as `__builtin_ia32_rcpps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.rcp.ps")
-    __vector(f32[4]) sse_rcp_ps(__vector(f32[4]));
-    /// The `llvm.x86.sse.rsqrt.ss` intrinsic; known as `__builtin_ia32_rsqrtss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.rsqrt.ss")
-    __vector(f32[4]) sse_rsqrt_ss(__vector(f32[4]));
-    /// The `llvm.x86.sse.rsqrt.ps` intrinsic; known as `__builtin_ia32_rsqrtps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.rsqrt.ps")
-    __vector(f32[4]) sse_rsqrt_ps(__vector(f32[4]));
-    /// The `llvm.x86.sse.min.ss` intrinsic; known as `__builtin_ia32_minss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.min.ss")
-    __vector(f32[4]) sse_min_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.min.ps` intrinsic; known as `__builtin_ia32_minps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.min.ps")
-    __vector(f32[4]) sse_min_ps(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.max.ss` intrinsic; known as `__builtin_ia32_maxss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.max.ss")
-    __vector(f32[4]) sse_max_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.max.ps` intrinsic; known as `__builtin_ia32_maxps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.max.ps")
-    __vector(f32[4]) sse_max_ps(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.cmp.ss` intrinsic; known as `__builtin_ia32_cmpss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.cmp.ss")
-    __vector(f32[4]) sse_cmp_ss(__vector(f32[4]), __vector(f32[4]), i8);
-    /// The `llvm.x86.sse.cmp.ps` intrinsic; known as `__builtin_ia32_cmpps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.cmp.ps")
-    __vector(f32[4]) sse_cmp_ps(__vector(f32[4]), __vector(f32[4]), i8);
-    /// The `llvm.x86.sse.comieq.ss` intrinsic; known as `__builtin_ia32_comieq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.comieq.ss")
-    i32 sse_comieq_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.comilt.ss` intrinsic; known as `__builtin_ia32_comilt` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.comilt.ss")
-    i32 sse_comilt_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.comile.ss` intrinsic; known as `__builtin_ia32_comile` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.comile.ss")
-    i32 sse_comile_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.comigt.ss` intrinsic; known as `__builtin_ia32_comigt` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.comigt.ss")
-    i32 sse_comigt_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.comige.ss` intrinsic; known as `__builtin_ia32_comige` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.comige.ss")
-    i32 sse_comige_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.comineq.ss` intrinsic; known as `__builtin_ia32_comineq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.comineq.ss")
-    i32 sse_comineq_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.ucomieq.ss` intrinsic; known as `__builtin_ia32_ucomieq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.ucomieq.ss")
-    i32 sse_ucomieq_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.ucomilt.ss` intrinsic; known as `__builtin_ia32_ucomilt` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.ucomilt.ss")
-    i32 sse_ucomilt_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.ucomile.ss` intrinsic; known as `__builtin_ia32_ucomile` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.ucomile.ss")
-    i32 sse_ucomile_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.ucomigt.ss` intrinsic; known as `__builtin_ia32_ucomigt` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.ucomigt.ss")
-    i32 sse_ucomigt_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.ucomige.ss` intrinsic; known as `__builtin_ia32_ucomige` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.ucomige.ss")
-    i32 sse_ucomige_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.ucomineq.ss` intrinsic; known as `__builtin_ia32_ucomineq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.ucomineq.ss")
-    i32 sse_ucomineq_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse.cvtss2si` intrinsic; known as `__builtin_ia32_cvtss2si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.cvtss2si")
-    i32 sse_cvtss2si(__vector(f32[4]));
-    /// The `llvm.x86.sse.cvtss2si64` intrinsic; known as `__builtin_ia32_cvtss2si64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.cvtss2si64")
-    i64 sse_cvtss2si64(__vector(f32[4]));
-    /// The `llvm.x86.sse.cvttss2si` intrinsic; known as `__builtin_ia32_cvttss2si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.cvttss2si")
-    i32 sse_cvttss2si(__vector(f32[4]));
-    /// The `llvm.x86.sse.cvttss2si64` intrinsic; known as `__builtin_ia32_cvttss2si64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.cvttss2si64")
-    i64 sse_cvttss2si64(__vector(f32[4]));
-    /// The `llvm.x86.sse.cvtsi2ss` intrinsic; known as `__builtin_ia32_cvtsi2ss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.cvtsi2ss")
-    __vector(f32[4]) sse_cvtsi2ss(__vector(f32[4]), i32);
-    /// The `llvm.x86.sse.cvtsi642ss` intrinsic; known as `__builtin_ia32_cvtsi642ss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.cvtsi642ss")
-    __vector(f32[4]) sse_cvtsi642ss(__vector(f32[4]), i64);
-    /// The `llvm.x86.sse.storeu.ps` intrinsic; known as `__builtin_ia32_storeups` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.storeu.ps")
-    void sse_storeu_ps(i8*, __vector(f32[4]));
-    /// The `llvm.x86.sse.sfence` intrinsic; known as `__builtin_ia32_sfence` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.sfence")
-    void sse_sfence();
-    /// The `llvm.x86.sse.stmxcsr` intrinsic.
-    pragma(LDC_intrinsic, "llvm.x86.sse.stmxcsr")
-    void sse_stmxcsr(i8*);
-    /// The `llvm.x86.sse.ldmxcsr` intrinsic.
-    pragma(LDC_intrinsic, "llvm.x86.sse.ldmxcsr")
-    void sse_ldmxcsr(i8*);
-    /// The `llvm.x86.sse.movmsk.ps` intrinsic; known as `__builtin_ia32_movmskps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse.movmsk.ps")
-    i32 sse_movmsk_ps(__vector(f32[4]));
-    /// The `llvm.x86.sse2.add.sd` intrinsic; known as `__builtin_ia32_addsd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.add.sd")
-    __vector(f64[2]) sse2_add_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.sub.sd` intrinsic; known as `__builtin_ia32_subsd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.sub.sd")
-    __vector(f64[2]) sse2_sub_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.mul.sd` intrinsic; known as `__builtin_ia32_mulsd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.mul.sd")
-    __vector(f64[2]) sse2_mul_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.div.sd` intrinsic; known as `__builtin_ia32_divsd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.div.sd")
-    __vector(f64[2]) sse2_div_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.sqrt.sd` intrinsic; known as `__builtin_ia32_sqrtsd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.sqrt.sd")
-    __vector(f64[2]) sse2_sqrt_sd(__vector(f64[2]));
-    /// The `llvm.x86.sse2.sqrt.pd` intrinsic; known as `__builtin_ia32_sqrtpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.sqrt.pd")
-    __vector(f64[2]) sse2_sqrt_pd(__vector(f64[2]));
-    /// The `llvm.x86.sse2.min.sd` intrinsic; known as `__builtin_ia32_minsd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.min.sd")
-    __vector(f64[2]) sse2_min_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.min.pd` intrinsic; known as `__builtin_ia32_minpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.min.pd")
-    __vector(f64[2]) sse2_min_pd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.max.sd` intrinsic; known as `__builtin_ia32_maxsd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.max.sd")
-    __vector(f64[2]) sse2_max_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.max.pd` intrinsic; known as `__builtin_ia32_maxpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.max.pd")
-    __vector(f64[2]) sse2_max_pd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.cmp.sd` intrinsic; known as `__builtin_ia32_cmpsd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cmp.sd")
-    __vector(f64[2]) sse2_cmp_sd(__vector(f64[2]), __vector(f64[2]), i8);
-    /// The `llvm.x86.sse2.cmp.pd` intrinsic; known as `__builtin_ia32_cmppd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cmp.pd")
-    __vector(f64[2]) sse2_cmp_pd(__vector(f64[2]), __vector(f64[2]), i8);
-    /// The `llvm.x86.sse2.comieq.sd` intrinsic; known as `__builtin_ia32_comisdeq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.comieq.sd")
-    i32 sse2_comieq_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.comilt.sd` intrinsic; known as `__builtin_ia32_comisdlt` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.comilt.sd")
-    i32 sse2_comilt_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.comile.sd` intrinsic; known as `__builtin_ia32_comisdle` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.comile.sd")
-    i32 sse2_comile_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.comigt.sd` intrinsic; known as `__builtin_ia32_comisdgt` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.comigt.sd")
-    i32 sse2_comigt_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.comige.sd` intrinsic; known as `__builtin_ia32_comisdge` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.comige.sd")
-    i32 sse2_comige_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.comineq.sd` intrinsic; known as `__builtin_ia32_comisdneq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.comineq.sd")
-    i32 sse2_comineq_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.ucomieq.sd` intrinsic; known as `__builtin_ia32_ucomisdeq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.ucomieq.sd")
-    i32 sse2_ucomieq_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.ucomilt.sd` intrinsic; known as `__builtin_ia32_ucomisdlt` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.ucomilt.sd")
-    i32 sse2_ucomilt_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.ucomile.sd` intrinsic; known as `__builtin_ia32_ucomisdle` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.ucomile.sd")
-    i32 sse2_ucomile_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.ucomigt.sd` intrinsic; known as `__builtin_ia32_ucomisdgt` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.ucomigt.sd")
-    i32 sse2_ucomigt_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.ucomige.sd` intrinsic; known as `__builtin_ia32_ucomisdge` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.ucomige.sd")
-    i32 sse2_ucomige_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.ucomineq.sd` intrinsic; known as `__builtin_ia32_ucomisdneq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.ucomineq.sd")
-    i32 sse2_ucomineq_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.padds.b` intrinsic; known as `__builtin_ia32_paddsb128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.padds.b")
-    __vector(i8[16]) sse2_padds_b(__vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.sse2.padds.w` intrinsic; known as `__builtin_ia32_paddsw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.padds.w")
-    __vector(i16[8]) sse2_padds_w(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.sse2.paddus.b` intrinsic; known as `__builtin_ia32_paddusb128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.paddus.b")
-    __vector(i8[16]) sse2_paddus_b(__vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.sse2.paddus.w` intrinsic; known as `__builtin_ia32_paddusw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.paddus.w")
-    __vector(i16[8]) sse2_paddus_w(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.sse2.psubs.b` intrinsic; known as `__builtin_ia32_psubsb128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psubs.b")
-    __vector(i8[16]) sse2_psubs_b(__vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.sse2.psubs.w` intrinsic; known as `__builtin_ia32_psubsw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psubs.w")
-    __vector(i16[8]) sse2_psubs_w(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.sse2.psubus.b` intrinsic; known as `__builtin_ia32_psubusb128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psubus.b")
-    __vector(i8[16]) sse2_psubus_b(__vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.sse2.psubus.w` intrinsic; known as `__builtin_ia32_psubusw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psubus.w")
-    __vector(i16[8]) sse2_psubus_w(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.sse2.pmulhu.w` intrinsic; known as `__builtin_ia32_pmulhuw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pmulhu.w")
-    __vector(i16[8]) sse2_pmulhu_w(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.sse2.pmulh.w` intrinsic; known as `__builtin_ia32_pmulhw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pmulh.w")
-    __vector(i16[8]) sse2_pmulh_w(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.sse2.pmulu.dq` intrinsic; known as `__builtin_ia32_pmuludq128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pmulu.dq")
-    __vector(i64[2]) sse2_pmulu_dq(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.sse2.pmadd.wd` intrinsic; known as `__builtin_ia32_pmaddwd128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pmadd.wd")
-    __vector(i32[4]) sse2_pmadd_wd(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.sse2.pavg.b` intrinsic; known as `__builtin_ia32_pavgb128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pavg.b")
-    __vector(i8[16]) sse2_pavg_b(__vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.sse2.pavg.w` intrinsic; known as `__builtin_ia32_pavgw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pavg.w")
-    __vector(i16[8]) sse2_pavg_w(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.sse2.pmaxu.b` intrinsic; known as `__builtin_ia32_pmaxub128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pmaxu.b")
-    __vector(i8[16]) sse2_pmaxu_b(__vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.sse2.pmaxs.w` intrinsic; known as `__builtin_ia32_pmaxsw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pmaxs.w")
-    __vector(i16[8]) sse2_pmaxs_w(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.sse2.pminu.b` intrinsic; known as `__builtin_ia32_pminub128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pminu.b")
-    __vector(i8[16]) sse2_pminu_b(__vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.sse2.pmins.w` intrinsic; known as `__builtin_ia32_pminsw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pmins.w")
-    __vector(i16[8]) sse2_pmins_w(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.sse2.psad.bw` intrinsic; known as `__builtin_ia32_psadbw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psad.bw")
-    __vector(i64[2]) sse2_psad_bw(__vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.sse2.psll.w` intrinsic; known as `__builtin_ia32_psllw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psll.w")
-    __vector(i16[8]) sse2_psll_w(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.sse2.psll.d` intrinsic; known as `__builtin_ia32_pslld128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psll.d")
-    __vector(i32[4]) sse2_psll_d(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.sse2.psll.q` intrinsic; known as `__builtin_ia32_psllq128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psll.q")
-    __vector(i64[2]) sse2_psll_q(__vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.sse2.psrl.w` intrinsic; known as `__builtin_ia32_psrlw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psrl.w")
-    __vector(i16[8]) sse2_psrl_w(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.sse2.psrl.d` intrinsic; known as `__builtin_ia32_psrld128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psrl.d")
-    __vector(i32[4]) sse2_psrl_d(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.sse2.psrl.q` intrinsic; known as `__builtin_ia32_psrlq128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psrl.q")
-    __vector(i64[2]) sse2_psrl_q(__vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.sse2.psra.w` intrinsic; known as `__builtin_ia32_psraw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psra.w")
-    __vector(i16[8]) sse2_psra_w(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.sse2.psra.d` intrinsic; known as `__builtin_ia32_psrad128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psra.d")
-    __vector(i32[4]) sse2_psra_d(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.sse2.pslli.w` intrinsic; known as `__builtin_ia32_psllwi128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pslli.w")
-    __vector(i16[8]) sse2_pslli_w(__vector(i16[8]), i32);
-    /// The `llvm.x86.sse2.pslli.d` intrinsic; known as `__builtin_ia32_pslldi128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pslli.d")
-    __vector(i32[4]) sse2_pslli_d(__vector(i32[4]), i32);
-    /// The `llvm.x86.sse2.pslli.q` intrinsic; known as `__builtin_ia32_psllqi128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pslli.q")
-    __vector(i64[2]) sse2_pslli_q(__vector(i64[2]), i32);
-    /// The `llvm.x86.sse2.psrli.w` intrinsic; known as `__builtin_ia32_psrlwi128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psrli.w")
-    __vector(i16[8]) sse2_psrli_w(__vector(i16[8]), i32);
-    /// The `llvm.x86.sse2.psrli.d` intrinsic; known as `__builtin_ia32_psrldi128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psrli.d")
-    __vector(i32[4]) sse2_psrli_d(__vector(i32[4]), i32);
-    /// The `llvm.x86.sse2.psrli.q` intrinsic; known as `__builtin_ia32_psrlqi128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psrli.q")
-    __vector(i64[2]) sse2_psrli_q(__vector(i64[2]), i32);
-    /// The `llvm.x86.sse2.psrai.w` intrinsic; known as `__builtin_ia32_psrawi128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psrai.w")
-    __vector(i16[8]) sse2_psrai_w(__vector(i16[8]), i32);
-    /// The `llvm.x86.sse2.psrai.d` intrinsic; known as `__builtin_ia32_psradi128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psrai.d")
-    __vector(i32[4]) sse2_psrai_d(__vector(i32[4]), i32);
-    /// The `llvm.x86.sse2.psll.dq` intrinsic; known as `__builtin_ia32_pslldqi128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psll.dq")
-    __vector(i64[2]) sse2_psll_dq(__vector(i64[2]), i32);
-    /// The `llvm.x86.sse2.psrl.dq` intrinsic; known as `__builtin_ia32_psrldqi128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psrl.dq")
-    __vector(i64[2]) sse2_psrl_dq(__vector(i64[2]), i32);
-    /// The `llvm.x86.sse2.psll.dq.bs` intrinsic; known as `__builtin_ia32_pslldqi128_byteshift` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psll.dq.bs")
-    __vector(i64[2]) sse2_psll_dq_bs(__vector(i64[2]), i32);
-    /// The `llvm.x86.sse2.psrl.dq.bs` intrinsic; known as `__builtin_ia32_psrldqi128_byteshift` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.psrl.dq.bs")
-    __vector(i64[2]) sse2_psrl_dq_bs(__vector(i64[2]), i32);
-    /// The `llvm.x86.sse2.cvtdq2pd` intrinsic; known as `__builtin_ia32_cvtdq2pd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtdq2pd")
-    __vector(f64[2]) sse2_cvtdq2pd(__vector(i32[4]));
-    /// The `llvm.x86.sse2.cvtdq2ps` intrinsic; known as `__builtin_ia32_cvtdq2ps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtdq2ps")
-    __vector(f32[4]) sse2_cvtdq2ps(__vector(i32[4]));
-    /// The `llvm.x86.sse2.cvtpd2dq` intrinsic; known as `__builtin_ia32_cvtpd2dq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtpd2dq")
-    __vector(i32[4]) sse2_cvtpd2dq(__vector(f64[2]));
-    /// The `llvm.x86.sse2.cvttpd2dq` intrinsic; known as `__builtin_ia32_cvttpd2dq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cvttpd2dq")
-    __vector(i32[4]) sse2_cvttpd2dq(__vector(f64[2]));
-    /// The `llvm.x86.sse2.cvtpd2ps` intrinsic; known as `__builtin_ia32_cvtpd2ps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtpd2ps")
-    __vector(f32[4]) sse2_cvtpd2ps(__vector(f64[2]));
-    /// The `llvm.x86.sse2.cvtps2dq` intrinsic; known as `__builtin_ia32_cvtps2dq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtps2dq")
-    __vector(i32[4]) sse2_cvtps2dq(__vector(f32[4]));
-    /// The `llvm.x86.sse2.cvttps2dq` intrinsic; known as `__builtin_ia32_cvttps2dq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cvttps2dq")
-    __vector(i32[4]) sse2_cvttps2dq(__vector(f32[4]));
-    /// The `llvm.x86.sse2.cvtps2pd` intrinsic; known as `__builtin_ia32_cvtps2pd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtps2pd")
-    __vector(f64[2]) sse2_cvtps2pd(__vector(f32[4]));
-    /// The `llvm.x86.sse2.cvtsd2si` intrinsic; known as `__builtin_ia32_cvtsd2si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtsd2si")
-    i32 sse2_cvtsd2si(__vector(f64[2]));
-    /// The `llvm.x86.sse2.cvtsd2si64` intrinsic; known as `__builtin_ia32_cvtsd2si64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtsd2si64")
-    i64 sse2_cvtsd2si64(__vector(f64[2]));
-    /// The `llvm.x86.sse2.cvttsd2si` intrinsic; known as `__builtin_ia32_cvttsd2si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cvttsd2si")
-    i32 sse2_cvttsd2si(__vector(f64[2]));
-    /// The `llvm.x86.sse2.cvttsd2si64` intrinsic; known as `__builtin_ia32_cvttsd2si64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cvttsd2si64")
-    i64 sse2_cvttsd2si64(__vector(f64[2]));
-    /// The `llvm.x86.sse2.cvtsi2sd` intrinsic; known as `__builtin_ia32_cvtsi2sd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtsi2sd")
-    __vector(f64[2]) sse2_cvtsi2sd(__vector(f64[2]), i32);
-    /// The `llvm.x86.sse2.cvtsi642sd` intrinsic; known as `__builtin_ia32_cvtsi642sd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtsi642sd")
-    __vector(f64[2]) sse2_cvtsi642sd(__vector(f64[2]), i64);
-    /// The `llvm.x86.sse2.cvtsd2ss` intrinsic; known as `__builtin_ia32_cvtsd2ss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtsd2ss")
-    __vector(f32[4]) sse2_cvtsd2ss(__vector(f32[4]), __vector(f64[2]));
-    /// The `llvm.x86.sse2.cvtss2sd` intrinsic; known as `__builtin_ia32_cvtss2sd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.cvtss2sd")
-    __vector(f64[2]) sse2_cvtss2sd(__vector(f64[2]), __vector(f32[4]));
-    /// The `llvm.x86.sse2.storeu.pd` intrinsic; known as `__builtin_ia32_storeupd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.storeu.pd")
-    void sse2_storeu_pd(i8*, __vector(f64[2]));
-    /// The `llvm.x86.sse2.storeu.dq` intrinsic; known as `__builtin_ia32_storedqu` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.storeu.dq")
-    void sse2_storeu_dq(i8*, __vector(i8[16]));
-    /// The `llvm.x86.sse2.storel.dq` intrinsic; known as `__builtin_ia32_storelv4si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.storel.dq")
-    void sse2_storel_dq(i8*, __vector(i32[4]));
-    /// The `llvm.x86.sse2.packsswb.128` intrinsic; known as `__builtin_ia32_packsswb128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.packsswb.128")
-    __vector(i8[16]) sse2_packsswb_128(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.sse2.packssdw.128` intrinsic; known as `__builtin_ia32_packssdw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.packssdw.128")
-    __vector(i16[8]) sse2_packssdw_128(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.sse2.packuswb.128` intrinsic; known as `__builtin_ia32_packuswb128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.packuswb.128")
-    __vector(i8[16]) sse2_packuswb_128(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.sse2.movmsk.pd` intrinsic; known as `__builtin_ia32_movmskpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.movmsk.pd")
-    i32 sse2_movmsk_pd(__vector(f64[2]));
-    /// The `llvm.x86.sse2.pmovmskb.128` intrinsic; known as `__builtin_ia32_pmovmskb128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pmovmskb.128")
-    i32 sse2_pmovmskb_128(__vector(i8[16]));
-    /// The `llvm.x86.sse2.maskmov.dqu` intrinsic; known as `__builtin_ia32_maskmovdqu` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.maskmov.dqu")
-    void sse2_maskmov_dqu(__vector(i8[16]), __vector(i8[16]), i8*);
-    /// The `llvm.x86.sse2.clflush` intrinsic; known as `__builtin_ia32_clflush` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.clflush")
-    void sse2_clflush(i8*);
-    /// The `llvm.x86.sse2.lfence` intrinsic; known as `__builtin_ia32_lfence` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.lfence")
-    void sse2_lfence();
-    /// The `llvm.x86.sse2.mfence` intrinsic; known as `__builtin_ia32_mfence` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.mfence")
-    void sse2_mfence();
-    /// The `llvm.x86.sse2.pause` intrinsic; known as `__builtin_ia32_pause` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pause")
-    void sse2_pause();
-    /// The `llvm.x86.sse3.addsub.ps` intrinsic; known as `__builtin_ia32_addsubps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse3.addsub.ps")
-    __vector(f32[4]) sse3_addsub_ps(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse3.addsub.pd` intrinsic; known as `__builtin_ia32_addsubpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse3.addsub.pd")
-    __vector(f64[2]) sse3_addsub_pd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse3.hadd.ps` intrinsic; known as `__builtin_ia32_haddps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse3.hadd.ps")
-    __vector(f32[4]) sse3_hadd_ps(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse3.hadd.pd` intrinsic; known as `__builtin_ia32_haddpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse3.hadd.pd")
-    __vector(f64[2]) sse3_hadd_pd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse3.hsub.ps` intrinsic; known as `__builtin_ia32_hsubps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse3.hsub.ps")
-    __vector(f32[4]) sse3_hsub_ps(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse3.hsub.pd` intrinsic; known as `__builtin_ia32_hsubpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse3.hsub.pd")
-    __vector(f64[2]) sse3_hsub_pd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse3.ldu.dq` intrinsic; known as `__builtin_ia32_lddqu` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse3.ldu.dq")
-    __vector(i8[16]) sse3_ldu_dq(i8*);
-    /// The `llvm.x86.sse3.monitor` intrinsic; known as `__builtin_ia32_monitor` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse3.monitor")
-    void sse3_monitor(i8*, i32, i32);
-    /// The `llvm.x86.sse3.mwait` intrinsic; known as `__builtin_ia32_mwait` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse3.mwait")
-    void sse3_mwait(i32, i32);
-    /// The `llvm.x86.ssse3.phadd.w.128` intrinsic; known as `__builtin_ia32_phaddw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.ssse3.phadd.w.128")
-    __vector(i16[8]) ssse3_phadd_w_128(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.ssse3.phadd.d.128` intrinsic; known as `__builtin_ia32_phaddd128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.ssse3.phadd.d.128")
-    __vector(i32[4]) ssse3_phadd_d_128(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.ssse3.phadd.sw.128` intrinsic; known as `__builtin_ia32_phaddsw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.ssse3.phadd.sw.128")
-    __vector(i16[8]) ssse3_phadd_sw_128(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.ssse3.phsub.w.128` intrinsic; known as `__builtin_ia32_phsubw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.ssse3.phsub.w.128")
-    __vector(i16[8]) ssse3_phsub_w_128(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.ssse3.phsub.d.128` intrinsic; known as `__builtin_ia32_phsubd128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.ssse3.phsub.d.128")
-    __vector(i32[4]) ssse3_phsub_d_128(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.ssse3.phsub.sw.128` intrinsic; known as `__builtin_ia32_phsubsw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.ssse3.phsub.sw.128")
-    __vector(i16[8]) ssse3_phsub_sw_128(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.ssse3.pmadd.ub.sw.128` intrinsic; known as `__builtin_ia32_pmaddubsw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.ssse3.pmadd.ub.sw.128")
-    __vector(i16[8]) ssse3_pmadd_ub_sw_128(__vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.ssse3.pmul.hr.sw.128` intrinsic; known as `__builtin_ia32_pmulhrsw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.ssse3.pmul.hr.sw.128")
-    __vector(i16[8]) ssse3_pmul_hr_sw_128(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.ssse3.pshuf.b.128` intrinsic; known as `__builtin_ia32_pshufb128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.ssse3.pshuf.b.128")
-    __vector(i8[16]) ssse3_pshuf_b_128(__vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.sse2.pshuf.d` intrinsic; known as `__builtin_ia32_pshufd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pshuf.d")
-    __vector(i32[4]) sse2_pshuf_d(__vector(i32[4]), i8);
-    /// The `llvm.x86.sse2.pshufl.w` intrinsic; known as `__builtin_ia32_pshuflw` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pshufl.w")
-    __vector(i16[8]) sse2_pshufl_w(__vector(i16[8]), i8);
-    /// The `llvm.x86.sse2.pshufh.w` intrinsic; known as `__builtin_ia32_pshufhw` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse2.pshufh.w")
-    __vector(i16[8]) sse2_pshufh_w(__vector(i16[8]), i8);
-    /// The `llvm.x86.ssse3.psign.b.128` intrinsic; known as `__builtin_ia32_psignb128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.ssse3.psign.b.128")
-    __vector(i8[16]) ssse3_psign_b_128(__vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.ssse3.psign.w.128` intrinsic; known as `__builtin_ia32_psignw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.ssse3.psign.w.128")
-    __vector(i16[8]) ssse3_psign_w_128(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.ssse3.psign.d.128` intrinsic; known as `__builtin_ia32_psignd128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.ssse3.psign.d.128")
-    __vector(i32[4]) ssse3_psign_d_128(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.ssse3.pabs.b.128` intrinsic; known as `__builtin_ia32_pabsb128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.ssse3.pabs.b.128")
-    __vector(i8[16]) ssse3_pabs_b_128(__vector(i8[16]));
-    /// The `llvm.x86.ssse3.pabs.w.128` intrinsic; known as `__builtin_ia32_pabsw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.ssse3.pabs.w.128")
-    __vector(i16[8]) ssse3_pabs_w_128(__vector(i16[8]));
-    /// The `llvm.x86.ssse3.pabs.d.128` intrinsic; known as `__builtin_ia32_pabsd128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.ssse3.pabs.d.128")
-    __vector(i32[4]) ssse3_pabs_d_128(__vector(i32[4]));
-    /// The `llvm.x86.sse41.round.ss` intrinsic; known as `__builtin_ia32_roundss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.round.ss")
-    __vector(f32[4]) sse41_round_ss(__vector(f32[4]), __vector(f32[4]), i32);
-    /// The `llvm.x86.sse41.round.ps` intrinsic; known as `__builtin_ia32_roundps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.round.ps")
-    __vector(f32[4]) sse41_round_ps(__vector(f32[4]), i32);
-    /// The `llvm.x86.sse41.round.sd` intrinsic; known as `__builtin_ia32_roundsd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.round.sd")
-    __vector(f64[2]) sse41_round_sd(__vector(f64[2]), __vector(f64[2]), i32);
-    /// The `llvm.x86.sse41.round.pd` intrinsic; known as `__builtin_ia32_roundpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.round.pd")
-    __vector(f64[2]) sse41_round_pd(__vector(f64[2]), i32);
-    /// The `llvm.x86.sse41.pmovsxbd` intrinsic; known as `__builtin_ia32_pmovsxbd128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovsxbd")
-    __vector(i32[4]) sse41_pmovsxbd(__vector(i8[16]));
-    /// The `llvm.x86.sse41.pmovsxbq` intrinsic; known as `__builtin_ia32_pmovsxbq128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovsxbq")
-    __vector(i64[2]) sse41_pmovsxbq(__vector(i8[16]));
-    /// The `llvm.x86.sse41.pmovsxbw` intrinsic; known as `__builtin_ia32_pmovsxbw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovsxbw")
-    __vector(i16[8]) sse41_pmovsxbw(__vector(i8[16]));
-    /// The `llvm.x86.sse41.pmovsxdq` intrinsic; known as `__builtin_ia32_pmovsxdq128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovsxdq")
-    __vector(i64[2]) sse41_pmovsxdq(__vector(i32[4]));
-    /// The `llvm.x86.sse41.pmovsxwd` intrinsic; known as `__builtin_ia32_pmovsxwd128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovsxwd")
-    __vector(i32[4]) sse41_pmovsxwd(__vector(i16[8]));
-    /// The `llvm.x86.sse41.pmovsxwq` intrinsic; known as `__builtin_ia32_pmovsxwq128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovsxwq")
-    __vector(i64[2]) sse41_pmovsxwq(__vector(i16[8]));
-    /// The `llvm.x86.sse41.pmovzxbd` intrinsic; known as `__builtin_ia32_pmovzxbd128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovzxbd")
-    __vector(i32[4]) sse41_pmovzxbd(__vector(i8[16]));
-    /// The `llvm.x86.sse41.pmovzxbq` intrinsic; known as `__builtin_ia32_pmovzxbq128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovzxbq")
-    __vector(i64[2]) sse41_pmovzxbq(__vector(i8[16]));
-    /// The `llvm.x86.sse41.pmovzxbw` intrinsic; known as `__builtin_ia32_pmovzxbw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovzxbw")
-    __vector(i16[8]) sse41_pmovzxbw(__vector(i8[16]));
-    /// The `llvm.x86.sse41.pmovzxdq` intrinsic; known as `__builtin_ia32_pmovzxdq128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovzxdq")
-    __vector(i64[2]) sse41_pmovzxdq(__vector(i32[4]));
-    /// The `llvm.x86.sse41.pmovzxwd` intrinsic; known as `__builtin_ia32_pmovzxwd128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovzxwd")
-    __vector(i32[4]) sse41_pmovzxwd(__vector(i16[8]));
-    /// The `llvm.x86.sse41.pmovzxwq` intrinsic; known as `__builtin_ia32_pmovzxwq128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmovzxwq")
-    __vector(i64[2]) sse41_pmovzxwq(__vector(i16[8]));
-    /// The `llvm.x86.sse41.phminposuw` intrinsic; known as `__builtin_ia32_phminposuw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.phminposuw")
-    __vector(i16[8]) sse41_phminposuw(__vector(i16[8]));
-    /// The `llvm.x86.sse41.pmaxsb` intrinsic; known as `__builtin_ia32_pmaxsb128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmaxsb")
-    __vector(i8[16]) sse41_pmaxsb(__vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.sse41.pmaxsd` intrinsic; known as `__builtin_ia32_pmaxsd128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmaxsd")
-    __vector(i32[4]) sse41_pmaxsd(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.sse41.pmaxud` intrinsic; known as `__builtin_ia32_pmaxud128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmaxud")
-    __vector(i32[4]) sse41_pmaxud(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.sse41.pmaxuw` intrinsic; known as `__builtin_ia32_pmaxuw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmaxuw")
-    __vector(i16[8]) sse41_pmaxuw(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.sse41.pminsb` intrinsic; known as `__builtin_ia32_pminsb128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pminsb")
-    __vector(i8[16]) sse41_pminsb(__vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.sse41.pminsd` intrinsic; known as `__builtin_ia32_pminsd128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pminsd")
-    __vector(i32[4]) sse41_pminsd(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.sse41.pminud` intrinsic; known as `__builtin_ia32_pminud128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pminud")
-    __vector(i32[4]) sse41_pminud(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.sse41.pminuw` intrinsic; known as `__builtin_ia32_pminuw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pminuw")
-    __vector(i16[8]) sse41_pminuw(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.aesni.aesimc` intrinsic; known as `__builtin_ia32_aesimc128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.aesni.aesimc")
-    __vector(i64[2]) aesni_aesimc(__vector(i64[2]));
-    /// The `llvm.x86.aesni.aesenc` intrinsic; known as `__builtin_ia32_aesenc128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.aesni.aesenc")
-    __vector(i64[2]) aesni_aesenc(__vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.aesni.aesenclast` intrinsic; known as `__builtin_ia32_aesenclast128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.aesni.aesenclast")
-    __vector(i64[2]) aesni_aesenclast(__vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.aesni.aesdec` intrinsic; known as `__builtin_ia32_aesdec128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.aesni.aesdec")
-    __vector(i64[2]) aesni_aesdec(__vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.aesni.aesdeclast` intrinsic; known as `__builtin_ia32_aesdeclast128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.aesni.aesdeclast")
-    __vector(i64[2]) aesni_aesdeclast(__vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.aesni.aeskeygenassist` intrinsic; known as `__builtin_ia32_aeskeygenassist128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.aesni.aeskeygenassist")
-    __vector(i64[2]) aesni_aeskeygenassist(__vector(i64[2]), i8);
-    /// The `llvm.x86.pclmulqdq` intrinsic; known as `__builtin_ia32_pclmulqdq128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.pclmulqdq")
-    __vector(i64[2]) pclmulqdq(__vector(i64[2]), __vector(i64[2]), i8);
-    /// The `llvm.x86.sse41.packusdw` intrinsic; known as `__builtin_ia32_packusdw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.packusdw")
-    __vector(i16[8]) sse41_packusdw(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.sse41.pmuldq` intrinsic; known as `__builtin_ia32_pmuldq128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pmuldq")
-    __vector(i64[2]) sse41_pmuldq(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.sse41.pextrb` intrinsic.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pextrb")
-    i32 sse41_pextrb(__vector(i8[16]), i32);
-    /// The `llvm.x86.sse41.pextrd` intrinsic.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pextrd")
-    i32 sse41_pextrd(__vector(i32[4]), i32);
-    /// The `llvm.x86.sse41.pextrq` intrinsic.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pextrq")
-    i64 sse41_pextrq(__vector(i64[2]), i32);
-    /// The `llvm.x86.sse41.extractps` intrinsic; known as `__builtin_ia32_extractps128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.extractps")
-    i32 sse41_extractps(__vector(f32[4]), i32);
-    /// The `llvm.x86.sse41.insertps` intrinsic; known as `__builtin_ia32_insertps128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.insertps")
-    __vector(f32[4]) sse41_insertps(__vector(f32[4]), __vector(f32[4]), i8);
-    /// The `llvm.x86.sse41.pblendvb` intrinsic; known as `__builtin_ia32_pblendvb128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pblendvb")
-    __vector(i8[16]) sse41_pblendvb(__vector(i8[16]), __vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.sse41.pblendw` intrinsic; known as `__builtin_ia32_pblendw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.pblendw")
-    __vector(i16[8]) sse41_pblendw(__vector(i16[8]), __vector(i16[8]), i8);
-    /// The `llvm.x86.sse41.blendpd` intrinsic; known as `__builtin_ia32_blendpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.blendpd")
-    __vector(f64[2]) sse41_blendpd(__vector(f64[2]), __vector(f64[2]), i8);
-    /// The `llvm.x86.sse41.blendps` intrinsic; known as `__builtin_ia32_blendps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.blendps")
-    __vector(f32[4]) sse41_blendps(__vector(f32[4]), __vector(f32[4]), i8);
-    /// The `llvm.x86.sse41.blendvpd` intrinsic; known as `__builtin_ia32_blendvpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.blendvpd")
-    __vector(f64[2]) sse41_blendvpd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.sse41.blendvps` intrinsic; known as `__builtin_ia32_blendvps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.blendvps")
-    __vector(f32[4]) sse41_blendvps(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.sse41.dppd` intrinsic; known as `__builtin_ia32_dppd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.dppd")
-    __vector(f64[2]) sse41_dppd(__vector(f64[2]), __vector(f64[2]), i8);
-    /// The `llvm.x86.sse41.dpps` intrinsic; known as `__builtin_ia32_dpps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.dpps")
-    __vector(f32[4]) sse41_dpps(__vector(f32[4]), __vector(f32[4]), i8);
-    /// The `llvm.x86.sse41.mpsadbw` intrinsic; known as `__builtin_ia32_mpsadbw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.mpsadbw")
-    __vector(i16[8]) sse41_mpsadbw(__vector(i8[16]), __vector(i8[16]), i8);
-    /// The `llvm.x86.sse41.movntdqa` intrinsic; known as `__builtin_ia32_movntdqa` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.movntdqa")
-    __vector(i64[2]) sse41_movntdqa(i8*);
-    /// The `llvm.x86.sse41.ptestz` intrinsic; known as `__builtin_ia32_ptestz128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.ptestz")
-    i32 sse41_ptestz(__vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.sse41.ptestc` intrinsic; known as `__builtin_ia32_ptestc128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.ptestc")
-    i32 sse41_ptestc(__vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.sse41.ptestnzc` intrinsic; known as `__builtin_ia32_ptestnzc128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse41.ptestnzc")
-    i32 sse41_ptestnzc(__vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.sse42.crc32.32.8` intrinsic; known as `__builtin_ia32_crc32qi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.crc32.32.8")
-    i32 sse42_crc32_32_8(i32, i8);
-    /// The `llvm.x86.sse42.crc32.32.16` intrinsic; known as `__builtin_ia32_crc32hi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.crc32.32.16")
-    i32 sse42_crc32_32_16(i32, i16);
-    /// The `llvm.x86.sse42.crc32.32.32` intrinsic; known as `__builtin_ia32_crc32si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.crc32.32.32")
-    i32 sse42_crc32_32_32(i32, i32);
-    /// The `llvm.x86.sse42.crc32.64.64` intrinsic; known as `__builtin_ia32_crc32di` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.crc32.64.64")
-    i64 sse42_crc32_64_64(i64, i64);
-    /// The `llvm.x86.sse42.pcmpistrm128` intrinsic; known as `__builtin_ia32_pcmpistrm128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpistrm128")
-    __vector(i8[16]) sse42_pcmpistrm128(__vector(i8[16]), __vector(i8[16]), i8);
-    /// The `llvm.x86.sse42.pcmpistri128` intrinsic; known as `__builtin_ia32_pcmpistri128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpistri128")
-    i32 sse42_pcmpistri128(__vector(i8[16]), __vector(i8[16]), i8);
-    /// The `llvm.x86.sse42.pcmpistria128` intrinsic; known as `__builtin_ia32_pcmpistria128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpistria128")
-    i32 sse42_pcmpistria128(__vector(i8[16]), __vector(i8[16]), i8);
-    /// The `llvm.x86.sse42.pcmpistric128` intrinsic; known as `__builtin_ia32_pcmpistric128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpistric128")
-    i32 sse42_pcmpistric128(__vector(i8[16]), __vector(i8[16]), i8);
-    /// The `llvm.x86.sse42.pcmpistrio128` intrinsic; known as `__builtin_ia32_pcmpistrio128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpistrio128")
-    i32 sse42_pcmpistrio128(__vector(i8[16]), __vector(i8[16]), i8);
-    /// The `llvm.x86.sse42.pcmpistris128` intrinsic; known as `__builtin_ia32_pcmpistris128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpistris128")
-    i32 sse42_pcmpistris128(__vector(i8[16]), __vector(i8[16]), i8);
-    /// The `llvm.x86.sse42.pcmpistriz128` intrinsic; known as `__builtin_ia32_pcmpistriz128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpistriz128")
-    i32 sse42_pcmpistriz128(__vector(i8[16]), __vector(i8[16]), i8);
-    /// The `llvm.x86.sse42.pcmpestrm128` intrinsic; known as `__builtin_ia32_pcmpestrm128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpestrm128")
-    __vector(i8[16]) sse42_pcmpestrm128(__vector(i8[16]), i32, __vector(i8[16]), i32, i8);
-    /// The `llvm.x86.sse42.pcmpestri128` intrinsic; known as `__builtin_ia32_pcmpestri128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpestri128")
-    i32 sse42_pcmpestri128(__vector(i8[16]), i32, __vector(i8[16]), i32, i8);
-    /// The `llvm.x86.sse42.pcmpestria128` intrinsic; known as `__builtin_ia32_pcmpestria128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpestria128")
-    i32 sse42_pcmpestria128(__vector(i8[16]), i32, __vector(i8[16]), i32, i8);
-    /// The `llvm.x86.sse42.pcmpestric128` intrinsic; known as `__builtin_ia32_pcmpestric128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpestric128")
-    i32 sse42_pcmpestric128(__vector(i8[16]), i32, __vector(i8[16]), i32, i8);
-    /// The `llvm.x86.sse42.pcmpestrio128` intrinsic; known as `__builtin_ia32_pcmpestrio128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpestrio128")
-    i32 sse42_pcmpestrio128(__vector(i8[16]), i32, __vector(i8[16]), i32, i8);
-    /// The `llvm.x86.sse42.pcmpestris128` intrinsic; known as `__builtin_ia32_pcmpestris128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpestris128")
-    i32 sse42_pcmpestris128(__vector(i8[16]), i32, __vector(i8[16]), i32, i8);
-    /// The `llvm.x86.sse42.pcmpestriz128` intrinsic; known as `__builtin_ia32_pcmpestriz128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse42.pcmpestriz128")
-    i32 sse42_pcmpestriz128(__vector(i8[16]), i32, __vector(i8[16]), i32, i8);
-    /// The `llvm.x86.sse4a.extrqi` intrinsic; known as `__builtin_ia32_extrqi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse4a.extrqi")
-    __vector(i64[2]) sse4a_extrqi(__vector(i64[2]), i8, i8);
-    /// The `llvm.x86.sse4a.extrq` intrinsic; known as `__builtin_ia32_extrq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse4a.extrq")
-    __vector(i64[2]) sse4a_extrq(__vector(i64[2]), __vector(i8[16]));
-    /// The `llvm.x86.sse4a.insertqi` intrinsic; known as `__builtin_ia32_insertqi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse4a.insertqi")
-    __vector(i64[2]) sse4a_insertqi(__vector(i64[2]), __vector(i64[2]), i8, i8);
-    /// The `llvm.x86.sse4a.insertq` intrinsic; known as `__builtin_ia32_insertq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse4a.insertq")
-    __vector(i64[2]) sse4a_insertq(__vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.sse4a.movnt.ss` intrinsic; known as `__builtin_ia32_movntss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse4a.movnt.ss")
-    void sse4a_movnt_ss(i8*, __vector(f32[4]));
-    /// The `llvm.x86.sse4a.movnt.sd` intrinsic; known as `__builtin_ia32_movntsd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sse4a.movnt.sd")
-    void sse4a_movnt_sd(i8*, __vector(f64[2]));
-    /// The `llvm.x86.avx.addsub.pd.256` intrinsic; known as `__builtin_ia32_addsubpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.addsub.pd.256")
-    __vector(f64[4]) avx_addsub_pd_256(__vector(f64[4]), __vector(f64[4]));
-    /// The `llvm.x86.avx.addsub.ps.256` intrinsic; known as `__builtin_ia32_addsubps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.addsub.ps.256")
-    __vector(f32[8]) avx_addsub_ps_256(__vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.avx.max.pd.256` intrinsic; known as `__builtin_ia32_maxpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.max.pd.256")
-    __vector(f64[4]) avx_max_pd_256(__vector(f64[4]), __vector(f64[4]));
-    /// The `llvm.x86.avx.max.ps.256` intrinsic; known as `__builtin_ia32_maxps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.max.ps.256")
-    __vector(f32[8]) avx_max_ps_256(__vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.avx.min.pd.256` intrinsic; known as `__builtin_ia32_minpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.min.pd.256")
-    __vector(f64[4]) avx_min_pd_256(__vector(f64[4]), __vector(f64[4]));
-    /// The `llvm.x86.avx.min.ps.256` intrinsic; known as `__builtin_ia32_minps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.min.ps.256")
-    __vector(f32[8]) avx_min_ps_256(__vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.avx.sqrt.pd.256` intrinsic; known as `__builtin_ia32_sqrtpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.sqrt.pd.256")
-    __vector(f64[4]) avx_sqrt_pd_256(__vector(f64[4]));
-    /// The `llvm.x86.avx.sqrt.ps.256` intrinsic; known as `__builtin_ia32_sqrtps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.sqrt.ps.256")
-    __vector(f32[8]) avx_sqrt_ps_256(__vector(f32[8]));
-    /// The `llvm.x86.avx.rsqrt.ps.256` intrinsic; known as `__builtin_ia32_rsqrtps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.rsqrt.ps.256")
-    __vector(f32[8]) avx_rsqrt_ps_256(__vector(f32[8]));
-    /// The `llvm.x86.avx.rcp.ps.256` intrinsic; known as `__builtin_ia32_rcpps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.rcp.ps.256")
-    __vector(f32[8]) avx_rcp_ps_256(__vector(f32[8]));
-    /// The `llvm.x86.avx.round.pd.256` intrinsic; known as `__builtin_ia32_roundpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.round.pd.256")
-    __vector(f64[4]) avx_round_pd_256(__vector(f64[4]), i32);
-    /// The `llvm.x86.avx.round.ps.256` intrinsic; known as `__builtin_ia32_roundps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.round.ps.256")
-    __vector(f32[8]) avx_round_ps_256(__vector(f32[8]), i32);
-    /// The `llvm.x86.avx.hadd.pd.256` intrinsic; known as `__builtin_ia32_haddpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.hadd.pd.256")
-    __vector(f64[4]) avx_hadd_pd_256(__vector(f64[4]), __vector(f64[4]));
-    /// The `llvm.x86.avx.hsub.ps.256` intrinsic; known as `__builtin_ia32_hsubps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.hsub.ps.256")
-    __vector(f32[8]) avx_hsub_ps_256(__vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.avx.hsub.pd.256` intrinsic; known as `__builtin_ia32_hsubpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.hsub.pd.256")
-    __vector(f64[4]) avx_hsub_pd_256(__vector(f64[4]), __vector(f64[4]));
-    /// The `llvm.x86.avx.hadd.ps.256` intrinsic; known as `__builtin_ia32_haddps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.hadd.ps.256")
-    __vector(f32[8]) avx_hadd_ps_256(__vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.avx.vpermilvar.pd` intrinsic; known as `__builtin_ia32_vpermilvarpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vpermilvar.pd")
-    __vector(f64[2]) avx_vpermilvar_pd(__vector(f64[2]), __vector(i64[2]));
-    /// The `llvm.x86.avx.vpermilvar.ps` intrinsic; known as `__builtin_ia32_vpermilvarps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vpermilvar.ps")
-    __vector(f32[4]) avx_vpermilvar_ps(__vector(f32[4]), __vector(i32[4]));
-    /// The `llvm.x86.avx.vpermilvar.pd.256` intrinsic; known as `__builtin_ia32_vpermilvarpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vpermilvar.pd.256")
-    __vector(f64[4]) avx_vpermilvar_pd_256(__vector(f64[4]), __vector(i64[4]));
-    /// The `llvm.x86.avx.vpermilvar.ps.256` intrinsic; known as `__builtin_ia32_vpermilvarps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vpermilvar.ps.256")
-    __vector(f32[8]) avx_vpermilvar_ps_256(__vector(f32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx.vperm2f128.pd.256` intrinsic; known as `__builtin_ia32_vperm2f128_pd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vperm2f128.pd.256")
-    __vector(f64[4]) avx_vperm2f128_pd_256(__vector(f64[4]), __vector(f64[4]), i8);
-    /// The `llvm.x86.avx.vperm2f128.ps.256` intrinsic; known as `__builtin_ia32_vperm2f128_ps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vperm2f128.ps.256")
-    __vector(f32[8]) avx_vperm2f128_ps_256(__vector(f32[8]), __vector(f32[8]), i8);
-    /// The `llvm.x86.avx.vperm2f128.si.256` intrinsic; known as `__builtin_ia32_vperm2f128_si256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vperm2f128.si.256")
-    __vector(i32[8]) avx_vperm2f128_si_256(__vector(i32[8]), __vector(i32[8]), i8);
-    /// The `llvm.x86.avx512.mask.vpermt.d.512` intrinsic; known as `__builtin_ia32_vpermt2vard512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.vpermt.d.512")
-    __vector(i32[16]) avx512_mask_vpermt_d_512(__vector(i32[16]), __vector(i32[16]), __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.vpermt.q.512` intrinsic; known as `__builtin_ia32_vpermt2varq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.vpermt.q.512")
-    __vector(i64[8]) avx512_mask_vpermt_q_512(__vector(i64[8]), __vector(i64[8]), __vector(i64[8]), i8);
-    /// The `llvm.x86.avx512.mask.vpermt.ps.512` intrinsic; known as `__builtin_ia32_vpermt2varps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.vpermt.ps.512")
-    __vector(f32[16]) avx512_mask_vpermt_ps_512(__vector(i32[16]), __vector(f32[16]), __vector(f32[16]), i16);
-    /// The `llvm.x86.avx512.mask.vpermt.pd.512` intrinsic; known as `__builtin_ia32_vpermt2varpd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.vpermt.pd.512")
-    __vector(f64[8]) avx512_mask_vpermt_pd_512(__vector(i64[8]), __vector(f64[8]), __vector(f64[8]), i8);
-    /// The `llvm.x86.avx.blend.pd.256` intrinsic; known as `__builtin_ia32_blendpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.blend.pd.256")
-    __vector(f64[4]) avx_blend_pd_256(__vector(f64[4]), __vector(f64[4]), i8);
-    /// The `llvm.x86.avx.blend.ps.256` intrinsic; known as `__builtin_ia32_blendps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.blend.ps.256")
-    __vector(f32[8]) avx_blend_ps_256(__vector(f32[8]), __vector(f32[8]), i8);
-    /// The `llvm.x86.avx.blendv.pd.256` intrinsic; known as `__builtin_ia32_blendvpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.blendv.pd.256")
-    __vector(f64[4]) avx_blendv_pd_256(__vector(f64[4]), __vector(f64[4]), __vector(f64[4]));
-    /// The `llvm.x86.avx.blendv.ps.256` intrinsic; known as `__builtin_ia32_blendvps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.blendv.ps.256")
-    __vector(f32[8]) avx_blendv_ps_256(__vector(f32[8]), __vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.avx.dp.ps.256` intrinsic; known as `__builtin_ia32_dpps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.dp.ps.256")
-    __vector(f32[8]) avx_dp_ps_256(__vector(f32[8]), __vector(f32[8]), i8);
-    /// The `llvm.x86.avx.cmp.pd.256` intrinsic; known as `__builtin_ia32_cmppd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.cmp.pd.256")
-    __vector(f64[4]) avx_cmp_pd_256(__vector(f64[4]), __vector(f64[4]), i8);
-    /// The `llvm.x86.avx.cmp.ps.256` intrinsic; known as `__builtin_ia32_cmpps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.cmp.ps.256")
-    __vector(f32[8]) avx_cmp_ps_256(__vector(f32[8]), __vector(f32[8]), i8);
-    /// The `llvm.x86.avx.vextractf128.pd.256` intrinsic; known as `__builtin_ia32_vextractf128_pd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vextractf128.pd.256")
-    __vector(f64[2]) avx_vextractf128_pd_256(__vector(f64[4]), i8);
-    /// The `llvm.x86.avx.vextractf128.ps.256` intrinsic; known as `__builtin_ia32_vextractf128_ps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vextractf128.ps.256")
-    __vector(f32[4]) avx_vextractf128_ps_256(__vector(f32[8]), i8);
-    /// The `llvm.x86.avx.vextractf128.si.256` intrinsic; known as `__builtin_ia32_vextractf128_si256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vextractf128.si.256")
-    __vector(i32[4]) avx_vextractf128_si_256(__vector(i32[8]), i8);
-    /// The `llvm.x86.avx.vinsertf128.pd.256` intrinsic; known as `__builtin_ia32_vinsertf128_pd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vinsertf128.pd.256")
-    __vector(f64[4]) avx_vinsertf128_pd_256(__vector(f64[4]), __vector(f64[2]), i8);
-    /// The `llvm.x86.avx.vinsertf128.ps.256` intrinsic; known as `__builtin_ia32_vinsertf128_ps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vinsertf128.ps.256")
-    __vector(f32[8]) avx_vinsertf128_ps_256(__vector(f32[8]), __vector(f32[4]), i8);
-    /// The `llvm.x86.avx.vinsertf128.si.256` intrinsic; known as `__builtin_ia32_vinsertf128_si256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vinsertf128.si.256")
-    __vector(i32[8]) avx_vinsertf128_si_256(__vector(i32[8]), __vector(i32[4]), i8);
-    /// The `llvm.x86.avx.cvtdq2.pd.256` intrinsic; known as `__builtin_ia32_cvtdq2pd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.cvtdq2.pd.256")
-    __vector(f64[4]) avx_cvtdq2_pd_256(__vector(i32[4]));
-    /// The `llvm.x86.avx.cvtdq2.ps.256` intrinsic; known as `__builtin_ia32_cvtdq2ps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.cvtdq2.ps.256")
-    __vector(f32[8]) avx_cvtdq2_ps_256(__vector(i32[8]));
-    /// The `llvm.x86.avx.cvt.pd2.ps.256` intrinsic; known as `__builtin_ia32_cvtpd2ps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.cvt.pd2.ps.256")
-    __vector(f32[4]) avx_cvt_pd2_ps_256(__vector(f64[4]));
-    /// The `llvm.x86.avx.cvt.ps2dq.256` intrinsic; known as `__builtin_ia32_cvtps2dq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.cvt.ps2dq.256")
-    __vector(i32[8]) avx_cvt_ps2dq_256(__vector(f32[8]));
-    /// The `llvm.x86.avx.cvt.ps2.pd.256` intrinsic; known as `__builtin_ia32_cvtps2pd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.cvt.ps2.pd.256")
-    __vector(f64[4]) avx_cvt_ps2_pd_256(__vector(f32[4]));
-    /// The `llvm.x86.avx.cvtt.pd2dq.256` intrinsic; known as `__builtin_ia32_cvttpd2dq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.cvtt.pd2dq.256")
-    __vector(i32[4]) avx_cvtt_pd2dq_256(__vector(f64[4]));
-    /// The `llvm.x86.avx.cvt.pd2dq.256` intrinsic; known as `__builtin_ia32_cvtpd2dq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.cvt.pd2dq.256")
-    __vector(i32[4]) avx_cvt_pd2dq_256(__vector(f64[4]));
-    /// The `llvm.x86.avx.cvtt.ps2dq.256` intrinsic; known as `__builtin_ia32_cvttps2dq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.cvtt.ps2dq.256")
-    __vector(i32[8]) avx_cvtt_ps2dq_256(__vector(f32[8]));
-    /// The `llvm.x86.avx.vtestz.pd` intrinsic; known as `__builtin_ia32_vtestzpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vtestz.pd")
-    i32 avx_vtestz_pd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.avx.vtestc.pd` intrinsic; known as `__builtin_ia32_vtestcpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vtestc.pd")
-    i32 avx_vtestc_pd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.avx.vtestnzc.pd` intrinsic; known as `__builtin_ia32_vtestnzcpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vtestnzc.pd")
-    i32 avx_vtestnzc_pd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.avx.vtestz.ps` intrinsic; known as `__builtin_ia32_vtestzps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vtestz.ps")
-    i32 avx_vtestz_ps(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.avx.vtestc.ps` intrinsic; known as `__builtin_ia32_vtestcps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vtestc.ps")
-    i32 avx_vtestc_ps(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.avx.vtestnzc.ps` intrinsic; known as `__builtin_ia32_vtestnzcps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vtestnzc.ps")
-    i32 avx_vtestnzc_ps(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.avx.vtestz.pd.256` intrinsic; known as `__builtin_ia32_vtestzpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vtestz.pd.256")
-    i32 avx_vtestz_pd_256(__vector(f64[4]), __vector(f64[4]));
-    /// The `llvm.x86.avx.vtestc.pd.256` intrinsic; known as `__builtin_ia32_vtestcpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vtestc.pd.256")
-    i32 avx_vtestc_pd_256(__vector(f64[4]), __vector(f64[4]));
-    /// The `llvm.x86.avx.vtestnzc.pd.256` intrinsic; known as `__builtin_ia32_vtestnzcpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vtestnzc.pd.256")
-    i32 avx_vtestnzc_pd_256(__vector(f64[4]), __vector(f64[4]));
-    /// The `llvm.x86.avx.vtestz.ps.256` intrinsic; known as `__builtin_ia32_vtestzps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vtestz.ps.256")
-    i32 avx_vtestz_ps_256(__vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.avx.vtestc.ps.256` intrinsic; known as `__builtin_ia32_vtestcps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vtestc.ps.256")
-    i32 avx_vtestc_ps_256(__vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.avx.vtestnzc.ps.256` intrinsic; known as `__builtin_ia32_vtestnzcps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vtestnzc.ps.256")
-    i32 avx_vtestnzc_ps_256(__vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.avx.ptestz.256` intrinsic; known as `__builtin_ia32_ptestz256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.ptestz.256")
-    i32 avx_ptestz_256(__vector(i64[4]), __vector(i64[4]));
-    /// The `llvm.x86.avx.ptestc.256` intrinsic; known as `__builtin_ia32_ptestc256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.ptestc.256")
-    i32 avx_ptestc_256(__vector(i64[4]), __vector(i64[4]));
-    /// The `llvm.x86.avx.ptestnzc.256` intrinsic; known as `__builtin_ia32_ptestnzc256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.ptestnzc.256")
-    i32 avx_ptestnzc_256(__vector(i64[4]), __vector(i64[4]));
-    /// The `llvm.x86.avx512.mask.ptestm.d.512` intrinsic; known as `__builtin_ia32_ptestmd512` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.ptestm.d.512")
-    i16 avx512_mask_ptestm_d_512(__vector(i32[16]), __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.ptestm.q.512` intrinsic; known as `__builtin_ia32_ptestmq512` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.ptestm.q.512")
-    i8 avx512_mask_ptestm_q_512(__vector(i64[8]), __vector(i64[8]), i8);
-    /// The `llvm.x86.avx.movmsk.pd.256` intrinsic; known as `__builtin_ia32_movmskpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.movmsk.pd.256")
-    i32 avx_movmsk_pd_256(__vector(f64[4]));
-    /// The `llvm.x86.avx.movmsk.ps.256` intrinsic; known as `__builtin_ia32_movmskps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.movmsk.ps.256")
-    i32 avx_movmsk_ps_256(__vector(f32[8]));
-    /// The `llvm.x86.avx.vzeroall` intrinsic; known as `__builtin_ia32_vzeroall` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vzeroall")
-    void avx_vzeroall();
-    /// The `llvm.x86.avx.vzeroupper` intrinsic; known as `__builtin_ia32_vzeroupper` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vzeroupper")
-    void avx_vzeroupper();
-    /// The `llvm.x86.avx.vbroadcastf128.pd.256` intrinsic; known as `__builtin_ia32_vbroadcastf128_pd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vbroadcastf128.pd.256")
-    __vector(f64[4]) avx_vbroadcastf128_pd_256(i8*);
-    /// The `llvm.x86.avx.vbroadcastf128.ps.256` intrinsic; known as `__builtin_ia32_vbroadcastf128_ps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.vbroadcastf128.ps.256")
-    __vector(f32[8]) avx_vbroadcastf128_ps_256(i8*);
-    /// The `llvm.x86.avx.ldu.dq.256` intrinsic; known as `__builtin_ia32_lddqu256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.ldu.dq.256")
-    __vector(i8[32]) avx_ldu_dq_256(i8*);
-    /// The `llvm.x86.avx.storeu.pd.256` intrinsic; known as `__builtin_ia32_storeupd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.storeu.pd.256")
-    void avx_storeu_pd_256(i8*, __vector(f64[4]));
-    /// The `llvm.x86.avx.storeu.ps.256` intrinsic; known as `__builtin_ia32_storeups256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.storeu.ps.256")
-    void avx_storeu_ps_256(i8*, __vector(f32[8]));
-    /// The `llvm.x86.avx.storeu.dq.256` intrinsic; known as `__builtin_ia32_storedqu256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.storeu.dq.256")
-    void avx_storeu_dq_256(i8*, __vector(i8[32]));
-    /// The `llvm.x86.avx.maskload.pd` intrinsic; known as `__builtin_ia32_maskloadpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.maskload.pd")
-    __vector(f64[2]) avx_maskload_pd(i8*, __vector(f64[2]));
-    /// The `llvm.x86.avx.maskload.ps` intrinsic; known as `__builtin_ia32_maskloadps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.maskload.ps")
-    __vector(f32[4]) avx_maskload_ps(i8*, __vector(f32[4]));
-    /// The `llvm.x86.avx.maskload.pd.256` intrinsic; known as `__builtin_ia32_maskloadpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.maskload.pd.256")
-    __vector(f64[4]) avx_maskload_pd_256(i8*, __vector(f64[4]));
-    /// The `llvm.x86.avx.maskload.ps.256` intrinsic; known as `__builtin_ia32_maskloadps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.maskload.ps.256")
-    __vector(f32[8]) avx_maskload_ps_256(i8*, __vector(f32[8]));
-    /// The `llvm.x86.avx512.mask.loadu.ps.512` intrinsic; known as `__builtin_ia32_loadups512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.loadu.ps.512")
-    __vector(f32[16]) avx512_mask_loadu_ps_512(i8*, __vector(f32[16]), i16);
-    /// The `llvm.x86.avx512.mask.loadu.pd.512` intrinsic; known as `__builtin_ia32_loadupd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.loadu.pd.512")
-    __vector(f64[8]) avx512_mask_loadu_pd_512(i8*, __vector(f64[8]), i8);
-    /// The `llvm.x86.avx.maskstore.pd` intrinsic; known as `__builtin_ia32_maskstorepd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.maskstore.pd")
-    void avx_maskstore_pd(i8*, __vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.avx.maskstore.ps` intrinsic; known as `__builtin_ia32_maskstoreps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.maskstore.ps")
-    void avx_maskstore_ps(i8*, __vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.avx.maskstore.pd.256` intrinsic; known as `__builtin_ia32_maskstorepd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.maskstore.pd.256")
-    void avx_maskstore_pd_256(i8*, __vector(f64[4]), __vector(f64[4]));
-    /// The `llvm.x86.avx.maskstore.ps.256` intrinsic; known as `__builtin_ia32_maskstoreps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx.maskstore.ps.256")
-    void avx_maskstore_ps_256(i8*, __vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.avx512.mask.storeu.ps.512` intrinsic; known as `__builtin_ia32_storeups512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.storeu.ps.512")
-    void avx512_mask_storeu_ps_512(i8*, __vector(f32[16]), i16);
-    /// The `llvm.x86.avx512.mask.storeu.pd.512` intrinsic; known as `__builtin_ia32_storeupd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.storeu.pd.512")
-    void avx512_mask_storeu_pd_512(i8*, __vector(f64[8]), i8);
-    /// The `llvm.x86.avx512.mask.store.ss` intrinsic; known as `__builtin_ia32_storess_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.store.ss")
-    void avx512_mask_store_ss(i8*, __vector(f32[4]), i8);
-    /// The `llvm.x86.avx2.padds.b` intrinsic; known as `__builtin_ia32_paddsb256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.padds.b")
-    __vector(i8[32]) avx2_padds_b(__vector(i8[32]), __vector(i8[32]));
-    /// The `llvm.x86.avx2.padds.w` intrinsic; known as `__builtin_ia32_paddsw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.padds.w")
-    __vector(i16[16]) avx2_padds_w(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.paddus.b` intrinsic; known as `__builtin_ia32_paddusb256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.paddus.b")
-    __vector(i8[32]) avx2_paddus_b(__vector(i8[32]), __vector(i8[32]));
-    /// The `llvm.x86.avx2.paddus.w` intrinsic; known as `__builtin_ia32_paddusw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.paddus.w")
-    __vector(i16[16]) avx2_paddus_w(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.psubs.b` intrinsic; known as `__builtin_ia32_psubsb256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psubs.b")
-    __vector(i8[32]) avx2_psubs_b(__vector(i8[32]), __vector(i8[32]));
-    /// The `llvm.x86.avx2.psubs.w` intrinsic; known as `__builtin_ia32_psubsw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psubs.w")
-    __vector(i16[16]) avx2_psubs_w(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.psubus.b` intrinsic; known as `__builtin_ia32_psubusb256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psubus.b")
-    __vector(i8[32]) avx2_psubus_b(__vector(i8[32]), __vector(i8[32]));
-    /// The `llvm.x86.avx2.psubus.w` intrinsic; known as `__builtin_ia32_psubusw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psubus.w")
-    __vector(i16[16]) avx2_psubus_w(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.pmulhu.w` intrinsic; known as `__builtin_ia32_pmulhuw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmulhu.w")
-    __vector(i16[16]) avx2_pmulhu_w(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.pmulh.w` intrinsic; known as `__builtin_ia32_pmulhw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmulh.w")
-    __vector(i16[16]) avx2_pmulh_w(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.pmulu.dq` intrinsic; known as `__builtin_ia32_pmuludq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmulu.dq")
-    __vector(i64[4]) avx2_pmulu_dq(__vector(i32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx2.pmul.dq` intrinsic; known as `__builtin_ia32_pmuldq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmul.dq")
-    __vector(i64[4]) avx2_pmul_dq(__vector(i32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx2.pmadd.wd` intrinsic; known as `__builtin_ia32_pmaddwd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmadd.wd")
-    __vector(i32[8]) avx2_pmadd_wd(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.pavg.b` intrinsic; known as `__builtin_ia32_pavgb256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pavg.b")
-    __vector(i8[32]) avx2_pavg_b(__vector(i8[32]), __vector(i8[32]));
-    /// The `llvm.x86.avx2.pavg.w` intrinsic; known as `__builtin_ia32_pavgw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pavg.w")
-    __vector(i16[16]) avx2_pavg_w(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.psad.bw` intrinsic; known as `__builtin_ia32_psadbw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psad.bw")
-    __vector(i64[4]) avx2_psad_bw(__vector(i8[32]), __vector(i8[32]));
-    /// The `llvm.x86.avx512.mask.pmulu.dq.512` intrinsic; known as `__builtin_ia32_pmuludq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pmulu.dq.512")
-    __vector(i64[8]) avx512_mask_pmulu_dq_512(__vector(i32[16]), __vector(i32[16]), __vector(i64[8]), i8);
-    /// The `llvm.x86.avx512.mask.pmul.dq.512` intrinsic; known as `__builtin_ia32_pmuldq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pmul.dq.512")
-    __vector(i64[8]) avx512_mask_pmul_dq_512(__vector(i32[16]), __vector(i32[16]), __vector(i64[8]), i8);
-    /// The `llvm.x86.avx2.pmaxu.b` intrinsic; known as `__builtin_ia32_pmaxub256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmaxu.b")
-    __vector(i8[32]) avx2_pmaxu_b(__vector(i8[32]), __vector(i8[32]));
-    /// The `llvm.x86.avx2.pmaxu.w` intrinsic; known as `__builtin_ia32_pmaxuw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmaxu.w")
-    __vector(i16[16]) avx2_pmaxu_w(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.pmaxu.d` intrinsic; known as `__builtin_ia32_pmaxud256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmaxu.d")
-    __vector(i32[8]) avx2_pmaxu_d(__vector(i32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx2.pmaxs.b` intrinsic; known as `__builtin_ia32_pmaxsb256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmaxs.b")
-    __vector(i8[32]) avx2_pmaxs_b(__vector(i8[32]), __vector(i8[32]));
-    /// The `llvm.x86.avx2.pmaxs.w` intrinsic; known as `__builtin_ia32_pmaxsw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmaxs.w")
-    __vector(i16[16]) avx2_pmaxs_w(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.pmaxs.d` intrinsic; known as `__builtin_ia32_pmaxsd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmaxs.d")
-    __vector(i32[8]) avx2_pmaxs_d(__vector(i32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx2.pminu.b` intrinsic; known as `__builtin_ia32_pminub256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pminu.b")
-    __vector(i8[32]) avx2_pminu_b(__vector(i8[32]), __vector(i8[32]));
-    /// The `llvm.x86.avx2.pminu.w` intrinsic; known as `__builtin_ia32_pminuw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pminu.w")
-    __vector(i16[16]) avx2_pminu_w(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.pminu.d` intrinsic; known as `__builtin_ia32_pminud256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pminu.d")
-    __vector(i32[8]) avx2_pminu_d(__vector(i32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx2.pmins.b` intrinsic; known as `__builtin_ia32_pminsb256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmins.b")
-    __vector(i8[32]) avx2_pmins_b(__vector(i8[32]), __vector(i8[32]));
-    /// The `llvm.x86.avx2.pmins.w` intrinsic; known as `__builtin_ia32_pminsw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmins.w")
-    __vector(i16[16]) avx2_pmins_w(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.pmins.d` intrinsic; known as `__builtin_ia32_pminsd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmins.d")
-    __vector(i32[8]) avx2_pmins_d(__vector(i32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx512.mask.pmaxu.d.512` intrinsic; known as `__builtin_ia32_pmaxud512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pmaxu.d.512")
-    __vector(i32[16]) avx512_mask_pmaxu_d_512(__vector(i32[16]), __vector(i32[16]), __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.pmaxs.d.512` intrinsic; known as `__builtin_ia32_pmaxsd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pmaxs.d.512")
-    __vector(i32[16]) avx512_mask_pmaxs_d_512(__vector(i32[16]), __vector(i32[16]), __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.pmaxu.q.512` intrinsic; known as `__builtin_ia32_pmaxuq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pmaxu.q.512")
-    __vector(i64[8]) avx512_mask_pmaxu_q_512(__vector(i64[8]), __vector(i64[8]), __vector(i64[8]), i8);
-    /// The `llvm.x86.avx512.mask.pmaxs.q.512` intrinsic; known as `__builtin_ia32_pmaxsq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pmaxs.q.512")
-    __vector(i64[8]) avx512_mask_pmaxs_q_512(__vector(i64[8]), __vector(i64[8]), __vector(i64[8]), i8);
-    /// The `llvm.x86.avx512.mask.pminu.d.512` intrinsic; known as `__builtin_ia32_pminud512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pminu.d.512")
-    __vector(i32[16]) avx512_mask_pminu_d_512(__vector(i32[16]), __vector(i32[16]), __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.pmins.d.512` intrinsic; known as `__builtin_ia32_pminsd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pmins.d.512")
-    __vector(i32[16]) avx512_mask_pmins_d_512(__vector(i32[16]), __vector(i32[16]), __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.pminu.q.512` intrinsic; known as `__builtin_ia32_pminuq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pminu.q.512")
-    __vector(i64[8]) avx512_mask_pminu_q_512(__vector(i64[8]), __vector(i64[8]), __vector(i64[8]), i8);
-    /// The `llvm.x86.avx512.mask.pmins.q.512` intrinsic; known as `__builtin_ia32_pminsq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pmins.q.512")
-    __vector(i64[8]) avx512_mask_pmins_q_512(__vector(i64[8]), __vector(i64[8]), __vector(i64[8]), i8);
-    /// The `llvm.x86.avx2.psll.w` intrinsic; known as `__builtin_ia32_psllw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psll.w")
-    __vector(i16[16]) avx2_psll_w(__vector(i16[16]), __vector(i16[8]));
-    /// The `llvm.x86.avx2.psll.d` intrinsic; known as `__builtin_ia32_pslld256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psll.d")
-    __vector(i32[8]) avx2_psll_d(__vector(i32[8]), __vector(i32[4]));
-    /// The `llvm.x86.avx2.psll.q` intrinsic; known as `__builtin_ia32_psllq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psll.q")
-    __vector(i64[4]) avx2_psll_q(__vector(i64[4]), __vector(i64[2]));
-    /// The `llvm.x86.avx2.psrl.w` intrinsic; known as `__builtin_ia32_psrlw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psrl.w")
-    __vector(i16[16]) avx2_psrl_w(__vector(i16[16]), __vector(i16[8]));
-    /// The `llvm.x86.avx2.psrl.d` intrinsic; known as `__builtin_ia32_psrld256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psrl.d")
-    __vector(i32[8]) avx2_psrl_d(__vector(i32[8]), __vector(i32[4]));
-    /// The `llvm.x86.avx2.psrl.q` intrinsic; known as `__builtin_ia32_psrlq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psrl.q")
-    __vector(i64[4]) avx2_psrl_q(__vector(i64[4]), __vector(i64[2]));
-    /// The `llvm.x86.avx2.psra.w` intrinsic; known as `__builtin_ia32_psraw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psra.w")
-    __vector(i16[16]) avx2_psra_w(__vector(i16[16]), __vector(i16[8]));
-    /// The `llvm.x86.avx2.psra.d` intrinsic; known as `__builtin_ia32_psrad256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psra.d")
-    __vector(i32[8]) avx2_psra_d(__vector(i32[8]), __vector(i32[4]));
-    /// The `llvm.x86.avx2.pslli.w` intrinsic; known as `__builtin_ia32_psllwi256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pslli.w")
-    __vector(i16[16]) avx2_pslli_w(__vector(i16[16]), i32);
-    /// The `llvm.x86.avx2.pslli.d` intrinsic; known as `__builtin_ia32_pslldi256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pslli.d")
-    __vector(i32[8]) avx2_pslli_d(__vector(i32[8]), i32);
-    /// The `llvm.x86.avx2.pslli.q` intrinsic; known as `__builtin_ia32_psllqi256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pslli.q")
-    __vector(i64[4]) avx2_pslli_q(__vector(i64[4]), i32);
-    /// The `llvm.x86.avx2.psrli.w` intrinsic; known as `__builtin_ia32_psrlwi256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psrli.w")
-    __vector(i16[16]) avx2_psrli_w(__vector(i16[16]), i32);
-    /// The `llvm.x86.avx2.psrli.d` intrinsic; known as `__builtin_ia32_psrldi256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psrli.d")
-    __vector(i32[8]) avx2_psrli_d(__vector(i32[8]), i32);
-    /// The `llvm.x86.avx2.psrli.q` intrinsic; known as `__builtin_ia32_psrlqi256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psrli.q")
-    __vector(i64[4]) avx2_psrli_q(__vector(i64[4]), i32);
-    /// The `llvm.x86.avx2.psrai.w` intrinsic; known as `__builtin_ia32_psrawi256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psrai.w")
-    __vector(i16[16]) avx2_psrai_w(__vector(i16[16]), i32);
-    /// The `llvm.x86.avx2.psrai.d` intrinsic; known as `__builtin_ia32_psradi256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psrai.d")
-    __vector(i32[8]) avx2_psrai_d(__vector(i32[8]), i32);
-    /// The `llvm.x86.avx2.psll.dq` intrinsic; known as `__builtin_ia32_pslldqi256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psll.dq")
-    __vector(i64[4]) avx2_psll_dq(__vector(i64[4]), i32);
-    /// The `llvm.x86.avx2.psrl.dq` intrinsic; known as `__builtin_ia32_psrldqi256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psrl.dq")
-    __vector(i64[4]) avx2_psrl_dq(__vector(i64[4]), i32);
-    /// The `llvm.x86.avx2.psll.dq.bs` intrinsic; known as `__builtin_ia32_pslldqi256_byteshift` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psll.dq.bs")
-    __vector(i64[4]) avx2_psll_dq_bs(__vector(i64[4]), i32);
-    /// The `llvm.x86.avx2.psrl.dq.bs` intrinsic; known as `__builtin_ia32_psrldqi256_byteshift` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psrl.dq.bs")
-    __vector(i64[4]) avx2_psrl_dq_bs(__vector(i64[4]), i32);
-    /// The `llvm.x86.avx2.packsswb` intrinsic; known as `__builtin_ia32_packsswb256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.packsswb")
-    __vector(i8[32]) avx2_packsswb(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.packssdw` intrinsic; known as `__builtin_ia32_packssdw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.packssdw")
-    __vector(i16[16]) avx2_packssdw(__vector(i32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx2.packuswb` intrinsic; known as `__builtin_ia32_packuswb256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.packuswb")
-    __vector(i8[32]) avx2_packuswb(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.packusdw` intrinsic; known as `__builtin_ia32_packusdw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.packusdw")
-    __vector(i16[16]) avx2_packusdw(__vector(i32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx2.pabs.b` intrinsic; known as `__builtin_ia32_pabsb256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pabs.b")
-    __vector(i8[32]) avx2_pabs_b(__vector(i8[32]));
-    /// The `llvm.x86.avx2.pabs.w` intrinsic; known as `__builtin_ia32_pabsw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pabs.w")
-    __vector(i16[16]) avx2_pabs_w(__vector(i16[16]));
-    /// The `llvm.x86.avx2.pabs.d` intrinsic; known as `__builtin_ia32_pabsd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pabs.d")
-    __vector(i32[8]) avx2_pabs_d(__vector(i32[8]));
-    /// The `llvm.x86.avx512.mask.pabs.d.512` intrinsic; known as `__builtin_ia32_pabsd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pabs.d.512")
-    __vector(i32[16]) avx512_mask_pabs_d_512(__vector(i32[16]), __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.pabs.q.512` intrinsic; known as `__builtin_ia32_pabsq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pabs.q.512")
-    __vector(i64[8]) avx512_mask_pabs_q_512(__vector(i64[8]), __vector(i64[8]), i8);
-    /// The `llvm.x86.avx2.phadd.w` intrinsic; known as `__builtin_ia32_phaddw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.phadd.w")
-    __vector(i16[16]) avx2_phadd_w(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.phadd.d` intrinsic; known as `__builtin_ia32_phaddd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.phadd.d")
-    __vector(i32[8]) avx2_phadd_d(__vector(i32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx2.phadd.sw` intrinsic; known as `__builtin_ia32_phaddsw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.phadd.sw")
-    __vector(i16[16]) avx2_phadd_sw(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.phsub.w` intrinsic; known as `__builtin_ia32_phsubw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.phsub.w")
-    __vector(i16[16]) avx2_phsub_w(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.phsub.d` intrinsic; known as `__builtin_ia32_phsubd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.phsub.d")
-    __vector(i32[8]) avx2_phsub_d(__vector(i32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx2.phsub.sw` intrinsic; known as `__builtin_ia32_phsubsw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.phsub.sw")
-    __vector(i16[16]) avx2_phsub_sw(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.pmadd.ub.sw` intrinsic; known as `__builtin_ia32_pmaddubsw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmadd.ub.sw")
-    __vector(i16[16]) avx2_pmadd_ub_sw(__vector(i8[32]), __vector(i8[32]));
-    /// The `llvm.x86.avx2.psign.b` intrinsic; known as `__builtin_ia32_psignb256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psign.b")
-    __vector(i8[32]) avx2_psign_b(__vector(i8[32]), __vector(i8[32]));
-    /// The `llvm.x86.avx2.psign.w` intrinsic; known as `__builtin_ia32_psignw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psign.w")
-    __vector(i16[16]) avx2_psign_w(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.psign.d` intrinsic; known as `__builtin_ia32_psignd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psign.d")
-    __vector(i32[8]) avx2_psign_d(__vector(i32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx2.pmul.hr.sw` intrinsic; known as `__builtin_ia32_pmulhrsw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmul.hr.sw")
-    __vector(i16[16]) avx2_pmul_hr_sw(__vector(i16[16]), __vector(i16[16]));
-    /// The `llvm.x86.avx2.pmovsxbd` intrinsic; known as `__builtin_ia32_pmovsxbd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovsxbd")
-    __vector(i32[8]) avx2_pmovsxbd(__vector(i8[16]));
-    /// The `llvm.x86.avx2.pmovsxbq` intrinsic; known as `__builtin_ia32_pmovsxbq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovsxbq")
-    __vector(i64[4]) avx2_pmovsxbq(__vector(i8[16]));
-    /// The `llvm.x86.avx2.pmovsxbw` intrinsic; known as `__builtin_ia32_pmovsxbw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovsxbw")
-    __vector(i16[16]) avx2_pmovsxbw(__vector(i8[16]));
-    /// The `llvm.x86.avx2.pmovsxdq` intrinsic; known as `__builtin_ia32_pmovsxdq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovsxdq")
-    __vector(i64[4]) avx2_pmovsxdq(__vector(i32[4]));
-    /// The `llvm.x86.avx2.pmovsxwd` intrinsic; known as `__builtin_ia32_pmovsxwd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovsxwd")
-    __vector(i32[8]) avx2_pmovsxwd(__vector(i16[8]));
-    /// The `llvm.x86.avx2.pmovsxwq` intrinsic; known as `__builtin_ia32_pmovsxwq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovsxwq")
-    __vector(i64[4]) avx2_pmovsxwq(__vector(i16[8]));
-    /// The `llvm.x86.avx2.pmovzxbd` intrinsic; known as `__builtin_ia32_pmovzxbd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovzxbd")
-    __vector(i32[8]) avx2_pmovzxbd(__vector(i8[16]));
-    /// The `llvm.x86.avx2.pmovzxbq` intrinsic; known as `__builtin_ia32_pmovzxbq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovzxbq")
-    __vector(i64[4]) avx2_pmovzxbq(__vector(i8[16]));
-    /// The `llvm.x86.avx2.pmovzxbw` intrinsic; known as `__builtin_ia32_pmovzxbw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovzxbw")
-    __vector(i16[16]) avx2_pmovzxbw(__vector(i8[16]));
-    /// The `llvm.x86.avx2.pmovzxdq` intrinsic; known as `__builtin_ia32_pmovzxdq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovzxdq")
-    __vector(i64[4]) avx2_pmovzxdq(__vector(i32[4]));
-    /// The `llvm.x86.avx2.pmovzxwd` intrinsic; known as `__builtin_ia32_pmovzxwd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovzxwd")
-    __vector(i32[8]) avx2_pmovzxwd(__vector(i16[8]));
-    /// The `llvm.x86.avx2.pmovzxwq` intrinsic; known as `__builtin_ia32_pmovzxwq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovzxwq")
-    __vector(i64[4]) avx2_pmovzxwq(__vector(i16[8]));
-    /// The `llvm.x86.avx2.pblendvb` intrinsic; known as `__builtin_ia32_pblendvb256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pblendvb")
-    __vector(i8[32]) avx2_pblendvb(__vector(i8[32]), __vector(i8[32]), __vector(i8[32]));
-    /// The `llvm.x86.avx2.pblendw` intrinsic; known as `__builtin_ia32_pblendw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pblendw")
-    __vector(i16[16]) avx2_pblendw(__vector(i16[16]), __vector(i16[16]), i8);
-    /// The `llvm.x86.avx2.pblendd.128` intrinsic; known as `__builtin_ia32_pblendd128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pblendd.128")
-    __vector(i32[4]) avx2_pblendd_128(__vector(i32[4]), __vector(i32[4]), i8);
-    /// The `llvm.x86.avx2.pblendd.256` intrinsic; known as `__builtin_ia32_pblendd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pblendd.256")
-    __vector(i32[8]) avx2_pblendd_256(__vector(i32[8]), __vector(i32[8]), i8);
-    /// The `llvm.x86.avx2.vbroadcast.ss.ps` intrinsic; known as `__builtin_ia32_vbroadcastss_ps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.vbroadcast.ss.ps")
-    __vector(f32[4]) avx2_vbroadcast_ss_ps(__vector(f32[4]));
-    /// The `llvm.x86.avx2.vbroadcast.sd.pd.256` intrinsic; known as `__builtin_ia32_vbroadcastsd_pd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.vbroadcast.sd.pd.256")
-    __vector(f64[4]) avx2_vbroadcast_sd_pd_256(__vector(f64[2]));
-    /// The `llvm.x86.avx2.vbroadcast.ss.ps.256` intrinsic; known as `__builtin_ia32_vbroadcastss_ps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.vbroadcast.ss.ps.256")
-    __vector(f32[8]) avx2_vbroadcast_ss_ps_256(__vector(f32[4]));
-    /// The `llvm.x86.avx2.vbroadcasti128` intrinsic.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.vbroadcasti128")
-    __vector(i64[4]) avx2_vbroadcasti128(i8*);
-    /// The `llvm.x86.avx2.pbroadcastb.128` intrinsic; known as `__builtin_ia32_pbroadcastb128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pbroadcastb.128")
-    __vector(i8[16]) avx2_pbroadcastb_128(__vector(i8[16]));
-    /// The `llvm.x86.avx2.pbroadcastb.256` intrinsic; known as `__builtin_ia32_pbroadcastb256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pbroadcastb.256")
-    __vector(i8[32]) avx2_pbroadcastb_256(__vector(i8[16]));
-    /// The `llvm.x86.avx2.pbroadcastw.128` intrinsic; known as `__builtin_ia32_pbroadcastw128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pbroadcastw.128")
-    __vector(i16[8]) avx2_pbroadcastw_128(__vector(i16[8]));
-    /// The `llvm.x86.avx2.pbroadcastw.256` intrinsic; known as `__builtin_ia32_pbroadcastw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pbroadcastw.256")
-    __vector(i16[16]) avx2_pbroadcastw_256(__vector(i16[8]));
-    /// The `llvm.x86.avx2.pbroadcastd.128` intrinsic; known as `__builtin_ia32_pbroadcastd128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pbroadcastd.128")
-    __vector(i32[4]) avx2_pbroadcastd_128(__vector(i32[4]));
-    /// The `llvm.x86.avx2.pbroadcastd.256` intrinsic; known as `__builtin_ia32_pbroadcastd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pbroadcastd.256")
-    __vector(i32[8]) avx2_pbroadcastd_256(__vector(i32[4]));
-    /// The `llvm.x86.avx2.pbroadcastq.128` intrinsic; known as `__builtin_ia32_pbroadcastq128` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pbroadcastq.128")
-    __vector(i64[2]) avx2_pbroadcastq_128(__vector(i64[2]));
-    /// The `llvm.x86.avx2.pbroadcastq.256` intrinsic; known as `__builtin_ia32_pbroadcastq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pbroadcastq.256")
-    __vector(i64[4]) avx2_pbroadcastq_256(__vector(i64[2]));
-    /// The `llvm.x86.avx512.mask.pbroadcast.d.gpr.512` intrinsic; known as `__builtin_ia32_pbroadcastd512_gpr_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pbroadcast.d.gpr.512")
-    __vector(i32[16]) avx512_mask_pbroadcast_d_gpr_512(i32, __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.pbroadcast.q.gpr.512` intrinsic; known as `__builtin_ia32_pbroadcastq512_gpr_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pbroadcast.q.gpr.512")
-    __vector(i64[8]) avx512_mask_pbroadcast_q_gpr_512(i64, __vector(i64[8]), i8);
-    /// The `llvm.x86.avx512.mask.pbroadcast.q.mem.512` intrinsic; known as `__builtin_ia32_pbroadcastq512_mem_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pbroadcast.q.mem.512")
-    __vector(i64[8]) avx512_mask_pbroadcast_q_mem_512(i64, __vector(i64[8]), i8);
-    /// The `llvm.x86.avx2.permd` intrinsic; known as `__builtin_ia32_permvarsi256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.permd")
-    __vector(i32[8]) avx2_permd(__vector(i32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx2.permps` intrinsic; known as `__builtin_ia32_permvarsf256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.permps")
-    __vector(f32[8]) avx2_permps(__vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.avx2.vperm2i128` intrinsic; known as `__builtin_ia32_permti256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.vperm2i128")
-    __vector(i64[4]) avx2_vperm2i128(__vector(i64[4]), __vector(i64[4]), i8);
-    /// The `llvm.x86.avx2.vextracti128` intrinsic; known as `__builtin_ia32_extract128i256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.vextracti128")
-    __vector(i64[2]) avx2_vextracti128(__vector(i64[4]), i8);
-    /// The `llvm.x86.avx2.vinserti128` intrinsic; known as `__builtin_ia32_insert128i256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.vinserti128")
-    __vector(i64[4]) avx2_vinserti128(__vector(i64[4]), __vector(i64[2]), i8);
-    /// The `llvm.x86.avx2.maskload.d` intrinsic; known as `__builtin_ia32_maskloadd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.maskload.d")
-    __vector(i32[4]) avx2_maskload_d(i8*, __vector(i32[4]));
-    /// The `llvm.x86.avx2.maskload.q` intrinsic; known as `__builtin_ia32_maskloadq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.maskload.q")
-    __vector(i64[2]) avx2_maskload_q(i8*, __vector(i64[2]));
-    /// The `llvm.x86.avx2.maskload.d.256` intrinsic; known as `__builtin_ia32_maskloadd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.maskload.d.256")
-    __vector(i32[8]) avx2_maskload_d_256(i8*, __vector(i32[8]));
-    /// The `llvm.x86.avx2.maskload.q.256` intrinsic; known as `__builtin_ia32_maskloadq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.maskload.q.256")
-    __vector(i64[4]) avx2_maskload_q_256(i8*, __vector(i64[4]));
-    /// The `llvm.x86.avx512.mask.loadu.d.512` intrinsic; known as `__builtin_ia32_loaddqusi512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.loadu.d.512")
-    __vector(i32[16]) avx512_mask_loadu_d_512(i8*, __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.loadu.q.512` intrinsic; known as `__builtin_ia32_loaddqudi512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.loadu.q.512")
-    __vector(i64[8]) avx512_mask_loadu_q_512(i8*, __vector(i64[8]), i8);
-    /// The `llvm.x86.avx2.maskstore.d` intrinsic; known as `__builtin_ia32_maskstored` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.maskstore.d")
-    void avx2_maskstore_d(i8*, __vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.avx2.maskstore.q` intrinsic; known as `__builtin_ia32_maskstoreq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.maskstore.q")
-    void avx2_maskstore_q(i8*, __vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.avx2.maskstore.d.256` intrinsic; known as `__builtin_ia32_maskstored256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.maskstore.d.256")
-    void avx2_maskstore_d_256(i8*, __vector(i32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx2.maskstore.q.256` intrinsic; known as `__builtin_ia32_maskstoreq256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.maskstore.q.256")
-    void avx2_maskstore_q_256(i8*, __vector(i64[4]), __vector(i64[4]));
-    /// The `llvm.x86.avx512.mask.storeu.d.512` intrinsic; known as `__builtin_ia32_storedqusi512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.storeu.d.512")
-    void avx512_mask_storeu_d_512(i8*, __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.storeu.q.512` intrinsic; known as `__builtin_ia32_storedqudi512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.storeu.q.512")
-    void avx512_mask_storeu_q_512(i8*, __vector(i64[8]), i8);
-    /// The `llvm.x86.avx2.psllv.d` intrinsic; known as `__builtin_ia32_psllv4si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psllv.d")
-    __vector(i32[4]) avx2_psllv_d(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.avx2.psllv.d.256` intrinsic; known as `__builtin_ia32_psllv8si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psllv.d.256")
-    __vector(i32[8]) avx2_psllv_d_256(__vector(i32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx2.psllv.q` intrinsic; known as `__builtin_ia32_psllv2di` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psllv.q")
-    __vector(i64[2]) avx2_psllv_q(__vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.avx2.psllv.q.256` intrinsic; known as `__builtin_ia32_psllv4di` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psllv.q.256")
-    __vector(i64[4]) avx2_psllv_q_256(__vector(i64[4]), __vector(i64[4]));
-    /// The `llvm.x86.avx2.psrlv.d` intrinsic; known as `__builtin_ia32_psrlv4si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psrlv.d")
-    __vector(i32[4]) avx2_psrlv_d(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.avx2.psrlv.d.256` intrinsic; known as `__builtin_ia32_psrlv8si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psrlv.d.256")
-    __vector(i32[8]) avx2_psrlv_d_256(__vector(i32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx2.psrlv.q` intrinsic; known as `__builtin_ia32_psrlv2di` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psrlv.q")
-    __vector(i64[2]) avx2_psrlv_q(__vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.avx2.psrlv.q.256` intrinsic; known as `__builtin_ia32_psrlv4di` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psrlv.q.256")
-    __vector(i64[4]) avx2_psrlv_q_256(__vector(i64[4]), __vector(i64[4]));
-    /// The `llvm.x86.avx2.psrav.d` intrinsic; known as `__builtin_ia32_psrav4si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psrav.d")
-    __vector(i32[4]) avx2_psrav_d(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.avx2.psrav.d.256` intrinsic; known as `__builtin_ia32_psrav8si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.psrav.d.256")
-    __vector(i32[8]) avx2_psrav_d_256(__vector(i32[8]), __vector(i32[8]));
-    /// The `llvm.x86.avx2.gather.d.pd` intrinsic; known as `__builtin_ia32_gatherd_pd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.d.pd")
-    __vector(f64[2]) avx2_gather_d_pd(__vector(f64[2]), i8*, __vector(i32[4]), __vector(f64[2]), i8);
-    /// The `llvm.x86.avx2.gather.d.pd.256` intrinsic; known as `__builtin_ia32_gatherd_pd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.d.pd.256")
-    __vector(f64[4]) avx2_gather_d_pd_256(__vector(f64[4]), i8*, __vector(i32[4]), __vector(f64[4]), i8);
-    /// The `llvm.x86.avx2.gather.q.pd` intrinsic; known as `__builtin_ia32_gatherq_pd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.q.pd")
-    __vector(f64[2]) avx2_gather_q_pd(__vector(f64[2]), i8*, __vector(i64[2]), __vector(f64[2]), i8);
-    /// The `llvm.x86.avx2.gather.q.pd.256` intrinsic; known as `__builtin_ia32_gatherq_pd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.q.pd.256")
-    __vector(f64[4]) avx2_gather_q_pd_256(__vector(f64[4]), i8*, __vector(i64[4]), __vector(f64[4]), i8);
-    /// The `llvm.x86.avx2.gather.d.ps` intrinsic; known as `__builtin_ia32_gatherd_ps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.d.ps")
-    __vector(f32[4]) avx2_gather_d_ps(__vector(f32[4]), i8*, __vector(i32[4]), __vector(f32[4]), i8);
-    /// The `llvm.x86.avx2.gather.d.ps.256` intrinsic; known as `__builtin_ia32_gatherd_ps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.d.ps.256")
-    __vector(f32[8]) avx2_gather_d_ps_256(__vector(f32[8]), i8*, __vector(i32[8]), __vector(f32[8]), i8);
-    /// The `llvm.x86.avx2.gather.q.ps` intrinsic; known as `__builtin_ia32_gatherq_ps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.q.ps")
-    __vector(f32[4]) avx2_gather_q_ps(__vector(f32[4]), i8*, __vector(i64[2]), __vector(f32[4]), i8);
-    /// The `llvm.x86.avx2.gather.q.ps.256` intrinsic; known as `__builtin_ia32_gatherq_ps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.q.ps.256")
-    __vector(f32[4]) avx2_gather_q_ps_256(__vector(f32[4]), i8*, __vector(i64[4]), __vector(f32[4]), i8);
-    /// The `llvm.x86.avx2.gather.d.q` intrinsic; known as `__builtin_ia32_gatherd_q` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.d.q")
-    __vector(i64[2]) avx2_gather_d_q(__vector(i64[2]), i8*, __vector(i32[4]), __vector(i64[2]), i8);
-    /// The `llvm.x86.avx2.gather.d.q.256` intrinsic; known as `__builtin_ia32_gatherd_q256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.d.q.256")
-    __vector(i64[4]) avx2_gather_d_q_256(__vector(i64[4]), i8*, __vector(i32[4]), __vector(i64[4]), i8);
-    /// The `llvm.x86.avx2.gather.q.q` intrinsic; known as `__builtin_ia32_gatherq_q` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.q.q")
-    __vector(i64[2]) avx2_gather_q_q(__vector(i64[2]), i8*, __vector(i64[2]), __vector(i64[2]), i8);
-    /// The `llvm.x86.avx2.gather.q.q.256` intrinsic; known as `__builtin_ia32_gatherq_q256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.q.q.256")
-    __vector(i64[4]) avx2_gather_q_q_256(__vector(i64[4]), i8*, __vector(i64[4]), __vector(i64[4]), i8);
-    /// The `llvm.x86.avx2.gather.d.d` intrinsic; known as `__builtin_ia32_gatherd_d` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.d.d")
-    __vector(i32[4]) avx2_gather_d_d(__vector(i32[4]), i8*, __vector(i32[4]), __vector(i32[4]), i8);
-    /// The `llvm.x86.avx2.gather.d.d.256` intrinsic; known as `__builtin_ia32_gatherd_d256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.d.d.256")
-    __vector(i32[8]) avx2_gather_d_d_256(__vector(i32[8]), i8*, __vector(i32[8]), __vector(i32[8]), i8);
-    /// The `llvm.x86.avx2.gather.q.d` intrinsic; known as `__builtin_ia32_gatherq_d` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.q.d")
-    __vector(i32[4]) avx2_gather_q_d(__vector(i32[4]), i8*, __vector(i64[2]), __vector(i32[4]), i8);
-    /// The `llvm.x86.avx2.gather.q.d.256` intrinsic; known as `__builtin_ia32_gatherq_d256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.gather.q.d.256")
-    __vector(i32[4]) avx2_gather_q_d_256(__vector(i32[4]), i8*, __vector(i64[4]), __vector(i32[4]), i8);
-    /// The `llvm.x86.avx2.pmovmskb` intrinsic; known as `__builtin_ia32_pmovmskb256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pmovmskb")
-    i32 avx2_pmovmskb(__vector(i8[32]));
-    /// The `llvm.x86.avx2.pshuf.b` intrinsic; known as `avx2_pshuf_b` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.pshuf.b")
-    __vector(i8[32]) avx2_pshuf_b(__vector(i8[32]), __vector(i8[32]));
-    /// The `llvm.x86.avx2.mpsadbw` intrinsic; known as `__builtin_ia32_mpsadbw256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.mpsadbw")
-    __vector(i16[16]) avx2_mpsadbw(__vector(i8[32]), __vector(i8[32]), i8);
-    /// The `llvm.x86.avx2.movntdqa` intrinsic; known as `__builtin_ia32_movntdqa256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx2.movntdqa")
-    __vector(i64[4]) avx2_movntdqa(i8*);
-    /// The `llvm.x86.fma.vfmadd.ss` intrinsic; known as `__builtin_ia32_vfmaddss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmadd.ss")
-    __vector(f32[4]) fma_vfmadd_ss(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.fma.vfmadd.sd` intrinsic; known as `__builtin_ia32_vfmaddsd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmadd.sd")
-    __vector(f64[2]) fma_vfmadd_sd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.fma.vfmadd.ps` intrinsic; known as `__builtin_ia32_vfmaddps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmadd.ps")
-    __vector(f32[4]) fma_vfmadd_ps(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.fma.vfmadd.pd` intrinsic; known as `__builtin_ia32_vfmaddpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmadd.pd")
-    __vector(f64[2]) fma_vfmadd_pd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.fma.vfmadd.ps.256` intrinsic; known as `__builtin_ia32_vfmaddps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmadd.ps.256")
-    __vector(f32[8]) fma_vfmadd_ps_256(__vector(f32[8]), __vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.fma.vfmadd.pd.256` intrinsic; known as `__builtin_ia32_vfmaddpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmadd.pd.256")
-    __vector(f64[4]) fma_vfmadd_pd_256(__vector(f64[4]), __vector(f64[4]), __vector(f64[4]));
-    /// The `llvm.x86.fma.mask.vfmadd.ps.512` intrinsic; known as `__builtin_ia32_vfmaddps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfmadd.ps.512")
-    __vector(f32[16]) fma_mask_vfmadd_ps_512(__vector(f32[16]), __vector(f32[16]), __vector(f32[16]), i16, i32);
-    /// The `llvm.x86.fma.mask.vfmadd.pd.512` intrinsic; known as `__builtin_ia32_vfmaddpd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfmadd.pd.512")
-    __vector(f64[8]) fma_mask_vfmadd_pd_512(__vector(f64[8]), __vector(f64[8]), __vector(f64[8]), i8, i32);
-    /// The `llvm.x86.fma.vfmsub.ss` intrinsic; known as `__builtin_ia32_vfmsubss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsub.ss")
-    __vector(f32[4]) fma_vfmsub_ss(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.fma.vfmsub.sd` intrinsic; known as `__builtin_ia32_vfmsubsd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsub.sd")
-    __vector(f64[2]) fma_vfmsub_sd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.fma.vfmsub.ps` intrinsic; known as `__builtin_ia32_vfmsubps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsub.ps")
-    __vector(f32[4]) fma_vfmsub_ps(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.fma.vfmsub.pd` intrinsic; known as `__builtin_ia32_vfmsubpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsub.pd")
-    __vector(f64[2]) fma_vfmsub_pd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.fma.vfmsub.ps.256` intrinsic; known as `__builtin_ia32_vfmsubps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsub.ps.256")
-    __vector(f32[8]) fma_vfmsub_ps_256(__vector(f32[8]), __vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.fma.vfmsub.pd.256` intrinsic; known as `__builtin_ia32_vfmsubpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsub.pd.256")
-    __vector(f64[4]) fma_vfmsub_pd_256(__vector(f64[4]), __vector(f64[4]), __vector(f64[4]));
-    /// The `llvm.x86.fma.mask.vfmsub.ps.512` intrinsic; known as `__builtin_ia32_vfmsubps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfmsub.ps.512")
-    __vector(f32[16]) fma_mask_vfmsub_ps_512(__vector(f32[16]), __vector(f32[16]), __vector(f32[16]), i16, i32);
-    /// The `llvm.x86.fma.mask.vfmsub.pd.512` intrinsic; known as `__builtin_ia32_vfmsubpd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfmsub.pd.512")
-    __vector(f64[8]) fma_mask_vfmsub_pd_512(__vector(f64[8]), __vector(f64[8]), __vector(f64[8]), i8, i32);
-    /// The `llvm.x86.fma.vfnmadd.ss` intrinsic; known as `__builtin_ia32_vfnmaddss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmadd.ss")
-    __vector(f32[4]) fma_vfnmadd_ss(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.fma.vfnmadd.sd` intrinsic; known as `__builtin_ia32_vfnmaddsd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmadd.sd")
-    __vector(f64[2]) fma_vfnmadd_sd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.fma.vfnmadd.ps` intrinsic; known as `__builtin_ia32_vfnmaddps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmadd.ps")
-    __vector(f32[4]) fma_vfnmadd_ps(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.fma.vfnmadd.pd` intrinsic; known as `__builtin_ia32_vfnmaddpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmadd.pd")
-    __vector(f64[2]) fma_vfnmadd_pd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.fma.vfnmadd.ps.256` intrinsic; known as `__builtin_ia32_vfnmaddps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmadd.ps.256")
-    __vector(f32[8]) fma_vfnmadd_ps_256(__vector(f32[8]), __vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.fma.vfnmadd.pd.256` intrinsic; known as `__builtin_ia32_vfnmaddpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmadd.pd.256")
-    __vector(f64[4]) fma_vfnmadd_pd_256(__vector(f64[4]), __vector(f64[4]), __vector(f64[4]));
-    /// The `llvm.x86.fma.mask.vfnmadd.ps.512` intrinsic; known as `__builtin_ia32_vfnmaddps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfnmadd.ps.512")
-    __vector(f32[16]) fma_mask_vfnmadd_ps_512(__vector(f32[16]), __vector(f32[16]), __vector(f32[16]), i16, i32);
-    /// The `llvm.x86.fma.mask.vfnmadd.pd.512` intrinsic; known as `__builtin_ia32_vfnmaddpd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfnmadd.pd.512")
-    __vector(f64[8]) fma_mask_vfnmadd_pd_512(__vector(f64[8]), __vector(f64[8]), __vector(f64[8]), i8, i32);
-    /// The `llvm.x86.fma.vfnmsub.ss` intrinsic; known as `__builtin_ia32_vfnmsubss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmsub.ss")
-    __vector(f32[4]) fma_vfnmsub_ss(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.fma.vfnmsub.sd` intrinsic; known as `__builtin_ia32_vfnmsubsd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmsub.sd")
-    __vector(f64[2]) fma_vfnmsub_sd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.fma.vfnmsub.ps` intrinsic; known as `__builtin_ia32_vfnmsubps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmsub.ps")
-    __vector(f32[4]) fma_vfnmsub_ps(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.fma.vfnmsub.pd` intrinsic; known as `__builtin_ia32_vfnmsubpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmsub.pd")
-    __vector(f64[2]) fma_vfnmsub_pd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.fma.vfnmsub.ps.256` intrinsic; known as `__builtin_ia32_vfnmsubps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmsub.ps.256")
-    __vector(f32[8]) fma_vfnmsub_ps_256(__vector(f32[8]), __vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.fma.vfnmsub.pd.256` intrinsic; known as `__builtin_ia32_vfnmsubpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfnmsub.pd.256")
-    __vector(f64[4]) fma_vfnmsub_pd_256(__vector(f64[4]), __vector(f64[4]), __vector(f64[4]));
-    /// The `llvm.x86.fma.mask.vfnmsub.ps.512` intrinsic; known as `__builtin_ia32_vfnmsubps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfnmsub.ps.512")
-    __vector(f32[16]) fma_mask_vfnmsub_ps_512(__vector(f32[16]), __vector(f32[16]), __vector(f32[16]), i16, i32);
-    /// The `llvm.x86.fma.mask.vfnmsub.pd.512` intrinsic; known as `__builtin_ia32_vfnmsubpd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfnmsub.pd.512")
-    __vector(f64[8]) fma_mask_vfnmsub_pd_512(__vector(f64[8]), __vector(f64[8]), __vector(f64[8]), i8, i32);
-    /// The `llvm.x86.fma.vfmaddsub.ps` intrinsic; known as `__builtin_ia32_vfmaddsubps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmaddsub.ps")
-    __vector(f32[4]) fma_vfmaddsub_ps(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.fma.vfmaddsub.pd` intrinsic; known as `__builtin_ia32_vfmaddsubpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmaddsub.pd")
-    __vector(f64[2]) fma_vfmaddsub_pd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.fma.vfmaddsub.ps.256` intrinsic; known as `__builtin_ia32_vfmaddsubps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmaddsub.ps.256")
-    __vector(f32[8]) fma_vfmaddsub_ps_256(__vector(f32[8]), __vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.fma.vfmaddsub.pd.256` intrinsic; known as `__builtin_ia32_vfmaddsubpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmaddsub.pd.256")
-    __vector(f64[4]) fma_vfmaddsub_pd_256(__vector(f64[4]), __vector(f64[4]), __vector(f64[4]));
-    /// The `llvm.x86.fma.mask.vfmaddsub.ps.512` intrinsic; known as `__builtin_ia32_vfmaddsubps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfmaddsub.ps.512")
-    __vector(f32[16]) fma_mask_vfmaddsub_ps_512(__vector(f32[16]), __vector(f32[16]), __vector(f32[16]), i16, i32);
-    /// The `llvm.x86.fma.mask.vfmaddsub.pd.512` intrinsic; known as `__builtin_ia32_vfmaddsubpd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfmaddsub.pd.512")
-    __vector(f64[8]) fma_mask_vfmaddsub_pd_512(__vector(f64[8]), __vector(f64[8]), __vector(f64[8]), i8, i32);
-    /// The `llvm.x86.fma.vfmsubadd.ps` intrinsic; known as `__builtin_ia32_vfmsubaddps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsubadd.ps")
-    __vector(f32[4]) fma_vfmsubadd_ps(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.fma.vfmsubadd.pd` intrinsic; known as `__builtin_ia32_vfmsubaddpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsubadd.pd")
-    __vector(f64[2]) fma_vfmsubadd_pd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.fma.vfmsubadd.ps.256` intrinsic; known as `__builtin_ia32_vfmsubaddps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsubadd.ps.256")
-    __vector(f32[8]) fma_vfmsubadd_ps_256(__vector(f32[8]), __vector(f32[8]), __vector(f32[8]));
-    /// The `llvm.x86.fma.vfmsubadd.pd.256` intrinsic; known as `__builtin_ia32_vfmsubaddpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.vfmsubadd.pd.256")
-    __vector(f64[4]) fma_vfmsubadd_pd_256(__vector(f64[4]), __vector(f64[4]), __vector(f64[4]));
-    /// The `llvm.x86.fma.mask.vfmsubadd.ps.512` intrinsic; known as `__builtin_ia32_vfmsubaddps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfmsubadd.ps.512")
-    __vector(f32[16]) fma_mask_vfmsubadd_ps_512(__vector(f32[16]), __vector(f32[16]), __vector(f32[16]), i16, i32);
-    /// The `llvm.x86.fma.mask.vfmsubadd.pd.512` intrinsic; known as `__builtin_ia32_vfmsubaddpd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.fma.mask.vfmsubadd.pd.512")
-    __vector(f64[8]) fma_mask_vfmsubadd_pd_512(__vector(f64[8]), __vector(f64[8]), __vector(f64[8]), i8, i32);
-    /// The `llvm.x86.xop.vpermil2pd` intrinsic; known as `__builtin_ia32_vpermil2pd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpermil2pd")
-    __vector(f64[2]) xop_vpermil2pd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]), i8);
-    /// The `llvm.x86.xop.vpermil2pd.256` intrinsic; known as `__builtin_ia32_vpermil2pd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpermil2pd.256")
-    __vector(f64[4]) xop_vpermil2pd_256(__vector(f64[4]), __vector(f64[4]), __vector(f64[4]), i8);
-    /// The `llvm.x86.xop.vpermil2ps` intrinsic; known as `__builtin_ia32_vpermil2ps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpermil2ps")
-    __vector(f32[4]) xop_vpermil2ps(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]), i8);
-    /// The `llvm.x86.xop.vpermil2ps.256` intrinsic; known as `__builtin_ia32_vpermil2ps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpermil2ps.256")
-    __vector(f32[8]) xop_vpermil2ps_256(__vector(f32[8]), __vector(f32[8]), __vector(f32[8]), i8);
-    /// The `llvm.x86.xop.vfrcz.pd` intrinsic; known as `__builtin_ia32_vfrczpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vfrcz.pd")
-    __vector(f64[2]) xop_vfrcz_pd(__vector(f64[2]));
-    /// The `llvm.x86.xop.vfrcz.ps` intrinsic; known as `__builtin_ia32_vfrczps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vfrcz.ps")
-    __vector(f32[4]) xop_vfrcz_ps(__vector(f32[4]));
-    /// The `llvm.x86.xop.vfrcz.sd` intrinsic; known as `__builtin_ia32_vfrczsd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vfrcz.sd")
-    __vector(f64[2]) xop_vfrcz_sd(__vector(f64[2]));
-    /// The `llvm.x86.xop.vfrcz.ss` intrinsic; known as `__builtin_ia32_vfrczss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vfrcz.ss")
-    __vector(f32[4]) xop_vfrcz_ss(__vector(f32[4]));
-    /// The `llvm.x86.xop.vfrcz.pd.256` intrinsic; known as `__builtin_ia32_vfrczpd256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vfrcz.pd.256")
-    __vector(f64[4]) xop_vfrcz_pd_256(__vector(f64[4]));
-    /// The `llvm.x86.xop.vfrcz.ps.256` intrinsic; known as `__builtin_ia32_vfrczps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vfrcz.ps.256")
-    __vector(f32[8]) xop_vfrcz_ps_256(__vector(f32[8]));
-    /// The `llvm.x86.xop.vpcmov` intrinsic; known as `__builtin_ia32_vpcmov` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpcmov")
-    __vector(i64[2]) xop_vpcmov(__vector(i64[2]), __vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.xop.vpcmov.256` intrinsic; known as `__builtin_ia32_vpcmov_256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpcmov.256")
-    __vector(i64[4]) xop_vpcmov_256(__vector(i64[4]), __vector(i64[4]), __vector(i64[4]));
-    /// The `llvm.x86.xop.vpcomb` intrinsic; known as `__builtin_ia32_vpcomb` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpcomb")
-    __vector(i8[16]) xop_vpcomb(__vector(i8[16]), __vector(i8[16]), i8);
-    /// The `llvm.x86.xop.vpcomw` intrinsic; known as `__builtin_ia32_vpcomw` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpcomw")
-    __vector(i16[8]) xop_vpcomw(__vector(i16[8]), __vector(i16[8]), i8);
-    /// The `llvm.x86.xop.vpcomd` intrinsic; known as `__builtin_ia32_vpcomd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpcomd")
-    __vector(i32[4]) xop_vpcomd(__vector(i32[4]), __vector(i32[4]), i8);
-    /// The `llvm.x86.xop.vpcomq` intrinsic; known as `__builtin_ia32_vpcomq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpcomq")
-    __vector(i64[2]) xop_vpcomq(__vector(i64[2]), __vector(i64[2]), i8);
-    /// The `llvm.x86.xop.vpcomub` intrinsic; known as `__builtin_ia32_vpcomub` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpcomub")
-    __vector(i8[16]) xop_vpcomub(__vector(i8[16]), __vector(i8[16]), i8);
-    /// The `llvm.x86.xop.vpcomuw` intrinsic; known as `__builtin_ia32_vpcomuw` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpcomuw")
-    __vector(i16[8]) xop_vpcomuw(__vector(i16[8]), __vector(i16[8]), i8);
-    /// The `llvm.x86.xop.vpcomud` intrinsic; known as `__builtin_ia32_vpcomud` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpcomud")
-    __vector(i32[4]) xop_vpcomud(__vector(i32[4]), __vector(i32[4]), i8);
-    /// The `llvm.x86.xop.vpcomuq` intrinsic; known as `__builtin_ia32_vpcomuq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpcomuq")
-    __vector(i64[2]) xop_vpcomuq(__vector(i64[2]), __vector(i64[2]), i8);
-    /// The `llvm.x86.xop.vphaddbd` intrinsic; known as `__builtin_ia32_vphaddbd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddbd")
-    __vector(i32[4]) xop_vphaddbd(__vector(i8[16]));
-    /// The `llvm.x86.xop.vphaddbq` intrinsic; known as `__builtin_ia32_vphaddbq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddbq")
-    __vector(i64[2]) xop_vphaddbq(__vector(i8[16]));
-    /// The `llvm.x86.xop.vphaddbw` intrinsic; known as `__builtin_ia32_vphaddbw` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddbw")
-    __vector(i16[8]) xop_vphaddbw(__vector(i8[16]));
-    /// The `llvm.x86.xop.vphadddq` intrinsic; known as `__builtin_ia32_vphadddq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vphadddq")
-    __vector(i64[2]) xop_vphadddq(__vector(i32[4]));
-    /// The `llvm.x86.xop.vphaddubd` intrinsic; known as `__builtin_ia32_vphaddubd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddubd")
-    __vector(i32[4]) xop_vphaddubd(__vector(i8[16]));
-    /// The `llvm.x86.xop.vphaddubq` intrinsic; known as `__builtin_ia32_vphaddubq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddubq")
-    __vector(i64[2]) xop_vphaddubq(__vector(i8[16]));
-    /// The `llvm.x86.xop.vphaddubw` intrinsic; known as `__builtin_ia32_vphaddubw` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddubw")
-    __vector(i16[8]) xop_vphaddubw(__vector(i8[16]));
-    /// The `llvm.x86.xop.vphaddudq` intrinsic; known as `__builtin_ia32_vphaddudq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddudq")
-    __vector(i64[2]) xop_vphaddudq(__vector(i32[4]));
-    /// The `llvm.x86.xop.vphadduwd` intrinsic; known as `__builtin_ia32_vphadduwd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vphadduwd")
-    __vector(i32[4]) xop_vphadduwd(__vector(i16[8]));
-    /// The `llvm.x86.xop.vphadduwq` intrinsic; known as `__builtin_ia32_vphadduwq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vphadduwq")
-    __vector(i64[2]) xop_vphadduwq(__vector(i16[8]));
-    /// The `llvm.x86.xop.vphaddwd` intrinsic; known as `__builtin_ia32_vphaddwd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddwd")
-    __vector(i32[4]) xop_vphaddwd(__vector(i16[8]));
-    /// The `llvm.x86.xop.vphaddwq` intrinsic; known as `__builtin_ia32_vphaddwq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vphaddwq")
-    __vector(i64[2]) xop_vphaddwq(__vector(i16[8]));
-    /// The `llvm.x86.xop.vphsubbw` intrinsic; known as `__builtin_ia32_vphsubbw` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vphsubbw")
-    __vector(i16[8]) xop_vphsubbw(__vector(i8[16]));
-    /// The `llvm.x86.xop.vphsubdq` intrinsic; known as `__builtin_ia32_vphsubdq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vphsubdq")
-    __vector(i64[2]) xop_vphsubdq(__vector(i32[4]));
-    /// The `llvm.x86.xop.vphsubwd` intrinsic; known as `__builtin_ia32_vphsubwd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vphsubwd")
-    __vector(i32[4]) xop_vphsubwd(__vector(i16[8]));
-    /// The `llvm.x86.xop.vpmacsdd` intrinsic; known as `__builtin_ia32_vpmacsdd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacsdd")
-    __vector(i32[4]) xop_vpmacsdd(__vector(i32[4]), __vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.xop.vpmacsdqh` intrinsic; known as `__builtin_ia32_vpmacsdqh` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacsdqh")
-    __vector(i64[2]) xop_vpmacsdqh(__vector(i32[4]), __vector(i32[4]), __vector(i64[2]));
-    /// The `llvm.x86.xop.vpmacsdql` intrinsic; known as `__builtin_ia32_vpmacsdql` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacsdql")
-    __vector(i64[2]) xop_vpmacsdql(__vector(i32[4]), __vector(i32[4]), __vector(i64[2]));
-    /// The `llvm.x86.xop.vpmacssdd` intrinsic; known as `__builtin_ia32_vpmacssdd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacssdd")
-    __vector(i32[4]) xop_vpmacssdd(__vector(i32[4]), __vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.xop.vpmacssdqh` intrinsic; known as `__builtin_ia32_vpmacssdqh` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacssdqh")
-    __vector(i64[2]) xop_vpmacssdqh(__vector(i32[4]), __vector(i32[4]), __vector(i64[2]));
-    /// The `llvm.x86.xop.vpmacssdql` intrinsic; known as `__builtin_ia32_vpmacssdql` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacssdql")
-    __vector(i64[2]) xop_vpmacssdql(__vector(i32[4]), __vector(i32[4]), __vector(i64[2]));
-    /// The `llvm.x86.xop.vpmacsswd` intrinsic; known as `__builtin_ia32_vpmacsswd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacsswd")
-    __vector(i32[4]) xop_vpmacsswd(__vector(i16[8]), __vector(i16[8]), __vector(i32[4]));
-    /// The `llvm.x86.xop.vpmacssww` intrinsic; known as `__builtin_ia32_vpmacssww` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacssww")
-    __vector(i16[8]) xop_vpmacssww(__vector(i16[8]), __vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.xop.vpmacswd` intrinsic; known as `__builtin_ia32_vpmacswd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacswd")
-    __vector(i32[4]) xop_vpmacswd(__vector(i16[8]), __vector(i16[8]), __vector(i32[4]));
-    /// The `llvm.x86.xop.vpmacsww` intrinsic; known as `__builtin_ia32_vpmacsww` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpmacsww")
-    __vector(i16[8]) xop_vpmacsww(__vector(i16[8]), __vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.xop.vpmadcsswd` intrinsic; known as `__builtin_ia32_vpmadcsswd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpmadcsswd")
-    __vector(i32[4]) xop_vpmadcsswd(__vector(i16[8]), __vector(i16[8]), __vector(i32[4]));
-    /// The `llvm.x86.xop.vpmadcswd` intrinsic; known as `__builtin_ia32_vpmadcswd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpmadcswd")
-    __vector(i32[4]) xop_vpmadcswd(__vector(i16[8]), __vector(i16[8]), __vector(i32[4]));
-    /// The `llvm.x86.xop.vpperm` intrinsic; known as `__builtin_ia32_vpperm` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpperm")
-    __vector(i8[16]) xop_vpperm(__vector(i8[16]), __vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.xop.vprotb` intrinsic; known as `__builtin_ia32_vprotb` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vprotb")
-    __vector(i8[16]) xop_vprotb(__vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.xop.vprotd` intrinsic; known as `__builtin_ia32_vprotd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vprotd")
-    __vector(i32[4]) xop_vprotd(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.xop.vprotq` intrinsic; known as `__builtin_ia32_vprotq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vprotq")
-    __vector(i64[2]) xop_vprotq(__vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.xop.vprotw` intrinsic; known as `__builtin_ia32_vprotw` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vprotw")
-    __vector(i16[8]) xop_vprotw(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.xop.vprotbi` intrinsic; known as `__builtin_ia32_vprotbi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vprotbi")
-    __vector(i8[16]) xop_vprotbi(__vector(i8[16]), i8);
-    /// The `llvm.x86.xop.vprotdi` intrinsic; known as `__builtin_ia32_vprotdi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vprotdi")
-    __vector(i32[4]) xop_vprotdi(__vector(i32[4]), i8);
-    /// The `llvm.x86.xop.vprotqi` intrinsic; known as `__builtin_ia32_vprotqi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vprotqi")
-    __vector(i64[2]) xop_vprotqi(__vector(i64[2]), i8);
-    /// The `llvm.x86.xop.vprotwi` intrinsic; known as `__builtin_ia32_vprotwi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vprotwi")
-    __vector(i16[8]) xop_vprotwi(__vector(i16[8]), i8);
-    /// The `llvm.x86.xop.vpshab` intrinsic; known as `__builtin_ia32_vpshab` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpshab")
-    __vector(i8[16]) xop_vpshab(__vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.xop.vpshad` intrinsic; known as `__builtin_ia32_vpshad` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpshad")
-    __vector(i32[4]) xop_vpshad(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.xop.vpshaq` intrinsic; known as `__builtin_ia32_vpshaq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpshaq")
-    __vector(i64[2]) xop_vpshaq(__vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.xop.vpshaw` intrinsic; known as `__builtin_ia32_vpshaw` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpshaw")
-    __vector(i16[8]) xop_vpshaw(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.xop.vpshlb` intrinsic; known as `__builtin_ia32_vpshlb` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpshlb")
-    __vector(i8[16]) xop_vpshlb(__vector(i8[16]), __vector(i8[16]));
-    /// The `llvm.x86.xop.vpshld` intrinsic; known as `__builtin_ia32_vpshld` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpshld")
-    __vector(i32[4]) xop_vpshld(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.xop.vpshlq` intrinsic; known as `__builtin_ia32_vpshlq` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpshlq")
-    __vector(i64[2]) xop_vpshlq(__vector(i64[2]), __vector(i64[2]));
-    /// The `llvm.x86.xop.vpshlw` intrinsic; known as `__builtin_ia32_vpshlw` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xop.vpshlw")
-    __vector(i16[8]) xop_vpshlw(__vector(i16[8]), __vector(i16[8]));
-    /// The `llvm.x86.mmx.emms` intrinsic; known as `__builtin_ia32_emms` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.mmx.emms")
-    void mmx_emms();
-    /// The `llvm.x86.mmx.femms` intrinsic; known as `__builtin_ia32_femms` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.mmx.femms")
-    void mmx_femms();
-    /// The `llvm.x86.bmi.bextr.32` intrinsic; known as `__builtin_ia32_bextr_u32` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.bmi.bextr.32")
-    i32 bmi_bextr_32(i32, i32);
-    /// The `llvm.x86.bmi.bextr.64` intrinsic; known as `__builtin_ia32_bextr_u64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.bmi.bextr.64")
-    i64 bmi_bextr_64(i64, i64);
-    /// The `llvm.x86.bmi.bzhi.32` intrinsic; known as `__builtin_ia32_bzhi_si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.bmi.bzhi.32")
-    i32 bmi_bzhi_32(i32, i32);
-    /// The `llvm.x86.bmi.bzhi.64` intrinsic; known as `__builtin_ia32_bzhi_di` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.bmi.bzhi.64")
-    i64 bmi_bzhi_64(i64, i64);
-    /// The `llvm.x86.bmi.pdep.32` intrinsic; known as `__builtin_ia32_pdep_si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.bmi.pdep.32")
-    i32 bmi_pdep_32(i32, i32);
-    /// The `llvm.x86.bmi.pdep.64` intrinsic; known as `__builtin_ia32_pdep_di` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.bmi.pdep.64")
-    i64 bmi_pdep_64(i64, i64);
-    /// The `llvm.x86.bmi.pext.32` intrinsic; known as `__builtin_ia32_pext_si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.bmi.pext.32")
-    i32 bmi_pext_32(i32, i32);
-    /// The `llvm.x86.bmi.pext.64` intrinsic; known as `__builtin_ia32_pext_di` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.bmi.pext.64")
-    i64 bmi_pext_64(i64, i64);
-    /// The `llvm.x86.rdfsbase.32` intrinsic; known as `__builtin_ia32_rdfsbase32` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.rdfsbase.32")
-    i32 rdfsbase_32();
-    /// The `llvm.x86.rdgsbase.32` intrinsic; known as `__builtin_ia32_rdgsbase32` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.rdgsbase.32")
-    i32 rdgsbase_32();
-    /// The `llvm.x86.rdfsbase.64` intrinsic; known as `__builtin_ia32_rdfsbase64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.rdfsbase.64")
-    i64 rdfsbase_64();
-    /// The `llvm.x86.rdgsbase.64` intrinsic; known as `__builtin_ia32_rdgsbase64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.rdgsbase.64")
-    i64 rdgsbase_64();
-    /// The `llvm.x86.wrfsbase.32` intrinsic; known as `__builtin_ia32_wrfsbase32` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.wrfsbase.32")
-    void wrfsbase_32(i32);
-    /// The `llvm.x86.wrgsbase.32` intrinsic; known as `__builtin_ia32_wrgsbase32` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.wrgsbase.32")
-    void wrgsbase_32(i32);
-    /// The `llvm.x86.wrfsbase.64` intrinsic; known as `__builtin_ia32_wrfsbase64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.wrfsbase.64")
-    void wrfsbase_64(i64);
-    /// The `llvm.x86.wrgsbase.64` intrinsic; known as `__builtin_ia32_wrgsbase64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.wrgsbase.64")
-    void wrgsbase_64(i64);
-    /// The `llvm.x86.vcvtph2ps.128` intrinsic; known as `__builtin_ia32_vcvtph2ps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.vcvtph2ps.128")
-    __vector(f32[4]) vcvtph2ps_128(__vector(i16[8]));
-    /// The `llvm.x86.vcvtph2ps.256` intrinsic; known as `__builtin_ia32_vcvtph2ps256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.vcvtph2ps.256")
-    __vector(f32[8]) vcvtph2ps_256(__vector(i16[8]));
-    /// The `llvm.x86.vcvtps2ph.128` intrinsic; known as `__builtin_ia32_vcvtps2ph` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.vcvtps2ph.128")
-    __vector(i16[8]) vcvtps2ph_128(__vector(f32[4]), i32);
-    /// The `llvm.x86.vcvtps2ph.256` intrinsic; known as `__builtin_ia32_vcvtps2ph256` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.vcvtps2ph.256")
-    __vector(i16[8]) vcvtps2ph_256(__vector(f32[8]), i32);
-    /// The `llvm.x86.avx512.mask.vcvtph2ps.512` intrinsic; known as `__builtin_ia32_vcvtph2ps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.vcvtph2ps.512")
-    __vector(f32[16]) avx512_mask_vcvtph2ps_512(__vector(i16[16]), __vector(f32[16]), i16, i32);
-    /// The `llvm.x86.avx512.mask.vcvtps2ph.512` intrinsic; known as `__builtin_ia32_vcvtps2ph512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.vcvtps2ph.512")
-    __vector(i16[16]) avx512_mask_vcvtps2ph_512(__vector(f32[16]), i32, __vector(i16[16]), i16);
-    /// The `llvm.x86.tbm.bextri.u32` intrinsic; known as `__builtin_ia32_bextri_u32` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.tbm.bextri.u32")
-    i32 tbm_bextri_u32(i32, i32);
-    /// The `llvm.x86.tbm.bextri.u64` intrinsic; known as `__builtin_ia32_bextri_u64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.tbm.bextri.u64")
-    i64 tbm_bextri_u64(i64, i64);
-    /// The `llvm.x86.addcarryx.u32` intrinsic; known as `__builtin_ia32_addcarryx_u32` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.addcarryx.u32")
-    i8 addcarryx_u32(i8, i32, i32, i8*);
-    /// The `llvm.x86.addcarryx.u64` intrinsic; known as `__builtin_ia32_addcarryx_u64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.addcarryx.u64")
-    i8 addcarryx_u64(i8, i64, i64, i8*);
-    /// The `llvm.x86.addcarry.u32` intrinsic; known as `__builtin_ia32_addcarry_u32` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.addcarry.u32")
-    i8 addcarry_u32(i8, i32, i32, i8*);
-    /// The `llvm.x86.addcarry.u64` intrinsic; known as `__builtin_ia32_addcarry_u64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.addcarry.u64")
-    i8 addcarry_u64(i8, i64, i64, i8*);
-    /// The `llvm.x86.subborrow.u32` intrinsic; known as `__builtin_ia32_subborrow_u32` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.subborrow.u32")
-    i8 subborrow_u32(i8, i32, i32, i8*);
-    /// The `llvm.x86.subborrow.u64` intrinsic; known as `__builtin_ia32_subborrow_u64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.subborrow.u64")
-    i8 subborrow_u64(i8, i64, i64, i8*);
-    /// The `llvm.x86.xbegin` intrinsic; known as `__builtin_ia32_xbegin` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xbegin")
-    i32 xbegin();
-    /// The `llvm.x86.xend` intrinsic; known as `__builtin_ia32_xend` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xend")
-    void xend();
-    /// The `llvm.x86.xabort` intrinsic; known as `__builtin_ia32_xabort` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xabort")
-    void xabort(i8);
-    /// The `llvm.x86.xtest` intrinsic; known as `__builtin_ia32_xtest` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.xtest")
-    i32 xtest();
-
-    // ======= Mir Addition:
-    pragma(LDC_intrinsic, "llvm.x86.avx512.pshuf.b.512")
-    __vector(ubyte[64]) avx512_pshuf_b_512(__vector(ubyte[64]), __vector(ubyte[64]));
-    // =======
-
-    /// The `llvm.x86.avx512.kand.w` intrinsic; known as `__builtin_ia32_kandhi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.kand.w")
-    i16 avx512_kand_w(i16, i16);
-    /// The `llvm.x86.avx512.kandn.w` intrinsic; known as `__builtin_ia32_kandnhi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.kandn.w")
-    i16 avx512_kandn_w(i16, i16);
-    /// The `llvm.x86.avx512.knot.w` intrinsic; known as `__builtin_ia32_knothi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.knot.w")
-    i16 avx512_knot_w(i16);
-    /// The `llvm.x86.avx512.kor.w` intrinsic; known as `__builtin_ia32_korhi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.kor.w")
-    i16 avx512_kor_w(i16, i16);
-    /// The `llvm.x86.avx512.kxor.w` intrinsic; known as `__builtin_ia32_kxorhi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.kxor.w")
-    i16 avx512_kxor_w(i16, i16);
-    /// The `llvm.x86.avx512.kxnor.w` intrinsic; known as `__builtin_ia32_kxnorhi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.kxnor.w")
-    i16 avx512_kxnor_w(i16, i16);
-    /// The `llvm.x86.avx512.kunpck.bw` intrinsic; known as `__builtin_ia32_kunpckhi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.kunpck.bw")
-    i16 avx512_kunpck_bw(i16, i16);
-    /// The `llvm.x86.avx512.kortestz.w` intrinsic; known as `__builtin_ia32_kortestzhi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.kortestz.w")
-    i32 avx512_kortestz_w(i16, i16);
-    /// The `llvm.x86.avx512.kortestc.w` intrinsic; known as `__builtin_ia32_kortestchi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.kortestc.w")
-    i32 avx512_kortestc_w(i16, i16);
-    /// The `llvm.x86.avx512.cvtss2usi` intrinsic; known as `__builtin_ia32_cvtss2usi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.cvtss2usi")
-    i32 avx512_cvtss2usi(__vector(f32[4]));
-    /// The `llvm.x86.avx512.cvtss2usi64` intrinsic; known as `__builtin_ia32_cvtss2usi64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.cvtss2usi64")
-    i64 avx512_cvtss2usi64(__vector(f32[4]));
-    /// The `llvm.x86.avx512.cvttss2usi` intrinsic; known as `__builtin_ia32_cvttss2usi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.cvttss2usi")
-    i32 avx512_cvttss2usi(__vector(f32[4]));
-    /// The `llvm.x86.avx512.cvttss2usi64` intrinsic; known as `__builtin_ia32_cvttss2usi64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.cvttss2usi64")
-    i64 avx512_cvttss2usi64(__vector(f32[4]));
-    /// The `llvm.x86.avx512.cvtusi2ss` intrinsic; known as `__builtin_ia32_cvtusi2ss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.cvtusi2ss")
-    __vector(f32[4]) avx512_cvtusi2ss(__vector(f32[4]), i32);
-    /// The `llvm.x86.avx512.cvtusi642ss` intrinsic; known as `__builtin_ia32_cvtusi642ss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.cvtusi642ss")
-    __vector(f32[4]) avx512_cvtusi642ss(__vector(f32[4]), i64);
-    /// The `llvm.x86.avx512.cvtsd2usi` intrinsic; known as `__builtin_ia32_cvtsd2usi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.cvtsd2usi")
-    i32 avx512_cvtsd2usi(__vector(f64[2]));
-    /// The `llvm.x86.avx512.cvtsd2usi64` intrinsic; known as `__builtin_ia32_cvtsd2usi64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.cvtsd2usi64")
-    i64 avx512_cvtsd2usi64(__vector(f64[2]));
-    /// The `llvm.x86.avx512.cvttsd2usi` intrinsic; known as `__builtin_ia32_cvttsd2usi` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.cvttsd2usi")
-    i32 avx512_cvttsd2usi(__vector(f64[2]));
-    /// The `llvm.x86.avx512.cvttsd2usi64` intrinsic; known as `__builtin_ia32_cvttsd2usi64` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.cvttsd2usi64")
-    i64 avx512_cvttsd2usi64(__vector(f64[2]));
-    /// The `llvm.x86.avx512.cvtusi2sd` intrinsic; known as `__builtin_ia32_cvtusi2sd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.cvtusi2sd")
-    __vector(f64[2]) avx512_cvtusi2sd(__vector(f64[2]), i32);
-    /// The `llvm.x86.avx512.cvtusi642sd` intrinsic; known as `__builtin_ia32_cvtusi642sd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.cvtusi642sd")
-    __vector(f64[2]) avx512_cvtusi642sd(__vector(f64[2]), i64);
-    /// The `llvm.x86.avx512.mask.cvttps2dq.512` intrinsic; known as `__builtin_ia32_cvttps2dq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvttps2dq.512")
-    __vector(i32[16]) avx512_mask_cvttps2dq_512(__vector(f32[16]), __vector(i32[16]), i16, i32);
-    /// The `llvm.x86.avx512.mask.cvttps2udq.512` intrinsic; known as `__builtin_ia32_cvttps2udq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvttps2udq.512")
-    __vector(i32[16]) avx512_mask_cvttps2udq_512(__vector(f32[16]), __vector(i32[16]), i16, i32);
-    /// The `llvm.x86.avx512.mask.cvttpd2dq.512` intrinsic; known as `__builtin_ia32_cvttpd2dq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvttpd2dq.512")
-    __vector(i32[8]) avx512_mask_cvttpd2dq_512(__vector(f64[8]), __vector(i32[8]), i8, i32);
-    /// The `llvm.x86.avx512.mask.cvttpd2udq.512` intrinsic; known as `__builtin_ia32_cvttpd2udq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvttpd2udq.512")
-    __vector(i32[8]) avx512_mask_cvttpd2udq_512(__vector(f64[8]), __vector(i32[8]), i8, i32);
-    /// The `llvm.x86.avx512.mask.rndscale.ps.512` intrinsic; known as `__builtin_ia32_rndscaleps_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.rndscale.ps.512")
-    __vector(f32[16]) avx512_mask_rndscale_ps_512(__vector(f32[16]), i32, __vector(f32[16]), i16, i32);
-    /// The `llvm.x86.avx512.mask.rndscale.pd.512` intrinsic; known as `__builtin_ia32_rndscalepd_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.rndscale.pd.512")
-    __vector(f64[8]) avx512_mask_rndscale_pd_512(__vector(f64[8]), i32, __vector(f64[8]), i8, i32);
-    /// The `llvm.x86.avx512.mask.cvtps2dq.512` intrinsic; known as `__builtin_ia32_cvtps2dq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtps2dq.512")
-    __vector(i32[16]) avx512_mask_cvtps2dq_512(__vector(f32[16]), __vector(i32[16]), i16, i32);
-    /// The `llvm.x86.avx512.mask.cvtpd2dq.512` intrinsic; known as `__builtin_ia32_cvtpd2dq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtpd2dq.512")
-    __vector(i32[8]) avx512_mask_cvtpd2dq_512(__vector(f64[8]), __vector(i32[8]), i8, i32);
-    /// The `llvm.x86.avx512.mask.cvtps2udq.512` intrinsic; known as `__builtin_ia32_cvtps2udq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtps2udq.512")
-    __vector(i32[16]) avx512_mask_cvtps2udq_512(__vector(f32[16]), __vector(i32[16]), i16, i32);
-    /// The `llvm.x86.avx512.mask.cvtpd2udq.512` intrinsic; known as `__builtin_ia32_cvtpd2udq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtpd2udq.512")
-    __vector(i32[8]) avx512_mask_cvtpd2udq_512(__vector(f64[8]), __vector(i32[8]), i8, i32);
-    /// The `llvm.x86.avx512.mask.cvtdq2ps.512` intrinsic; known as `__builtin_ia32_cvtdq2ps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtdq2ps.512")
-    __vector(f32[16]) avx512_mask_cvtdq2ps_512(__vector(i32[16]), __vector(f32[16]), i16, i32);
-    /// The `llvm.x86.avx512.mask.cvtdq2pd.512` intrinsic; known as `__builtin_ia32_cvtdq2pd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtdq2pd.512")
-    __vector(f64[8]) avx512_mask_cvtdq2pd_512(__vector(i32[8]), __vector(f64[8]), i8);
-    /// The `llvm.x86.avx512.mask.cvtudq2ps.512` intrinsic; known as `__builtin_ia32_cvtudq2ps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtudq2ps.512")
-    __vector(f32[16]) avx512_mask_cvtudq2ps_512(__vector(i32[16]), __vector(f32[16]), i16, i32);
-    /// The `llvm.x86.avx512.mask.cvtudq2pd.512` intrinsic; known as `__builtin_ia32_cvtudq2pd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtudq2pd.512")
-    __vector(f64[8]) avx512_mask_cvtudq2pd_512(__vector(i32[8]), __vector(f64[8]), i8);
-    /// The `llvm.x86.avx512.mask.cvtpd2ps.512` intrinsic; known as `__builtin_ia32_cvtpd2ps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cvtpd2ps.512")
-    __vector(f32[8]) avx512_mask_cvtpd2ps_512(__vector(f64[8]), __vector(f32[8]), i8, i32);
-    /// The `llvm.x86.avx512.vbroadcast.ss.512` intrinsic; known as `__builtin_ia32_vbroadcastss512` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.vbroadcast.ss.512")
-    __vector(f32[16]) avx512_vbroadcast_ss_512(i8*);
-    /// The `llvm.x86.avx512.vbroadcast.ss.ps.512` intrinsic; known as `__builtin_ia32_vbroadcastss_ps512` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.vbroadcast.ss.ps.512")
-    __vector(f32[16]) avx512_vbroadcast_ss_ps_512(__vector(f32[4]));
-    /// The `llvm.x86.avx512.vbroadcast.sd.512` intrinsic; known as `__builtin_ia32_vbroadcastsd512` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.vbroadcast.sd.512")
-    __vector(f64[8]) avx512_vbroadcast_sd_512(i8*);
-    /// The `llvm.x86.avx512.vbroadcast.sd.pd.512` intrinsic; known as `__builtin_ia32_vbroadcastsd_pd512` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.vbroadcast.sd.pd.512")
-    __vector(f64[8]) avx512_vbroadcast_sd_pd_512(__vector(f64[2]));
-    /// The `llvm.x86.avx512.pbroadcastd.512` intrinsic; known as `__builtin_ia32_pbroadcastd512` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.pbroadcastd.512")
-    __vector(i32[16]) avx512_pbroadcastd_512(__vector(i32[4]));
-    /// The `llvm.x86.avx512.pbroadcastd.i32.512` intrinsic.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.pbroadcastd.i32.512")
-    __vector(i32[16]) avx512_pbroadcastd_i32_512(i32);
-    /// The `llvm.x86.avx512.pbroadcastq.512` intrinsic; known as `__builtin_ia32_pbroadcastq512` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.pbroadcastq.512")
-    __vector(i64[8]) avx512_pbroadcastq_512(__vector(i64[2]));
-    /// The `llvm.x86.avx512.pbroadcastq.i64.512` intrinsic.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.pbroadcastq.i64.512")
-    __vector(i64[8]) avx512_pbroadcastq_i64_512(i64);
-    /// The `llvm.x86.avx512.pmovzxbq` intrinsic; known as `__builtin_ia32_pmovzxbq512` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.pmovzxbq")
-    __vector(i64[8]) avx512_pmovzxbq(__vector(i8[16]));
-    /// The `llvm.x86.avx512.pmovzxwd` intrinsic; known as `__builtin_ia32_pmovzxwd512` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.pmovzxwd")
-    __vector(i32[16]) avx512_pmovzxwd(__vector(i16[16]));
-    /// The `llvm.x86.avx512.pmovzxbd` intrinsic; known as `__builtin_ia32_pmovzxbd512` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.pmovzxbd")
-    __vector(i32[16]) avx512_pmovzxbd(__vector(i8[16]));
-    /// The `llvm.x86.avx512.pmovzxwq` intrinsic; known as `__builtin_ia32_pmovzxwq512` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.pmovzxwq")
-    __vector(i64[8]) avx512_pmovzxwq(__vector(i16[8]));
-    /// The `llvm.x86.avx512.pmovzxdq` intrinsic; known as `__builtin_ia32_pmovzxdq512` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.pmovzxdq")
-    __vector(i64[8]) avx512_pmovzxdq(__vector(i32[8]));
-    /// The `llvm.x86.avx512.mask.max.ps.512` intrinsic; known as `__builtin_ia32_maxps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.max.ps.512")
-    __vector(f32[16]) avx512_mask_max_ps_512(__vector(f32[16]), __vector(f32[16]), __vector(f32[16]), i16, i32);
-    /// The `llvm.x86.avx512.mask.max.pd.512` intrinsic; known as `__builtin_ia32_maxpd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.max.pd.512")
-    __vector(f64[8]) avx512_mask_max_pd_512(__vector(f64[8]), __vector(f64[8]), __vector(f64[8]), i8, i32);
-    /// The `llvm.x86.avx512.mask.min.ps.512` intrinsic; known as `__builtin_ia32_minps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.min.ps.512")
-    __vector(f32[16]) avx512_mask_min_ps_512(__vector(f32[16]), __vector(f32[16]), __vector(f32[16]), i16, i32);
-    /// The `llvm.x86.avx512.mask.min.pd.512` intrinsic; known as `__builtin_ia32_minpd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.min.pd.512")
-    __vector(f64[8]) avx512_mask_min_pd_512(__vector(f64[8]), __vector(f64[8]), __vector(f64[8]), i8, i32);
-    /// The `llvm.x86.avx512.rndscale.ss` intrinsic; known as `__builtin_ia32_rndscaless` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rndscale.ss")
-    __vector(f32[4]) avx512_rndscale_ss(__vector(f32[4]), __vector(f32[4]), i32);
-    /// The `llvm.x86.avx512.rndscale.sd` intrinsic; known as `__builtin_ia32_rndscalesd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rndscale.sd")
-    __vector(f64[2]) avx512_rndscale_sd(__vector(f64[2]), __vector(f64[2]), i32);
-    /// The `llvm.x86.avx512.sqrt.ss` intrinsic; known as `__builtin_ia32_sqrtrndss` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.sqrt.ss")
-    __vector(f32[4]) avx512_sqrt_ss(__vector(f32[4]), __vector(f32[4]));
-    /// The `llvm.x86.avx512.sqrt.sd` intrinsic; known as `__builtin_ia32_sqrtrndsd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.sqrt.sd")
-    __vector(f64[2]) avx512_sqrt_sd(__vector(f64[2]), __vector(f64[2]));
-    /// The `llvm.x86.avx512.sqrt.pd.512` intrinsic; known as `__builtin_ia32_sqrtpd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.sqrt.pd.512")
-    __vector(f64[8]) avx512_sqrt_pd_512(__vector(f64[8]), __vector(f64[8]), i8, i32);
-    /// The `llvm.x86.avx512.sqrt.ps.512` intrinsic; known as `__builtin_ia32_sqrtps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.sqrt.ps.512")
-    __vector(f32[16]) avx512_sqrt_ps_512(__vector(f32[16]), __vector(f32[16]), i16, i32);
-    /// The `llvm.x86.avx512.rsqrt14.ss` intrinsic; known as `__builtin_ia32_rsqrt14ss_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rsqrt14.ss")
-    __vector(f32[4]) avx512_rsqrt14_ss(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]), i8);
-    /// The `llvm.x86.avx512.rsqrt14.sd` intrinsic; known as `__builtin_ia32_rsqrt14sd_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rsqrt14.sd")
-    __vector(f64[2]) avx512_rsqrt14_sd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]), i8);
-    /// The `llvm.x86.avx512.rsqrt14.pd.512` intrinsic; known as `__builtin_ia32_rsqrt14pd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rsqrt14.pd.512")
-    __vector(f64[8]) avx512_rsqrt14_pd_512(__vector(f64[8]), __vector(f64[8]), i8);
-    /// The `llvm.x86.avx512.rsqrt14.ps.512` intrinsic; known as `__builtin_ia32_rsqrt14ps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rsqrt14.ps.512")
-    __vector(f32[16]) avx512_rsqrt14_ps_512(__vector(f32[16]), __vector(f32[16]), i16);
-    /// The `llvm.x86.avx512.rcp14.ss` intrinsic; known as `__builtin_ia32_rcp14ss_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rcp14.ss")
-    __vector(f32[4]) avx512_rcp14_ss(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]), i8);
-    /// The `llvm.x86.avx512.rcp14.sd` intrinsic; known as `__builtin_ia32_rcp14sd_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rcp14.sd")
-    __vector(f64[2]) avx512_rcp14_sd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]), i8);
-    /// The `llvm.x86.avx512.rcp14.pd.512` intrinsic; known as `__builtin_ia32_rcp14pd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rcp14.pd.512")
-    __vector(f64[8]) avx512_rcp14_pd_512(__vector(f64[8]), __vector(f64[8]), i8);
-    /// The `llvm.x86.avx512.rcp14.ps.512` intrinsic; known as `__builtin_ia32_rcp14ps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rcp14.ps.512")
-    __vector(f32[16]) avx512_rcp14_ps_512(__vector(f32[16]), __vector(f32[16]), i16);
-    /// The `llvm.x86.avx512.rcp28.ps` intrinsic; known as `__builtin_ia32_rcp28ps_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rcp28.ps")
-    __vector(f32[16]) avx512_rcp28_ps(__vector(f32[16]), __vector(f32[16]), i16, i32);
-    /// The `llvm.x86.avx512.rcp28.pd` intrinsic; known as `__builtin_ia32_rcp28pd_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rcp28.pd")
-    __vector(f64[8]) avx512_rcp28_pd(__vector(f64[8]), __vector(f64[8]), i8, i32);
-    /// The `llvm.x86.avx512.rcp28.ss` intrinsic; known as `__builtin_ia32_rcp28ss_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rcp28.ss")
-    __vector(f32[4]) avx512_rcp28_ss(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]), i8, i32);
-    /// The `llvm.x86.avx512.rcp28.sd` intrinsic; known as `__builtin_ia32_rcp28sd_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rcp28.sd")
-    __vector(f64[2]) avx512_rcp28_sd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]), i8, i32);
-    /// The `llvm.x86.avx512.rsqrt28.ps` intrinsic; known as `__builtin_ia32_rsqrt28ps_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rsqrt28.ps")
-    __vector(f32[16]) avx512_rsqrt28_ps(__vector(f32[16]), __vector(f32[16]), i16, i32);
-    /// The `llvm.x86.avx512.rsqrt28.pd` intrinsic; known as `__builtin_ia32_rsqrt28pd_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rsqrt28.pd")
-    __vector(f64[8]) avx512_rsqrt28_pd(__vector(f64[8]), __vector(f64[8]), i8, i32);
-    /// The `llvm.x86.avx512.rsqrt28.ss` intrinsic; known as `__builtin_ia32_rsqrt28ss_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rsqrt28.ss")
-    __vector(f32[4]) avx512_rsqrt28_ss(__vector(f32[4]), __vector(f32[4]), __vector(f32[4]), i8, i32);
-    /// The `llvm.x86.avx512.rsqrt28.sd` intrinsic; known as `__builtin_ia32_rsqrt28sd_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.rsqrt28.sd")
-    __vector(f64[2]) avx512_rsqrt28_sd(__vector(f64[2]), __vector(f64[2]), __vector(f64[2]), i8, i32);
-    /// The `llvm.x86.avx512.psll.dq` intrinsic; known as `__builtin_ia32_pslldqi512` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.psll.dq")
-    __vector(i64[8]) avx512_psll_dq(__vector(i64[8]), i32);
-    /// The `llvm.x86.avx512.psrl.dq` intrinsic; known as `__builtin_ia32_psrldqi512` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.psrl.dq")
-    __vector(i64[8]) avx512_psrl_dq(__vector(i64[8]), i32);
-    /// The `llvm.x86.avx512.psll.dq.bs` intrinsic; known as `__builtin_ia32_pslldqi512_byteshift` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.psll.dq.bs")
-    __vector(i64[8]) avx512_psll_dq_bs(__vector(i64[8]), i32);
-    /// The `llvm.x86.avx512.psrl.dq.bs` intrinsic; known as `__builtin_ia32_psrldqi512_byteshift` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.psrl.dq.bs")
-    __vector(i64[8]) avx512_psrl_dq_bs(__vector(i64[8]), i32);
-    /// The `llvm.x86.avx512.gather.dpd.512` intrinsic; known as `__builtin_ia32_gathersiv8df` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.gather.dpd.512")
-    __vector(f64[8]) avx512_gather_dpd_512(__vector(f64[8]), i8*, __vector(i32[8]), i8, i32);
-    /// The `llvm.x86.avx512.gather.dps.512` intrinsic; known as `__builtin_ia32_gathersiv16sf` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.gather.dps.512")
-    __vector(f32[16]) avx512_gather_dps_512(__vector(f32[16]), i8*, __vector(i32[16]), i16, i32);
-    /// The `llvm.x86.avx512.gather.qpd.512` intrinsic; known as `__builtin_ia32_gatherdiv8df` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.gather.qpd.512")
-    __vector(f64[8]) avx512_gather_qpd_512(__vector(f64[8]), i8*, __vector(i64[8]), i8, i32);
-    /// The `llvm.x86.avx512.gather.qps.512` intrinsic; known as `__builtin_ia32_gatherdiv16sf` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.gather.qps.512")
-    __vector(f32[8]) avx512_gather_qps_512(__vector(f32[8]), i8*, __vector(i64[8]), i8, i32);
-    /// The `llvm.x86.avx512.gather.dpq.512` intrinsic; known as `__builtin_ia32_gathersiv8di` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.gather.dpq.512")
-    __vector(i64[8]) avx512_gather_dpq_512(__vector(i64[8]), i8*, __vector(i32[8]), i8, i32);
-    /// The `llvm.x86.avx512.gather.dpi.512` intrinsic; known as `__builtin_ia32_gathersiv16si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.gather.dpi.512")
-    __vector(i32[16]) avx512_gather_dpi_512(__vector(i32[16]), i8*, __vector(i32[16]), i16, i32);
-    /// The `llvm.x86.avx512.gather.qpq.512` intrinsic; known as `__builtin_ia32_gatherdiv8di` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.gather.qpq.512")
-    __vector(i64[8]) avx512_gather_qpq_512(__vector(i64[8]), i8*, __vector(i64[8]), i8, i32);
-    /// The `llvm.x86.avx512.gather.qpi.512` intrinsic; known as `__builtin_ia32_gatherdiv16si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.gather.qpi.512")
-    __vector(i32[8]) avx512_gather_qpi_512(__vector(i32[8]), i8*, __vector(i64[8]), i8, i32);
-    /// The `llvm.x86.avx512.scatter.dpd.512` intrinsic; known as `__builtin_ia32_scattersiv8df` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.scatter.dpd.512")
-    void avx512_scatter_dpd_512(i8*, i8, __vector(i32[8]), __vector(f64[8]), i32);
-    /// The `llvm.x86.avx512.scatter.dps.512` intrinsic; known as `__builtin_ia32_scattersiv16sf` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.scatter.dps.512")
-    void avx512_scatter_dps_512(i8*, i16, __vector(i32[16]), __vector(f32[16]), i32);
-    /// The `llvm.x86.avx512.scatter.qpd.512` intrinsic; known as `__builtin_ia32_scatterdiv8df` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.scatter.qpd.512")
-    void avx512_scatter_qpd_512(i8*, i8, __vector(i64[8]), __vector(f64[8]), i32);
-    /// The `llvm.x86.avx512.scatter.qps.512` intrinsic; known as `__builtin_ia32_scatterdiv16sf` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.scatter.qps.512")
-    void avx512_scatter_qps_512(i8*, i8, __vector(i64[8]), __vector(f32[8]), i32);
-    /// The `llvm.x86.avx512.scatter.dpq.512` intrinsic; known as `__builtin_ia32_scattersiv8di` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.scatter.dpq.512")
-    void avx512_scatter_dpq_512(i8*, i8, __vector(i32[8]), __vector(i64[8]), i32);
-    /// The `llvm.x86.avx512.scatter.dpi.512` intrinsic; known as `__builtin_ia32_scattersiv16si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.scatter.dpi.512")
-    void avx512_scatter_dpi_512(i8*, i16, __vector(i32[16]), __vector(i32[16]), i32);
-    /// The `llvm.x86.avx512.scatter.qpq.512` intrinsic; known as `__builtin_ia32_scatterdiv8di` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.scatter.qpq.512")
-    void avx512_scatter_qpq_512(i8*, i8, __vector(i64[8]), __vector(i64[8]), i32);
-    /// The `llvm.x86.avx512.scatter.qpi.512` intrinsic; known as `__builtin_ia32_scatterdiv16si` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.scatter.qpi.512")
-    void avx512_scatter_qpi_512(i8*, i8, __vector(i64[8]), __vector(i32[8]), i32);
-    /// The `llvm.x86.avx512.gatherpf.dpd.512` intrinsic; known as `__builtin_ia32_gatherpfdpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.gatherpf.dpd.512")
-    void avx512_gatherpf_dpd_512(i8, __vector(i32[8]), i8*, i32, i32);
-    /// The `llvm.x86.avx512.gatherpf.dps.512` intrinsic; known as `__builtin_ia32_gatherpfdps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.gatherpf.dps.512")
-    void avx512_gatherpf_dps_512(i16, __vector(i32[16]), i8*, i32, i32);
-    /// The `llvm.x86.avx512.gatherpf.qpd.512` intrinsic; known as `__builtin_ia32_gatherpfqpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.gatherpf.qpd.512")
-    void avx512_gatherpf_qpd_512(i8, __vector(i64[8]), i8*, i32, i32);
-    /// The `llvm.x86.avx512.gatherpf.qps.512` intrinsic; known as `__builtin_ia32_gatherpfqps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.gatherpf.qps.512")
-    void avx512_gatherpf_qps_512(i8, __vector(i64[8]), i8*, i32, i32);
-    /// The `llvm.x86.avx512.scatterpf.dpd.512` intrinsic; known as `__builtin_ia32_scatterpfdpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.scatterpf.dpd.512")
-    void avx512_scatterpf_dpd_512(i8, __vector(i32[8]), i8*, i32, i32);
-    /// The `llvm.x86.avx512.scatterpf.dps.512` intrinsic; known as `__builtin_ia32_scatterpfdps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.scatterpf.dps.512")
-    void avx512_scatterpf_dps_512(i16, __vector(i32[16]), i8*, i32, i32);
-    /// The `llvm.x86.avx512.scatterpf.qpd.512` intrinsic; known as `__builtin_ia32_scatterpfqpd` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.scatterpf.qpd.512")
-    void avx512_scatterpf_qpd_512(i8, __vector(i64[8]), i8*, i32, i32);
-    /// The `llvm.x86.avx512.scatterpf.qps.512` intrinsic; known as `__builtin_ia32_scatterpfqps` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.scatterpf.qps.512")
-    void avx512_scatterpf_qps_512(i8, __vector(i64[8]), i8*, i32, i32);
-    /// The `llvm.x86.avx512.mask.conflict.d.512` intrinsic; known as `__builtin_ia32_vpconflictsi_512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.conflict.d.512")
-    __vector(i32[16]) avx512_mask_conflict_d_512(__vector(i32[16]), __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.conflict.q.512` intrinsic; known as `__builtin_ia32_vpconflictdi_512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.conflict.q.512")
-    __vector(i64[8]) avx512_mask_conflict_q_512(__vector(i64[8]), __vector(i64[8]), i8);
-    /// The `llvm.x86.avx512.mask.lzcnt.d.512` intrinsic; known as `__builtin_ia32_vplzcntd_512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.lzcnt.d.512")
-    __vector(i32[16]) avx512_mask_lzcnt_d_512(__vector(i32[16]), __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.lzcnt.q.512` intrinsic; known as `__builtin_ia32_vplzcntq_512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.lzcnt.q.512")
-    __vector(i64[8]) avx512_mask_lzcnt_q_512(__vector(i64[8]), __vector(i64[8]), i8);
-    /// The `llvm.x86.avx512.mask.blend.ps.512` intrinsic; known as `__builtin_ia32_blendmps_512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.blend.ps.512")
-    __vector(f32[16]) avx512_mask_blend_ps_512(__vector(f32[16]), __vector(f32[16]), i16);
-    /// The `llvm.x86.avx512.mask.blend.pd.512` intrinsic; known as `__builtin_ia32_blendmpd_512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.blend.pd.512")
-    __vector(f64[8]) avx512_mask_blend_pd_512(__vector(f64[8]), __vector(f64[8]), i8);
-    /// The `llvm.x86.avx512.mask.blend.d.512` intrinsic; known as `__builtin_ia32_blendmd_512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.blend.d.512")
-    __vector(i32[16]) avx512_mask_blend_d_512(__vector(i32[16]), __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.blend.q.512` intrinsic; known as `__builtin_ia32_blendmq_512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.blend.q.512")
-    __vector(i64[8]) avx512_mask_blend_q_512(__vector(i64[8]), __vector(i64[8]), i8);
-    /// The `llvm.x86.avx512.mask.valign.q.512` intrinsic; known as `__builtin_ia32_alignq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.valign.q.512")
-    __vector(i64[8]) avx512_mask_valign_q_512(__vector(i64[8]), __vector(i64[8]), i8, __vector(i64[8]), i8);
-    /// The `llvm.x86.avx512.mask.valign.d.512` intrinsic; known as `__builtin_ia32_alignd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.valign.d.512")
-    __vector(i32[16]) avx512_mask_valign_d_512(__vector(i32[16]), __vector(i32[16]), i8, __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.pcmpeq.b.512` intrinsic; known as `__builtin_ia32_pcmpeqb512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.b.512")
-    i64 avx512_mask_pcmpeq_b_512(i8x64, i8x64, i64);
-    /// The `llvm.x86.avx512.mask.pcmpeq.w.512` intrinsic; known as `__builtin_ia32_pcmpeqw512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.w.512")
-    i32 avx512_mask_pcmpeq_w_512(__vector(i16[32]), __vector(i16[32]), i32);
-    /// The `llvm.x86.avx512.mask.pcmpeq.d.512` intrinsic; known as `__builtin_ia32_pcmpeqd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.d.512")
-    i16 avx512_mask_pcmpeq_d_512(__vector(i32[16]), __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.pcmpeq.q.512` intrinsic; known as `__builtin_ia32_pcmpeqq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.q.512")
-    i8 avx512_mask_pcmpeq_q_512(__vector(i64[8]), __vector(i64[8]), i8);
-    /// The `llvm.x86.avx512.mask.pcmpgt.b.512` intrinsic; known as `__builtin_ia32_pcmpgtb512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.b.512")
-    i64 avx512_mask_pcmpgt_b_512(i8x64, i8x64, i64);
-    /// The `llvm.x86.avx512.mask.pcmpgt.w.512` intrinsic; known as `__builtin_ia32_pcmpgtw512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.w.512")
-    i32 avx512_mask_pcmpgt_w_512(__vector(i16[32]), __vector(i16[32]), i32);
-    /// The `llvm.x86.avx512.mask.pcmpgt.d.512` intrinsic; known as `__builtin_ia32_pcmpgtd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.d.512")
-    i16 avx512_mask_pcmpgt_d_512(__vector(i32[16]), __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.pcmpgt.q.512` intrinsic; known as `__builtin_ia32_pcmpgtq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.q.512")
-    i8 avx512_mask_pcmpgt_q_512(__vector(i64[8]), __vector(i64[8]), i8);
-    /// The `llvm.x86.avx512.mask.pcmpeq.b.256` intrinsic; known as `__builtin_ia32_pcmpeqb256_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.b.256")
-    i32 avx512_mask_pcmpeq_b_256(__vector(i8[32]), __vector(i8[32]), i32);
-    /// The `llvm.x86.avx512.mask.pcmpeq.w.256` intrinsic; known as `__builtin_ia32_pcmpeqw256_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.w.256")
-    i16 avx512_mask_pcmpeq_w_256(__vector(i16[16]), __vector(i16[16]), i16);
-    /// The `llvm.x86.avx512.mask.pcmpeq.d.256` intrinsic; known as `__builtin_ia32_pcmpeqd256_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.d.256")
-    i8 avx512_mask_pcmpeq_d_256(__vector(i32[8]), __vector(i32[8]), i8);
-    /// The `llvm.x86.avx512.mask.pcmpeq.q.256` intrinsic; known as `__builtin_ia32_pcmpeqq256_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.q.256")
-    i8 avx512_mask_pcmpeq_q_256(__vector(i64[4]), __vector(i64[4]), i8);
-    /// The `llvm.x86.avx512.mask.pcmpgt.b.256` intrinsic; known as `__builtin_ia32_pcmpgtb256_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.b.256")
-    i32 avx512_mask_pcmpgt_b_256(__vector(i8[32]), __vector(i8[32]), i32);
-    /// The `llvm.x86.avx512.mask.pcmpgt.w.256` intrinsic; known as `__builtin_ia32_pcmpgtw256_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.w.256")
-    i16 avx512_mask_pcmpgt_w_256(__vector(i16[16]), __vector(i16[16]), i16);
-    /// The `llvm.x86.avx512.mask.pcmpgt.d.256` intrinsic; known as `__builtin_ia32_pcmpgtd256_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.d.256")
-    i8 avx512_mask_pcmpgt_d_256(__vector(i32[8]), __vector(i32[8]), i8);
-    /// The `llvm.x86.avx512.mask.pcmpgt.q.256` intrinsic; known as `__builtin_ia32_pcmpgtq256_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.q.256")
-    i8 avx512_mask_pcmpgt_q_256(__vector(i64[4]), __vector(i64[4]), i8);
-    /// The `llvm.x86.avx512.mask.pcmpeq.b.128` intrinsic; known as `__builtin_ia32_pcmpeqb128_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.b.128")
-    i16 avx512_mask_pcmpeq_b_128(__vector(i8[16]), __vector(i8[16]), i16);
-    /// The `llvm.x86.avx512.mask.pcmpeq.w.128` intrinsic; known as `__builtin_ia32_pcmpeqw128_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.w.128")
-    i8 avx512_mask_pcmpeq_w_128(__vector(i16[8]), __vector(i16[8]), i8);
-    /// The `llvm.x86.avx512.mask.pcmpeq.d.128` intrinsic; known as `__builtin_ia32_pcmpeqd128_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.d.128")
-    i8 avx512_mask_pcmpeq_d_128(__vector(i32[4]), __vector(i32[4]), i8);
-    /// The `llvm.x86.avx512.mask.pcmpeq.q.128` intrinsic; known as `__builtin_ia32_pcmpeqq128_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpeq.q.128")
-    i8 avx512_mask_pcmpeq_q_128(__vector(i64[2]), __vector(i64[2]), i8);
-    /// The `llvm.x86.avx512.mask.pcmpgt.b.128` intrinsic; known as `__builtin_ia32_pcmpgtb128_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.b.128")
-    i16 avx512_mask_pcmpgt_b_128(__vector(i8[16]), __vector(i8[16]), i16);
-    /// The `llvm.x86.avx512.mask.pcmpgt.w.128` intrinsic; known as `__builtin_ia32_pcmpgtw128_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.w.128")
-    i8 avx512_mask_pcmpgt_w_128(__vector(i16[8]), __vector(i16[8]), i8);
-    /// The `llvm.x86.avx512.mask.pcmpgt.d.128` intrinsic; known as `__builtin_ia32_pcmpgtd128_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.d.128")
-    i8 avx512_mask_pcmpgt_d_128(__vector(i32[4]), __vector(i32[4]), i8);
-    /// The `llvm.x86.avx512.mask.pcmpgt.q.128` intrinsic; known as `__builtin_ia32_pcmpgtq128_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pcmpgt.q.128")
-    i8 avx512_mask_pcmpgt_q_128(__vector(i64[2]), __vector(i64[2]), i8);
-    /// The `llvm.x86.avx512.mask.cmp.ps.512` intrinsic; known as `__builtin_ia32_cmpps512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cmp.ps.512")
-    i16 avx512_mask_cmp_ps_512(__vector(f32[16]), __vector(f32[16]), i32, i16, i32);
-    /// The `llvm.x86.avx512.mask.cmp.pd.512` intrinsic; known as `__builtin_ia32_cmppd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.cmp.pd.512")
-    i8 avx512_mask_cmp_pd_512(__vector(f64[8]), __vector(f64[8]), i32, i8, i32);
-    /// The `llvm.x86.avx512.mask.pand.d.512` intrinsic; known as `__builtin_ia32_pandd512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pand.d.512")
-    __vector(i32[16]) avx512_mask_pand_d_512(__vector(i32[16]), __vector(i32[16]), __vector(i32[16]), i16);
-    /// The `llvm.x86.avx512.mask.pand.q.512` intrinsic; known as `__builtin_ia32_pandq512_mask` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.mask.pand.q.512")
-    __vector(i64[8]) avx512_mask_pand_q_512(__vector(i64[8]), __vector(i64[8]), __vector(i64[8]), i8);
-    /// The `llvm.x86.avx512.movntdqa` intrinsic; known as `__builtin_ia32_movntdqa512` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.avx512.movntdqa")
-    __vector(i64[8]) avx512_movntdqa(i8*);
-    /// The `llvm.x86.sha1rnds4` intrinsic; known as `__builtin_ia32_sha1rnds4` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sha1rnds4")
-    __vector(i32[4]) sha1rnds4(__vector(i32[4]), __vector(i32[4]), i8);
-    /// The `llvm.x86.sha1nexte` intrinsic; known as `__builtin_ia32_sha1nexte` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sha1nexte")
-    __vector(i32[4]) sha1nexte(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.sha1msg1` intrinsic; known as `__builtin_ia32_sha1msg1` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sha1msg1")
-    __vector(i32[4]) sha1msg1(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.sha1msg2` intrinsic; known as `__builtin_ia32_sha1msg2` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sha1msg2")
-    __vector(i32[4]) sha1msg2(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.sha256rnds2` intrinsic; known as `__builtin_ia32_sha256rnds2` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sha256rnds2")
-    __vector(i32[4]) sha256rnds2(__vector(i32[4]), __vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.sha256msg1` intrinsic; known as `__builtin_ia32_sha256msg1` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sha256msg1")
-    __vector(i32[4]) sha256msg1(__vector(i32[4]), __vector(i32[4]));
-    /// The `llvm.x86.sha256msg2` intrinsic; known as `__builtin_ia32_sha256msg2` in GCC.
-    pragma(LDC_intrinsic, "llvm.x86.sha256msg2")
-    __vector(i32[4]) sha256msg2(__vector(i32[4]), __vector(i32[4]));
-}
-
 /// LLVM intrinsics for the xcore architecture.
 version (xcore) {
     /// The `llvm.xcore.bitrev` intrinsic; known as `__builtin_bitrev` in GCC.
@@ -18392,3 +18392,4 @@ version (xcore) {
     void initdp_p0i8(i8*, i8*);
 }
 
+}
