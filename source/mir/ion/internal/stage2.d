@@ -43,11 +43,11 @@ void stage2(
     {
         version (X86_Any)
         {
-            static if (!__traits(targetHasFeature, "avx512bw"))
-            {
-                import cpuid.x86_any;
-                if (avx512bw)
-                    return stage2_impl_skylake_avx512(params);
+            import cpuid.x86_any;
+            // static if (!__traits(targetHasFeature, "avx512bw"))
+            // {
+            //     if (avx512bw)
+            //         return stage2_impl_skylake_avx512(params);
                 static if (!__traits(targetHasFeature, "avx2"))
                 {
                     if (avx2)
@@ -70,9 +70,9 @@ void stage2(
                 }
                 else
                     return stage2_impl_broadwell(params);
-            }
-            else
-                return stage2_impl_skylake_avx512(params);
+            // }
+            // else
+            //     return stage2_impl_skylake_avx512(params);
         }
         else
             return stage2_impl_generic(params);
