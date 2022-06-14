@@ -137,8 +137,8 @@ Stage3Result stage3(
             auto spacesMask = pairedMask2[indexG][1] << (63 - indexL);
             if (spacesMask != 0)
             {
-                assert(ctlz(spacesMask) < text.length, text);
-                text = text[0 .. $ - ctlz(spacesMask)];
+                assert(ctlz(spacesMask) < text.length);
+                text = text[0 .. $ - cast(size_t)ctlz(spacesMask)];
                 return false;
             }
             text = text[0 .. index & ~0x3FUL];
@@ -204,7 +204,7 @@ Next:
                         memcpy(_textBuffer.ptr + _textBuffer.length - text.length, text.ptr, text.length);
                         text = _textBuffer[$ - text.length .. $];
                     }
-                    auto index = text.length - 1;
+                    size_t index = text.length - 1;
                     auto indexG = index >> 6;
                     auto indexL = index & 0x3F;
                     auto quoteMask = pairedMask1[indexG][0] << (63 - indexL);
@@ -214,7 +214,7 @@ Next:
                     if (mask != 0)
                     {
                         assert(text.length > ctlz(mask));
-                        auto shift = ctlz(mask);
+                        auto shift = cast(size_t)ctlz(mask);
                         text = text[0 .. $ - shift];
                         currentTapePosition -= shift;
                         if (_expect(quoteMask > escapeMask, true))
@@ -301,7 +301,7 @@ Next:
                             }
                         }
                     }
-                    auto newTextLength = index & ~0x3FUL;
+                    size_t newTextLength = index & ~size_t(0x3F);
                     currentTapePosition -= text.length - newTextLength;
                     text = text[0 .. newTextLength];
                 }
