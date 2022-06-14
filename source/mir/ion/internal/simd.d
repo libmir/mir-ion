@@ -143,10 +143,12 @@ version (X86_Any)
 {
     version (LDC)
     {
-        public import mir.llvmint:
-            ssse3_pshuf_b_128,
-            avx2_pshuf_b,
-            avx512_pshuf_b_512;
+        pragma(LDC_intrinsic, "llvm.x86.ssse3.pshuf.b.128")
+            __vector(ubyte[16]) ssse3_pshuf_b_128(__vector(ubyte[16]), __vector(ubyte[16]));
+        pragma(LDC_intrinsic, "llvm.x86.avx2.pshuf.b")
+            __vector(ubyte[32]) avx2_pshuf_b(__vector(ubyte[32]), __vector(ubyte[32]));
+        pragma(LDC_intrinsic, "llvm.x86.avx512.pshuf.b.512")
+            __vector(ubyte[64]) avx512_pshuf_b_512(__vector(ubyte[64]), __vector(ubyte[64]));
     }
 
     version (GDC)
