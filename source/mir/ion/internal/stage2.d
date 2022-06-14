@@ -111,8 +111,8 @@ version (X86_Any)
             {{
                 auto s = v[i] - ',';
                 auto m = v[i] | ubyte(0x20);
-                auto b = __builtin_ia32_pshufb(whiteSpaceMask, v[i]);
-                auto a = __builtin_ia32_pshufb(operatorMask, s);
+                auto b = ssse3_pshuf_b_128(whiteSpaceMask, v[i]);
+                auto a = ssse3_pshuf_b_128(operatorMask, s);
                 result[1][i] = equal(v[i], b);
                 result[0][i] = equal(m, a);
             }}
@@ -148,8 +148,8 @@ version (X86_Any)
             {{
                 auto s = v[i] - ',';
                 auto m = v[i] | ubyte(0x20);
-                auto b = __builtin_ia32_pshufb(whiteSpaceMask, v[i]);
-                auto a = __builtin_ia32_pshufb(operatorMask, s);
+                auto b = ssse3_pshuf_b_128(whiteSpaceMask, v[i]);
+                auto a = ssse3_pshuf_b_128(operatorMask, s);
                 result[1][i] = equal(v[i], b);
                 result[0][i] = equal(m, a);
             }}
@@ -223,8 +223,8 @@ version (X86_Any)
         do
         {
             auto v = *cast(__vector(ubyte[64])*)(vector++);
-            auto a = __builtin_ia32_pshufb512(operatorMask, v);
-            auto b = __builtin_ia32_pshufb512(whiteSpaceMask, v);
+            auto a = avx512_pshuf_b_512(operatorMask, v);
+            auto b = avx512_pshuf_b_512(whiteSpaceMask, v);
             *pairedMask++ = transform([equal(v, a), equal(v, b)]);
         }
         while(--n);
