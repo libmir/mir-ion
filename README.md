@@ -58,7 +58,7 @@ Test data from [kostya/benchmarks](https://github.com/kostya/benchmarks).
 Binary Ion writing      0.251 GB/s
      is equivalent of   1.063 GB/s for JSON
 
-JSON    -> binary Ion   0.589 GB/s
+JSON    -> binary Ion   0.6 GB/s
 
 MsgPack -> binary Ion   0.309 GB/s
      is equivalent of   1.098 GB/s for JSON
