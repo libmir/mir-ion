@@ -107,7 +107,10 @@ void serializeValue(S, V)(scope ref S serializer, scope const V value)
 {
     static if (hasUDA!(V, serdeProxy))
     {
-        serializer.serializeWithProxy!(serdeGetProxy!V)(value);
+        static if (hasUDA!(V, serdeProxyCast))
+            serializeValue(serializer, cast(serdeGetProxy!V)value);
+        else
+            serializer.serializeWithProxy!(serdeGetProxy!V)(value);
     }
     else
     {
