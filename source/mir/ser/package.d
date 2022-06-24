@@ -14,6 +14,7 @@ import mir.ion.type_code;
 import mir.reflection;
 import std.meta;
 import std.traits;
+import mir.ion.conv : proxyTo;
 
 public import mir.serde;
 
@@ -644,24 +645,14 @@ private template serializeWithProxy(Proxy)
         static if (is(Proxy == const(char)[]) || is(Proxy == string) || is(Proxy == char[]))
         {
             import mir.format: stringBuf, print, getData;
-            static if (__traits(compiles, serializeValue(serializer, stringBuf() << value << getData)))
-                serializeValue(serializer, stringBuf() << value << getData);
+            static if (__traits(compiles, serializeValue(serializer, stringBuf() << proxyTo!Proxy(value) << getData)))
+                serializeValue(serializer, stringBuf() << proxyTo!Proxy(value) << getData);
             else
-            {
-                serializeValue(serializer, to!Proxy(value));
-            }
+                serializeValue(serializer, proxyTo!Proxy(value));
         }
         else
         {
-            static if (isImplicitlyConvertible!(V, Proxy))
-            {
-                Proxy proxy = value;
-                serializeValue(serializer, proxy);
-            }
-            else
-            {
-                serializeValue(serializer, to!Proxy(value));
-            }
+            serializeValue(serializer, proxyTo!Proxy(value));
         }
     }
 }
@@ -776,7 +767,7 @@ void serializeValue(S, V)(scope ref S serializer, auto ref V value)
             static if (__traits(compiles, value.serialize(serializer)) || !hasUDA!(V, serdeProxy))
                 value.serialize(serializer);
             else
-                serializeValue(serializer, to!(serdeGetProxy!V)(value));
+                serializeValue(serializer, proxyTo!(serdeGetProxy!V)(value));
 
         }
         else

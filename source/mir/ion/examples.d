@@ -1404,3 +1404,26 @@ unittest
     assert((cast(Foo)6).serializeText == "6", Foo.b.serializeText);
     assert("6".deserializeText!Foo == 6);
 }
+
+///
+version(mir_ion_test)
+unittest
+{
+    import mir.deser.json;
+    import mir.algebraic_alias.json;
+    import mir.algebraic: Variant, Nullable;
+
+    @serdeProxy!int
+    struct Aliased
+    {
+        int x;
+        alias x this;
+    }
+
+    struct S
+    {
+        @serdeOptional Variant!(void, Aliased) data;
+    }
+
+    S s = `{"data":4}`.deserializeJson!S;
+}

@@ -16,6 +16,7 @@ import mir.small_array;
 import mir.small_string;
 import mir.utility: _expect;
 import std.traits: ForeachType, hasUDA, Unqual, isSomeChar, EnumMembers, TemplateArgsOf, getUDAs;
+import mir.ion.conv : toProxy;
 
 private alias AliasSeq(T...) = T;
 
@@ -380,7 +381,7 @@ template deserializeValue(string[] symbolTable)
             Temporal proxy;
             if (auto exception = impl(params, proxy))
                 return exception;
-            auto temporal = to!(serdeDeserializationMemberType!(T, member))(move(proxy));
+            auto temporal = toProxy!(serdeDeserializationMemberType!(T, member))(move(proxy));
             static if (hasTransform)
                 transform(temporal);
             __traits(getMember, value, member) = move(temporal);
@@ -442,6 +443,7 @@ template deserializeValue(string[] symbolTable)
         if (!isFirstOrderSerdeType!T)
     {with(params){
         import mir.algebraic: isVariant, isNullable;
+        import mir.serde: ContainsProxied;
         import mir.internal.meta: Contains;
         import mir.ndslice.slice: Slice, SliceKind;
         import mir.rc.array: RCArray, RCI;
@@ -749,7 +751,6 @@ template deserializeValue(string[] symbolTable)
                         return error.ionException;
                     if (symbolId >= table.length)
                         return IonErrorCode.symbolIdIsTooLargeForTheCurrentSymbolTable.ionException;
-                    import mir.conv: to;
                     auto elemParams = params.withData(elem);
                     serdeGetProxy!T temporal;
                     if (auto exception = impl(elemParams, temporal))
@@ -774,7 +775,6 @@ template deserializeValue(string[] symbolTable)
                 {
                     if (error)
                         return error.ionException;
-                    import mir.conv: to;
                     auto elemParams = params.withData(elem);
                     serdeGetProxy!T temporal;
                     if (auto exception = impl(elemParams, temporal))
@@ -788,7 +788,7 @@ template deserializeValue(string[] symbolTable)
                 if (auto exception = impl(params, temporal))
                     return exception;
 
-                value = to!T(move(temporal));
+                value = toProxy!T(move(temporal));
             }
             static if(__traits(hasMember, T, "serdeFinalize"))
             {
@@ -876,7 +876,26 @@ template deserializeValue(string[] symbolTable)
             }
 
             alias Types = T.AllowedTypes;
-            alias contains = Contains!Types;
+            alias contains = ContainsProxied!Types;
+
+            pragma(inline, true) void setValue(T)(T new_value)
+            {
+                alias realContains = Contains!Types;
+                static if (realContains!T)
+                    value = new_value;
+                else
+                {
+                    static foreach (Type; Types)
+                    {
+                        static if (is(serdeGetFinalProxy!Type == T))
+                        {
+                            Type ret = new_value.toProxy!Type;
+                            value = ret;
+                            return; // kind of unsafe: first one wins, but compiler will warn with multiple returns anyway
+                        }
+                    }
+                }
+            }
 
             static if (getAlgebraicAnnotationsOfVariant!T.length)
             {
@@ -901,7 +920,7 @@ template deserializeValue(string[] symbolTable)
                                 if (auto exception = deserializeValue(annotatedParams, object))
                                     return exception;
                                 import core.lifetime: move;
-                                value = move(object);
+                                setValue(move(object));
                                 return null;
                             }
                         }
@@ -936,7 +955,7 @@ template deserializeValue(string[] symbolTable)
                                         if (auto exception = deserializeValue(annotatedParams, object))
                                             return exception;
                                         import core.lifetime: move;
-                                        value = move(object);
+                                        setValue(move(object));
                                         return null;
                                     }
                                 }
@@ -951,7 +970,7 @@ template deserializeValue(string[] symbolTable)
                 // TODO: check that descriptor.type correspond underlaying type
                 if (data.descriptor.L == 0xF)
                 {
-                    value = IonNull(data.descriptor.type);
+                    setValue(IonNull(data.descriptor.type));
                     return retNull;
                 }
             }
@@ -961,7 +980,7 @@ template deserializeValue(string[] symbolTable)
                 // TODO: check that descriptor.type correspond underlaying type
                 if (data.descriptor.L == 0xF)
                 {
-                    value = null;
+                    setValue(null);
                     return retNull;
                 }
             }
@@ -970,7 +989,7 @@ template deserializeValue(string[] symbolTable)
                 T.AllowedTypes[1] payload;
                 if (auto exception = deserializeValue(params, payload))
                     return exception;
-                value = payload;
+                setValue(payload);
                 return retNull;
             }
             else
@@ -980,7 +999,7 @@ template deserializeValue(string[] symbolTable)
                 // {
                 //     case IonTypeCode.null_:
                 //     {
-                //         value = null;
+                //         setValue(null);
                 //         return retNull;
                 //     }
                 // }
@@ -992,7 +1011,7 @@ template deserializeValue(string[] symbolTable)
                         bool boolean;
                         if (auto errorCode = data.get!bool(boolean))
                             return errorCode.ionException;
-                        value = boolean;
+                        setValue(boolean);
                         return retNull;
                     }
                 }
@@ -1005,7 +1024,7 @@ template deserializeValue(string[] symbolTable)
                         string str;
                         if (auto exception = deserializeValue(params, str))
                             return exception;
-                        value = str;
+                        setValue(str);
                         return retNull;
                     }
                 }
@@ -1018,12 +1037,22 @@ template deserializeValue(string[] symbolTable)
                         Filter!(isSmallString, Types)[$ - 1] str; // pick the largest one
                         if (auto exception = deserializeValue(params, str))
                             return exception;
-                        value = str;
+                        setValue(str);
                         return retNull;
                     }
                 }
 
-                static if (contains!long)
+                enum containsIntegral = contains!short
+                    || contains!ushort
+                    || contains!int
+                    || contains!uint
+                    || contains!long
+                    || contains!ulong;
+                enum containsFloating = contains!float
+                    || contains!double
+                    || contains!real;
+
+                static if (containsIntegral)
                 {
                     case IonTypeCode.nInt:
                     case IonTypeCode.uInt:
@@ -1031,14 +1060,14 @@ template deserializeValue(string[] symbolTable)
                         long number;
                         if (auto exception = deserializeValue_(data, number))
                             return exception;
-                        value = number;
+                        setValue(number);
                         return retNull;
                     }
                 }
 
-                static if (contains!double)
+                static if (containsFloating)
                 {
-                    static if (!contains!long)
+                    static if (!containsIntegral)
                     {
                         case IonTypeCode.nInt:
                         case IonTypeCode.uInt:
@@ -1049,7 +1078,7 @@ template deserializeValue(string[] symbolTable)
                         double number;
                         if (auto exception = deserializeValue_(data, number))
                             return exception;
-                        value = number;
+                        setValue(number);
                         return retNull;
                     }
                 }
@@ -1061,7 +1090,7 @@ template deserializeValue(string[] symbolTable)
                         Timestamp timestamp;
                         if (auto error = data.trustedGet!IonTimestamp.get(timestamp))
                             return error.ionException;
-                        value = timestamp;
+                        setValue(timestamp);
                         return retNull;
                     }
                 }
@@ -1071,7 +1100,7 @@ template deserializeValue(string[] symbolTable)
                     case IonTypeCode.blob:
                     {
                         auto blob = data.trustedGet!Blob;
-                        value = Blob(blob.data.dup);
+                        setValue(Blob(blob.data.dup));
                         return retNull;
                     }
                 }
@@ -1081,7 +1110,7 @@ template deserializeValue(string[] symbolTable)
                     case IonTypeCode.clob:
                     {
                         auto clob = data.trustedGet!Clob;
-                        value = Clob(clob.data.dup);
+                        setValue(Clob(clob.data.dup));
                         return retNull;
                     }
                 }
@@ -1096,7 +1125,7 @@ template deserializeValue(string[] symbolTable)
                         if (auto exception = deserializeValue(params, array))
                             return exception;
                         import core.lifetime: move;
-                        value = move(array);
+                        setValue(move(array));
                         return retNull;
                     }
                 }
@@ -1164,7 +1193,7 @@ template deserializeValue(string[] symbolTable)
                                                 if (auto exception = deserializeValue(params, object))
                                                     return exception;
                                                 import core.lifetime: move;
-                                                value = move(object);
+                                                setValue(move(object));
                                                 return retNull;
                                             }
                                         }
@@ -1186,7 +1215,7 @@ template deserializeValue(string[] symbolTable)
                             if (auto exception = deserializeValue(params, object))
                                 return exception;
                             import core.lifetime: move;
-                            value = move(object);
+                            setValue(move(object));
                             return retNull;
                         }
                     }
@@ -1202,7 +1231,7 @@ template deserializeValue(string[] symbolTable)
                         if (auto exception = deserializeValue(params, object))
                             return exception;
                         import core.lifetime: move;
-                        value = move(object);
+                        setValue(move(object));
                         return retNull;
                     }
                 }

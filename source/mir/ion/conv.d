@@ -562,3 +562,35 @@ version(mir_ion_test) unittest
     ])
         text.text2ion.ion2msgpack.msgpack2ion.ion2text.should == text;
 }
+
+To toProxy(To, From)(auto ref scope return From v)
+{
+    import std.traits : hasUDA, isImplicitlyConvertible;
+    import mir.conv : to;
+    import mir.deser : serdeProxyCast;
+    static if (__traits(compiles, hasUDA!(To, serdeProxyCast)) && hasUDA!(To, serdeProxyCast))
+        return cast(To)v;
+    else static if (isImplicitlyConvertible!(From, To))
+    {
+        To ret = v;
+        return ret;
+    }
+    else
+        return to!To(v);
+}
+
+To proxyTo(To, From)(auto ref scope return From v)
+{
+    import std.traits : hasUDA, isImplicitlyConvertible;
+    import mir.conv : to;
+    import mir.deser : serdeProxyCast;
+    static if (__traits(compiles, hasUDA!(From, serdeProxyCast)) && hasUDA!(From, serdeProxyCast))
+        return cast(To)v;
+    else static if (isImplicitlyConvertible!(From, To))
+    {
+        To ret = v;
+        return ret;
+    }
+    else
+        return to!To(v);
+}
