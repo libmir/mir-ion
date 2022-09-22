@@ -933,7 +933,7 @@ unittest
 }
 
 ///
-version(mir_ion_test)
+version(none)
 unittest
 {
     import mir.algebraic;
