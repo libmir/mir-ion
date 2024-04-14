@@ -83,8 +83,13 @@ void stage2(
 
 version (X86_Any)
 {
+    // A backwards compatible @target ldc attribute.
+    // Needed because of https://github.com/libmir/mir-ion/pull/46
+    version(LDC)
+    private enum backwardsCompatibleTarget (string now, string old) =
+	target(__VERSION__ >= 2108 ? now : old);
 
-    version (LDC) @target("arch=westmere")
+    version (LDC) @backwardsCompatibleTarget!("sse4.2", "arch=westmere")
     private void stage2_impl_westmere(
         size_t n,
         scope const(ubyte[64])* vector,
@@ -121,7 +126,7 @@ version (X86_Any)
         while(--n);
     }
 
-    version (LDC) @target("arch=sandybridge")
+    version (LDC) @backwardsCompatibleTarget!("avx", "arch=sandybridge")
     private void stage2_impl_sandybridge(
         size_t n,
         scope const(ubyte[64])* vector,
@@ -158,7 +163,7 @@ version (X86_Any)
         while(--n);
     }
 
-    version (LDC) @target("arch=broadwell")
+    version (LDC) @backwardsCompatibleTarget!("avx2", "arch=broadwell")
     private void stage2_impl_broadwell(
         size_t n,
         scope const(ubyte[64])* vector,
@@ -197,7 +202,7 @@ version (X86_Any)
     }
 
     version(none)
-    version (LDC) @target("arch=skylake-avx512")
+    version (LDC) @backwardsCompatibleTarget!("avx512bw", "arch=skylake-avx512")
     private void stage2_impl_skylake_avx512(
         size_t n,
         scope const(ubyte[64])* vector,
