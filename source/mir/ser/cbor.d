@@ -271,7 +271,12 @@ scope:
         {
             auto res = cast(long)num;
             if (res != num)
-                throw bigIntConvException.toMutable;
+            {
+                version(D_Exceptions)
+                    throw bigIntConvException.toMutable;
+                else
+                    assert(0, "BigInt is too large for CBOR");
+            }
             putValue(res);
         }
 
