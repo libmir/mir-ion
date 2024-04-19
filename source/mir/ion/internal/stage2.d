@@ -196,6 +196,7 @@ version (X86_Any)
         while(--n);
     }
 
+    version(none)
     version (LDC) @target("arch=skylake-avx512")
     private void stage2_impl_skylake_avx512(
         size_t n,
