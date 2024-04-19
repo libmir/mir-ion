@@ -306,7 +306,12 @@ scope:
         void putAnnotation(scope const(char)[] annotation)
         {
             if (_annotation)
-                throw msgpackAnnotationException.toMutable;
+            {
+                version (D_Exceptions)
+                    throw msgpackAnnotationException.toMutable;
+                else
+                    assert(0, "MsgPack can store exactly one annotation.");
+            }
             _annotation = true;
             putKey(annotation);
         }
@@ -452,7 +457,12 @@ scope:
         {
             auto res = cast(long)num;
             if (res != num)
-                throw bigIntConvException.toMutable;
+            {
+                version(D_Exceptions)
+                    throw bigIntConvException.toMutable;
+                else
+                    assert(0, "BigInt is too large for MessagePack");
+            }
             putValue(res);
         }
 

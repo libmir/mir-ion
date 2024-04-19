@@ -1258,6 +1258,11 @@ unittest
 +/
 auto beginList(S, V)(scope ref S serializer, scope ref V value)
 {
+    static if (__traits(hasMember, V, "length") || is(V : E[], E))
+    {
+        return serializer.listBegin(value.length);
+    }
+    else
     static if (__traits(compiles, serializer.listBegin))
     {
         return serializer.listBegin;
@@ -1273,6 +1278,11 @@ auto beginList(S, V)(scope ref S serializer, scope ref V value)
 +/
 auto beginSexp(S, V)(scope ref S serializer, scope ref V value)
 {
+    static if (__traits(hasMember, V, "length") || is(V : E[], E))
+    {
+        return serializer.sexpBegin(value.length);
+    }
+    else
     static if (__traits(compiles, serializer.sexpBegin))
     {
         return serializer.sexpBegin;
@@ -1288,6 +1298,11 @@ auto beginSexp(S, V)(scope ref S serializer, scope ref V value)
 +/
 auto beginStruct(S, V)(scope ref S serializer, scope ref V value)
 {
+    static if (is(V : E[K], E, K))
+    {
+        return serializer.structBegin(value.length);
+    }
+    else
     static if (__traits(compiles, serializer.structBegin))
     {
         return serializer.structBegin;
