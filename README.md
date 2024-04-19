@@ -15,6 +15,7 @@ Mir Ion serialization engine supports
  - MsgPack
  - YAML
  - CSV
+ - CBOR (encoding only)
  - [Bloomberg](https://github.com/libmir/mir-bloomberg)
  - [Custom formats](docs-src/custom-formats.md)
 
