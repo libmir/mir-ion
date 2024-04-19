@@ -13,10 +13,6 @@ version(D_Exceptions) {
     import mir.exception: toMutable;
     private static immutable bigIntConvException = new IonException("Overflow when converting BigInt");
     private static immutable cborAnnotationException = new IonException("Cbor can store exactly one annotation.");
-    private static immutable stringTooLargeException = new IonException("Too large of a string for Cbor");
-    private static immutable blobTooLargeException = new IonException("Too large of a blob for Cbor");
-    private static immutable mapTooLargeException = new IonException("Too large of a map for Cbor");
-    private static immutable arrayTooLargeException = new IonException("Too large of an array for Cbor");
 }
 
 /++
