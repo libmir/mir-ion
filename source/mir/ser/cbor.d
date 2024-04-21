@@ -47,11 +47,8 @@ Cbor serialization back-end
 +/
 struct CborSerializer(Appender)
 {
-        import mir.appender: ScopedBuffer;
         import mir.bignum.decimal: Decimal;
         import mir.bignum.integer: BigInt;
-        import mir.ion.symbol_table: IonSymbolTable, IonSystemSymbolTable_v1;
-        import mir.ion.tape;
         import mir.ion.type_code;
         import mir.lob;
         import mir.serde: SerdeTarget;
