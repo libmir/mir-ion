@@ -466,7 +466,7 @@ private void serializeValueImpl(S, V)(scope ref S serializer, scope ref const V 
     if (isAggregateType!V && (!isIterable!V || hasFields!V || hasUDA!(V, serdeProxy) && !hasUDA!(V, serdeLikeList)))
 {
     import mir.algebraic;
-    auto state = serializer.structBegin;
+    auto state = serializer.beginStruct(value);
 
     static if (hasUDA!(V, serdeDiscriminatedField))
     {{
@@ -1301,6 +1301,13 @@ auto beginStruct(S, V)(scope ref S serializer, scope ref V value)
     static if (is(V : E[K], E, K))
     {
         return serializer.structBegin(value.length);
+    }
+    else
+    static if (hasUDA!(V, serdeMembersExactly))
+    {
+        enum auto udas = getUDAs!(V, serdeMembersExactly);
+        static assert(udas.length == 1, V.stringof ~ " can have exactly one UDA serdeMembersExactly");
+        return serializer.structBegin(getUDAs!(V, serdeMembersExactly)[0].n);
     }
     else
     static if (__traits(compiles, serializer.structBegin))
